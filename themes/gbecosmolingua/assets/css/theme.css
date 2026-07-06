@@ -1,0 +1,119 @@
+/* GbeCosmoLingua — styles complémentaires */
+
+.gbe-hero {
+	background: linear-gradient(135deg, #1a3c34 0%, #2d5a4e 60%, #c45c26 100%);
+	color: #fff;
+	padding: 4rem 2rem;
+	border-radius: 0 0 1.5rem 1.5rem;
+}
+
+.gbe-hero h1 {
+	color: #fff !important;
+	font-size: clamp(2rem, 5vw, 3.5rem);
+	margin-bottom: 1rem;
+}
+
+.gbe-hero .gbe-tagline {
+	color: #d4a853;
+	font-size: 1.15rem;
+	font-weight: 600;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+}
+
+.gbe-section {
+	padding: 3rem 0;
+}
+
+.gbe-section--alt {
+	background-color: #fff;
+	border-radius: 1rem;
+	padding: 2.5rem;
+	margin: 2rem 0;
+	box-shadow: 0 2px 12px rgba(26, 60, 52, 0.08);
+}
+
+.gbe-devise {
+	border-left: 4px solid #d4a853;
+	padding: 1.5rem 2rem;
+	font-style: italic;
+	font-size: 1.25rem;
+	color: #1a3c34;
+	background: #fff;
+	border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.gbe-rubriques-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+	gap: 1.5rem;
+	margin-top: 2rem;
+}
+
+.gbe-rubrique-card {
+	background: #fff;
+	border-radius: 0.75rem;
+	padding: 1.5rem;
+	border-top: 4px solid #c45c26;
+	transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.gbe-rubrique-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 8px 24px rgba(26, 60, 52, 0.12);
+}
+
+.gbe-rubrique-card h3 {
+	margin-top: 0;
+	color: #1a3c34;
+	font-size: 1.1rem;
+}
+
+.gbe-rubrique-card a {
+	text-decoration: none;
+	color: inherit;
+}
+
+.gbe-rubrique-card a:hover h3 {
+	color: #c45c26;
+}
+
+.gbe-mission-list {
+	list-style: none;
+	padding: 0;
+}
+
+.gbe-mission-list li {
+	padding: 0.6rem 0 0.6rem 1.75rem;
+	position: relative;
+	border-bottom: 1px solid rgba(26, 60, 52, 0.1);
+}
+
+.gbe-mission-list li::before {
+	content: "◆";
+	color: #d4a853;
+	position: absolute;
+	left: 0;
+	font-size: 0.7rem;
+	top: 0.85rem;
+}
+
+.site-header .wp-block-navigation {
+	font-weight: 500;
+}
+
+.gbe-quote {
+	border-left: 3px solid #c45c26;
+	padding-left: 1.25rem;
+	margin: 1.5rem 0;
+	font-style: italic;
+	color: #555;
+}
+
+.gbe-quote cite {
+	display: block;
+	margin-top: 0.5rem;
+	font-style: normal;
+	font-size: 0.9rem;
+	color: #1a3c34;
+}

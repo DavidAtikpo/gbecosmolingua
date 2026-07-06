@@ -1,0 +1,68 @@
+services:
+
+  db:
+    image: mysql:8.0
+    container_name: gbe_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: db_gbecosmolingua
+      MYSQL_USER: gbe_user
+      MYSQL_PASSWORD: gbe_pass
+      MYSQL_ROOT_PASSWORD: root_pass
+    volumes:
+      - db_data:/var/lib/mysql
+
+  wordpress:
+    image: wordpress:latest
+    container_name: gbe_wp
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: db_gbecosmolingua
+      WORDPRESS_DB_USER: gbe_user
+      WORDPRESS_DB_PASSWORD: gbe_pass
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./wp-content:/var/www/html/wp-content
+      - ./themes/gbecosmolingua:/var/www/html/wp-content/themes/gbecosmolingua
+      - ./plugins/gbecosmolingua-core:/var/www/html/wp-content/plugins/gbecosmolingua-core
+    depends_on:
+      - db
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: gbe_pma
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    depends_on:
+      - db
+
+  wpcli:
+    image: wordpress:cli
+    container_name: gbe_wpcli
+    user: "33:33"
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./wp-content:/var/www/html/wp-content
+      - ./themes/gbecosmolingua:/var/www/html/wp-content/themes/gbecosmolingua
+      - ./plugins/gbecosmolingua-core:/var/www/html/wp-content/plugins/gbecosmolingua-core
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: db_gbecosmolingua
+      WORDPRESS_DB_USER: gbe_user
+      WORDPRESS_DB_PASSWORD: gbe_pass
+    depends_on:
+      - db
+      - wordpress
+
+volumes:
+  db_data:
+  wordpress_data:
+
+

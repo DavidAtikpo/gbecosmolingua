@@ -1,0 +1,22 @@
+.gbe-meta-fields .gbe-field {
+	margin-bottom: 1rem;
+}
+
+.gbe-meta-fields label {
+	display: block;
+	margin-bottom: 0.25rem;
+}
+
+.gbe-media-field .gbe-media-preview {
+	display: inline-block;
+	margin: 0 0.5rem;
+	font-style: italic;
+	color: #666;
+}
+
+.gbe-admin-notice {
+	padding: 1rem;
+	background: #f0f6f4;
+	border-left: 4px solid #1a3c34;
+	margin: 1rem 0;
+}
