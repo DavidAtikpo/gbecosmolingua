@@ -19,6 +19,7 @@ class GBE_Admin {
 		add_action( 'admin_menu', array( __CLASS__, 'add_menu' ) );
 		add_action( 'admin_post_gbe_run_import', array( __CLASS__, 'handle_import' ) );
 		add_action( 'admin_post_gbe_reset_import', array( __CLASS__, 'handle_reset' ) );
+		add_action( 'admin_post_gbe_reset_templates', array( __CLASS__, 'handle_reset_templates' ) );
 		add_action( 'admin_post_gbe_seed_demo', array( __CLASS__, 'handle_seed_demo' ) );
 		add_filter( 'manage_gbe_soumission_posts_columns', array( __CLASS__, 'soumission_columns' ) );
 		add_action( 'manage_gbe_soumission_posts_custom_column', array( __CLASS__, 'soumission_column_content' ), 10, 2 );
@@ -36,6 +37,15 @@ class GBE_Admin {
 			array( __CLASS__, 'render_page' ),
 			'dashicons-admin-site-alt3',
 			3
+		);
+
+		add_submenu_page(
+			'gbecosmolingua',
+			__( 'Configuration', 'gbecosmolingua-core' ),
+			__( 'Configuration', 'gbecosmolingua-core' ),
+			'manage_options',
+			'gbecosmolingua',
+			array( __CLASS__, 'render_page' )
 		);
 
 		add_submenu_page(
@@ -60,6 +70,7 @@ class GBE_Admin {
 
 			<div class="gbe-admin-notice">
 				<p><strong><?php esc_html_e( 'Thème actif :', 'gbecosmolingua-core' ); ?></strong> <?php echo esc_html( $theme->get( 'Name' ) ); ?></p>
+				<p><strong><?php esc_html_e( 'Plugin :', 'gbecosmolingua-core' ); ?></strong> <?php echo esc_html( GBE_CORE_VERSION ); ?></p>
 				<p><strong><?php esc_html_e( 'Import des pages :', 'gbecosmolingua-core' ); ?></strong>
 					<?php
 					echo $imported
@@ -95,23 +106,34 @@ class GBE_Admin {
 			</ul>
 
 			<h2><?php esc_html_e( 'Actions', 'gbecosmolingua-core' ); ?></h2>
-			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline;">
-				<?php wp_nonce_field( 'gbe_run_import' ); ?>
-				<input type="hidden" name="action" value="gbe_run_import">
-				<?php submit_button( __( 'Importer / mettre à jour les pages', 'gbecosmolingua-core' ), 'primary', 'submit', false ); ?>
-			</form>
+			<div class="gbe-admin-actions" style="display:flex; flex-direction:column; gap:0.75rem; max-width:520px; margin-bottom:1rem;">
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+					<?php wp_nonce_field( 'gbe_run_import' ); ?>
+					<input type="hidden" name="action" value="gbe_run_import">
+					<?php submit_button( __( 'Importer / mettre à jour les pages', 'gbecosmolingua-core' ), 'primary', 'submit', false ); ?>
+				</form>
 
-			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline; margin-left: 1rem;">
-				<?php wp_nonce_field( 'gbe_seed_demo' ); ?>
-				<input type="hidden" name="action" value="gbe_seed_demo">
-				<?php submit_button( __( 'Créer le contenu de démo', 'gbecosmolingua-core' ), 'secondary', 'submit', false ); ?>
-			</form>
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+					<?php wp_nonce_field( 'gbe_reset_templates' ); ?>
+					<input type="hidden" name="action" value="gbe_reset_templates">
+					<?php submit_button( __( 'Réinitialiser en-tête et pied de page', 'gbecosmolingua-core' ), 'primary', 'submit', false ); ?>
+				</form>
+				<p class="description" style="margin:0;">
+					<?php esc_html_e( 'Recharge les fichiers en-tête et pied de page du thème.', 'gbecosmolingua-core' ); ?>
+				</p>
 
-			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline; margin-left: 1rem;">
-				<?php wp_nonce_field( 'gbe_reset_import' ); ?>
-				<input type="hidden" name="action" value="gbe_reset_import">
-				<?php submit_button( __( 'Réinitialiser le flag d\'import', 'gbecosmolingua-core' ), 'secondary', 'submit', false ); ?>
-			</form>
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+					<?php wp_nonce_field( 'gbe_seed_demo' ); ?>
+					<input type="hidden" name="action" value="gbe_seed_demo">
+					<?php submit_button( __( 'Créer le contenu de démo', 'gbecosmolingua-core' ), 'secondary', 'submit', false ); ?>
+				</form>
+
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+					<?php wp_nonce_field( 'gbe_reset_import' ); ?>
+					<input type="hidden" name="action" value="gbe_reset_import">
+					<?php submit_button( __( 'Réinitialiser le flag d\'import', 'gbecosmolingua-core' ), 'secondary', 'submit', false ); ?>
+				</form>
+			</div>
 
 			<?php if ( isset( $_GET['gbe_message'] ) ) : ?>
 				<div class="notice notice-success is-dismissible" style="margin-top:1rem;">
@@ -135,11 +157,44 @@ class GBE_Admin {
 		$result = GBE_Page_Importer::import( $force );
 		GBE_Page_Importer::patch_phase4_shortcodes();
 		GBE_Page_Importer::patch_phase5_forms();
+		GBE_Page_Importer::restore_primary_menu();
 
 		wp_safe_redirect(
 			add_query_arg(
 				'gbe_message',
 				rawurlencode( $result['message'] ),
+				admin_url( 'admin.php?page=gbecosmolingua' )
+			)
+		);
+		exit;
+	}
+
+	/**
+	 * Handle template parts reset.
+	 */
+	public static function handle_reset_templates() {
+		check_admin_referer( 'gbe_reset_templates' );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Accès refusé.', 'gbecosmolingua-core' ) );
+		}
+
+		$reset = GBE_Page_Importer::reset_theme_template_parts( array( 'header', 'footer' ) );
+		GBE_Page_Importer::restore_primary_menu();
+
+		if ( empty( $reset ) ) {
+			$message = __( 'En-tête et pied de page réinitialisés depuis le thème.', 'gbecosmolingua-core' );
+		} else {
+			$message = sprintf(
+				/* translators: %s: comma-separated template part names */
+				__( 'Parties de modèles réinitialisées : %s.', 'gbecosmolingua-core' ),
+				implode( ', ', $reset )
+			);
+		}
+
+		wp_safe_redirect(
+			add_query_arg(
+				'gbe_message',
+				rawurlencode( $message ),
 				admin_url( 'admin.php?page=gbecosmolingua' )
 			)
 		);

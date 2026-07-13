@@ -93,7 +93,7 @@ function gbe_get_map_data() {
 		'zones'   => array(
 			array(
 				'name'    => 'Continuum gbe — Togo',
-				'color'   => '#1a3c34',
+				'color'   => '#1f5b2a',
 				'coords'  => array(
 					array( 6.0, 0.6 ),
 					array( 6.0, 1.8 ),
@@ -103,7 +103,7 @@ function gbe_get_map_data() {
 			),
 			array(
 				'name'    => 'Continuum gbe — Bénin',
-				'color'   => '#c45c26',
+				'color'   => '#8a4a12',
 				'coords'  => array(
 					array( 6.0, 1.8 ),
 					array( 6.0, 3.9 ),
@@ -113,7 +113,7 @@ function gbe_get_map_data() {
 			),
 			array(
 				'name'    => 'Continuum gbe — Ghana (Volta)',
-				'color'   => '#d4a853',
+				'color'   => '#b87913',
 				'coords'  => array(
 					array( 5.5, -0.2 ),
 					array( 5.5, 1.2 ),

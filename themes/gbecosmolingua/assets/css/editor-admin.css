@@ -1,0 +1,148 @@
+/* GbeCosmoLingua — éditeur de blocs (Modifier page / article) */
+:root,
+body.block-editor-page,
+body.site-editor-php,
+body.appearance_page_gutenberg-edit-site {
+	--gbe-green: #1f5b2a;
+	--gbe-green-dark: #123819;
+	--gbe-green-darker: #0d2818;
+	--gbe-gold: #b87913;
+	--gbe-gold-light: #d8ad4b;
+	--gbe-sand: #f7f1df;
+	--gbe-white: #fffaf0;
+	--wp-admin-theme-color: var(--gbe-green);
+	--wp-admin-theme-color--rgb: 31, 91, 42;
+	--wp-admin-theme-color-darker-10: var(--gbe-green-dark);
+	--wp-admin-theme-color-darker-10--rgb: 18, 56, 25;
+	--wp-admin-theme-color-darker-20: var(--gbe-green-darker);
+	--wp-admin-theme-color-darker-20--rgb: 13, 40, 24;
+}
+
+/* En-tête de l'éditeur */
+.edit-post-header,
+.edit-site-header,
+.interface-interface-skeleton__header {
+	background: var(--gbe-green-dark) !important;
+	border-bottom: 3px solid var(--gbe-gold) !important;
+	color: var(--gbe-white);
+}
+
+.edit-post-header button,
+.edit-site-header button,
+.interface-interface-skeleton__header button {
+	color: var(--gbe-white);
+}
+
+.edit-post-header button:hover,
+.edit-site-header button:hover,
+.interface-interface-skeleton__header button:hover {
+	color: var(--gbe-gold-light);
+}
+
+.edit-post-header .components-button.is-primary,
+.edit-site-header .components-button.is-primary,
+.editor-post-publish-button__button,
+.components-button.editor-post-publish-button__button.is-primary,
+.components-button.is-primary {
+	background: var(--gbe-green) !important;
+	border-color: var(--gbe-green-dark) !important;
+	color: var(--gbe-white) !important;
+}
+
+.edit-post-header .components-button.is-primary:hover,
+.edit-site-header .components-button.is-primary:hover,
+.editor-post-publish-button__button:hover,
+.components-button.editor-post-publish-button__button.is-primary:hover,
+.components-button.is-primary:hover {
+	background: var(--gbe-gold) !important;
+	border-color: var(--gbe-gold) !important;
+	color: #23150c !important;
+}
+
+/* Barre latérale (réglages page, blocs) */
+.interface-complementary-area,
+.interface-interface-skeleton__sidebar,
+.edit-post-sidebar,
+.components-panel {
+	background: var(--gbe-sand);
+}
+
+.components-panel__header {
+	background: var(--gbe-green-dark);
+	border-bottom: 2px solid var(--gbe-gold);
+}
+
+.components-panel__header button,
+.components-panel__header h2 {
+	color: var(--gbe-white) !important;
+}
+
+.components-panel__body > .components-panel__body-title:hover {
+	background: rgba(31, 91, 42, 0.08);
+}
+
+.components-panel__body > .components-panel__body-title button {
+	color: var(--gbe-green-dark);
+}
+
+.components-panel__body > .components-panel__body-title.is-opened {
+	border-bottom: 2px solid var(--gbe-gold);
+}
+
+/* Onglets et navigation éditeur */
+.interface-pinned-items .components-button.is-pressed,
+.interface-pinned-items .components-button[aria-pressed="true"] {
+	background: var(--gbe-green);
+	color: var(--gbe-white);
+}
+
+.block-editor-tabbed-sidebar__tab.is-active {
+	box-shadow: inset 0 -3px 0 var(--gbe-gold);
+	color: var(--gbe-green);
+}
+
+/* Zone centrale */
+.interface-interface-skeleton__body,
+.edit-post-visual-editor,
+.editor-styles-wrapper {
+	background: #fff;
+}
+
+.interface-interface-skeleton__footer {
+	border-top: 2px solid var(--gbe-gold);
+}
+
+/* Liens dans l'éditeur */
+.block-editor-page a,
+.site-editor-php a {
+	color: var(--gbe-green);
+}
+
+.block-editor-page a:hover,
+.site-editor-php a:hover {
+	color: var(--gbe-gold);
+}
+
+/* Listes (Pages, Articles) */
+body.post-type-page .wrap h1,
+body.post-type-post .wrap h1 {
+	color: var(--gbe-green-dark);
+}
+
+/* Métaboxes classiques (si visibles) */
+.postbox .postbox-header {
+	border-bottom: 2px solid var(--gbe-gold);
+}
+
+.postbox .postbox-header h2 {
+	color: var(--gbe-green-dark);
+}
+
+/* Notifications dans l'éditeur */
+.components-notice.is-success {
+	border-left-color: var(--gbe-green);
+}
+
+.components-notice.is-info {
+	border-left-color: var(--gbe-gold);
+}

@@ -9,7 +9,7 @@
 	height: 520px;
 	width: 100%;
 	border-radius: 0.75rem;
-	border: 2px solid #1a3c34;
+	border: 2px solid #1f5b2a;
 	box-shadow: 0 4px 20px rgba(26, 60, 52, 0.15);
 	z-index: 1;
 }
@@ -26,7 +26,7 @@
 	align-items: center;
 	gap: 0.4rem;
 	font-size: 0.9rem;
-	color: #2d2d2d;
+	color: #23150c;
 }
 
 .gbe-legend-item::before {
@@ -36,9 +36,9 @@
 	border-radius: 50%;
 }
 
-.gbe-legend-item--langue::before { background: #1a3c34; }
-.gbe-legend-item--patrimoine::before { background: #c45c26; }
-.gbe-legend-item--migration::before { background: #d4a853; }
+.gbe-legend-item--langue::before { background: #1f5b2a; }
+.gbe-legend-item--patrimoine::before { background: #8a4a12; }
+.gbe-legend-item--migration::before { background: #b87913; }
 
 .gbe-map-marker span {
 	display: block;
@@ -73,7 +73,7 @@
 	display: block;
 	font-size: 0.85rem;
 	font-weight: 600;
-	color: #1a3c34;
+	color: #1f5b2a;
 	margin-bottom: 0.25rem;
 }
 
@@ -88,7 +88,7 @@
 .gbe-btn {
 	display: inline-block;
 	padding: 0.55rem 1.25rem;
-	background: #1a3c34;
+	background: #1f5b2a;
 	color: #fff !important;
 	border: none;
 	border-radius: 0.35rem;
@@ -99,7 +99,7 @@
 }
 
 .gbe-btn:hover {
-	background: #c45c26;
+	background: #8a4a12;
 	color: #fff !important;
 }
 
@@ -119,22 +119,22 @@
 	background: #fff;
 	border-radius: 0.75rem;
 	padding: 1.5rem;
-	border-left: 4px solid #d4a853;
+	border-left: 4px solid #b87913;
 	box-shadow: 0 2px 10px rgba(26, 60, 52, 0.08);
 }
 
 .gbe-card--proverbe {
-	border-left-color: #1a3c34;
+	border-left-color: #1f5b2a;
 }
 
 .gbe-card--xotutu {
-	border-left-color: #c45c26;
+	border-left-color: #8a4a12;
 }
 
 .gbe-card__quote {
 	font-size: 1.15rem;
 	font-style: italic;
-	color: #1a3c34;
+	color: #1f5b2a;
 	margin: 0.75rem 0;
 	border: none;
 	padding: 0;
@@ -149,7 +149,7 @@
 	display: inline-block;
 	margin-top: 0.75rem;
 	font-weight: 600;
-	color: #c45c26 !important;
+	color: #8a4a12 !important;
 	text-decoration: none !important;
 }
 
@@ -159,19 +159,19 @@
 }
 
 .gbe-card__title a {
-	color: #1a3c34;
+	color: #1f5b2a;
 	text-decoration: none;
 }
 
 .gbe-card__title a:hover {
-	color: #c45c26;
+	color: #8a4a12;
 }
 
 .gbe-tag {
 	display: inline-block;
 	padding: 0.2rem 0.6rem;
-	background: #f5f0e8;
-	color: #1a3c34;
+	background: #f7f1df;
+	color: #1f5b2a;
 	border-radius: 1rem;
 	font-size: 0.8rem;
 	margin-right: 0.35rem;
@@ -182,7 +182,7 @@
 	display: inline-block;
 	margin-top: 0.5rem;
 	padding: 0.25rem 0.6rem;
-	background: #1a3c34;
+	background: #1f5b2a;
 	color: #fff;
 	border-radius: 0.25rem;
 	font-size: 0.8rem;
@@ -208,7 +208,7 @@
 
 .gbe-proverbe-detail--appended,
 .gbe-xotutu-detail--appended {
-	border-top: 3px solid #d4a853;
+	border-top: 3px solid #b87913;
 }
 
 .gbe-field-block {
@@ -217,7 +217,7 @@
 
 .gbe-field-block h3,
 .gbe-field-block h4 {
-	color: #1a3c34;
+	color: #1f5b2a;
 	margin-bottom: 0.5rem;
 	font-size: 1rem;
 }
@@ -257,8 +257,8 @@
 
 .gbe-tab.is-active,
 .gbe-tab:hover {
-	color: #1a3c34 !important;
-	border-bottom-color: #c45c26;
+	color: #1f5b2a !important;
+	border-bottom-color: #8a4a12;
 }
 
 .gbe-ressources-list {
@@ -290,11 +290,11 @@
 .gbe-archive-header {
 	margin-bottom: 2rem;
 	padding-bottom: 1rem;
-	border-bottom: 2px solid #d4a853;
+	border-bottom: 2px solid #b87913;
 }
 
 .gbe-archive-header h1 {
-	color: #1a3c34;
+	color: #1f5b2a;
 }
 
 /* Formulaires */
@@ -323,7 +323,7 @@
 .gbe-form-field label {
 	display: block;
 	font-weight: 600;
-	color: #1a3c34;
+	color: #1f5b2a;
 	margin-bottom: 0.35rem;
 }
 
@@ -342,7 +342,7 @@
 }
 
 .gbe-required {
-	color: #c45c26;
+	color: #8a4a12;
 }
 
 .gbe-form-consent {
@@ -373,8 +373,8 @@
 
 .gbe-form-notice--success {
 	background: #e8f5f0;
-	border-left: 4px solid #1a3c34;
-	color: #1a3c34;
+	border-left: 4px solid #1f5b2a;
+	color: #1f5b2a;
 }
 
 .gbe-donation-success .gbe-btn--donate {
@@ -433,14 +433,14 @@
 	text-decoration: none !important;
 	font-size: 0.9rem;
 	font-weight: 500;
-	color: #1a3c34 !important;
-	background: #f5f0e8;
+	color: #1f5b2a !important;
+	background: #f7f1df;
 	transition: background 0.2s;
 }
 
 .gbe-lang-switcher a:hover,
 .gbe-lang-switcher .current-lang a {
-	background: #1a3c34;
+	background: #1f5b2a;
 	color: #fff !important;
 }
 

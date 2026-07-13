@@ -5,7 +5,7 @@ services:
     container_name: gbe_db
     restart: always
     environment:
-      MYSQL_DATABASE: db_gbecosmolingua
+      MYSQL_DATABASE: gbe_wp
       MYSQL_USER: gbe_user
       MYSQL_PASSWORD: gbe_pass
       MYSQL_ROOT_PASSWORD: root_pass
@@ -20,7 +20,7 @@ services:
       - "8080:80"
     environment:
       WORDPRESS_DB_HOST: db:3306
-      WORDPRESS_DB_NAME: db_gbecosmolingua
+      WORDPRESS_DB_NAME: gbe_wp
       WORDPRESS_DB_USER: gbe_user
       WORDPRESS_DB_PASSWORD: gbe_pass
     volumes:
@@ -54,7 +54,7 @@ services:
       - ./plugins/gbecosmolingua-core:/var/www/html/wp-content/plugins/gbecosmolingua-core
     environment:
       WORDPRESS_DB_HOST: db:3306
-      WORDPRESS_DB_NAME: db_gbecosmolingua
+      WORDPRESS_DB_NAME: gbe_wp
       WORDPRESS_DB_USER: gbe_user
       WORDPRESS_DB_PASSWORD: gbe_pass
     depends_on:

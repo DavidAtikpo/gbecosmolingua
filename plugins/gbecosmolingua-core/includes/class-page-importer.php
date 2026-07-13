@@ -189,33 +189,9 @@ class GBE_Page_Importer {
 				);
 			}
 			++$position;
-
-			$children = get_pages(
-				array(
-					'parent'      => $page->ID,
-					'sort_column' => 'menu_order,post_title',
-				)
-			);
-
-			foreach ( $children as $child ) {
-				if ( ! self::menu_item_exists( $menu_id, $child->ID ) ) {
-					wp_update_nav_menu_item(
-						$menu_id,
-						0,
-						array(
-							'menu-item-title'     => $child->post_title,
-							'menu-item-object'    => 'page',
-							'menu-item-object-id' => $child->ID,
-							'menu-item-type'      => 'post_type',
-							'menu-item-status'    => 'publish',
-							'menu-item-parent-id' => self::get_menu_item_id_for_page( $menu_id, $page->ID ),
-						)
-					);
-				}
-			}
 		}
 
-		$locations           = get_theme_mod( 'nav_menu_locations', array() );
+		$locations            = get_theme_mod( 'nav_menu_locations', array() );
 		$locations['primary'] = $menu_id;
 		set_theme_mod( 'nav_menu_locations', $locations );
 	}
@@ -309,5 +285,69 @@ class GBE_Page_Importer {
 				);
 			}
 		}
+	}
+
+	/**
+	 * Remove submenu items from primary navigation (header cleanup).
+	 */
+	public static function simplify_primary_menu() {
+		$menu = wp_get_nav_menu_object( 'Menu principal GbeCosmoLingua' );
+		if ( ! $menu ) {
+			return;
+		}
+
+		$items = wp_get_nav_menu_items( $menu->term_id );
+		if ( ! $items ) {
+			return;
+		}
+
+		foreach ( $items as $item ) {
+			if ( (int) $item->menu_item_parent > 0 ) {
+				wp_delete_post( $item->ID, true );
+			}
+		}
+	}
+
+	/**
+	 * Re-add missing top-level rubriques to the primary menu.
+	 */
+	public static function restore_primary_menu() {
+		self::create_navigation_menu( array() );
+		self::simplify_primary_menu();
+	}
+
+	/**
+	 * Restore header/footer template parts from theme files (removes DB customizations).
+	 *
+	 * @param string[] $slugs Template part slugs.
+	 * @return string[] Reset slugs.
+	 */
+	public static function reset_theme_template_parts( $slugs = array( 'header', 'footer' ) ) {
+		if ( ! function_exists( 'get_block_template' ) ) {
+			return array();
+		}
+
+		$theme_slug = get_stylesheet();
+		$reset      = array();
+
+		foreach ( $slugs as $slug ) {
+			$template_id = $theme_slug . '//' . $slug;
+			$template    = get_block_template( $template_id, 'wp_template_part' );
+
+			if ( ! $template || empty( $template->wp_id ) ) {
+				continue;
+			}
+
+			if ( 'custom' === $template->source ) {
+				wp_delete_post( (int) $template->wp_id, true );
+				$reset[] = $slug;
+			}
+		}
+
+		if ( ! empty( $reset ) && function_exists( 'wp_clean_theme_json_cache' ) ) {
+			wp_clean_theme_json_cache();
+		}
+
+		return $reset;
 	}
 }

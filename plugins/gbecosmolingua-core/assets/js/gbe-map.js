@@ -22,9 +22,9 @@
 	}).addTo(map);
 
 	var typeColors = {
-		langue: '#1a3c34',
-		patrimoine: '#c45c26',
-		migration: '#d4a853'
+		langue: '#1f5b2a',
+		patrimoine: '#8a4a12',
+		migration: '#b87913'
 	};
 
 	if (data.zones && data.zones.length) {
@@ -43,7 +43,7 @@
 
 	if (data.markers && data.markers.length) {
 		data.markers.forEach(function (marker) {
-			var color = typeColors[marker.type] || '#1a3c34';
+			var color = typeColors[marker.type] || '#1f5b2a';
 			var icon = L.divIcon({
 				className: 'gbe-map-marker',
 				html: '<span style="background:' + color + '"></span>',
@@ -64,4 +64,5 @@
 	setTimeout(function () {
 		map.invalidateSize();
 	}, 200);
+	
 })();

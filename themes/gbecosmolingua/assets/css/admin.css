@@ -1,0 +1,253 @@
+/* GbeCosmoLingua — personnalisation admin WordPress */
+:root {
+	--gbe-green: #1f5b2a;
+	--gbe-green-dark: #123819;
+	--gbe-green-darker: #0d2818;
+	--gbe-bark-dark: #23150c;
+	--gbe-gold: #b87913;
+	--gbe-gold-light: #d8ad4b;
+	--gbe-sand: #f7f1df;
+	--gbe-white: #fffaf0;
+}
+
+/* Barre d'administration */
+#wpadminbar {
+	background: var(--gbe-green-dark);
+}
+
+#wpadminbar .ab-item,
+#wpadminbar a.ab-item,
+#wpadminbar > #wp-toolbar span.ab-label,
+#wpadminbar > #wp-toolbar span.noticon {
+	color: var(--gbe-white);
+}
+
+#wpadminbar .ab-top-menu > li:hover > .ab-item,
+#wpadminbar .ab-top-menu > li > .ab-item:focus,
+#wpadminbar:not(.mobile) .ab-top-menu > li:hover > .ab-item,
+#wpadminbar:not(.mobile) .ab-top-menu > li > .ab-item:focus {
+	background: var(--gbe-green);
+	color: var(--gbe-gold-light);
+}
+
+#wpadminbar .quicklinks .menupop .ab-sub-wrapper,
+#wpadminbar .shortlink-input {
+	background: var(--gbe-green-darker);
+}
+
+#wpadminbar .ab-submenu .ab-item {
+	color: var(--gbe-white);
+}
+
+#wpadminbar .ab-submenu .ab-item:hover,
+#wpadminbar .ab-submenu .ab-item:focus {
+	color: var(--gbe-gold-light);
+	background: var(--gbe-green);
+}
+
+#wp-admin-bar-gbe-logo > .ab-item {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0 0.75rem !important;
+	height: 32px;
+	overflow: hidden;
+	line-height: 1;
+}
+
+#wp-admin-bar-gbe-logo .gbe-admin-bar-logo__icon {
+	display: inline-block;
+	flex-shrink: 0;
+	width: 28px;
+	height: 28px;
+	background: var(--gbe-white) url("../images/gbecosmolingua-logo.png") center / cover no-repeat;
+	border-radius: 50%;
+	border: 1px solid var(--gbe-gold);
+}
+
+/* Menu latéral */
+#adminmenuback,
+#adminmenuwrap,
+#adminmenu {
+	background: var(--gbe-green-dark);
+}
+
+#adminmenu a {
+	color: var(--gbe-white);
+}
+
+#adminmenu div.wp-menu-image::before {
+	color: var(--gbe-gold-light);
+}
+
+#adminmenu li.menu-top:hover,
+#adminmenu li.opensub > a.menu-top,
+#adminmenu li > a.menu-top:focus {
+	background: var(--gbe-green);
+	color: var(--gbe-white);
+}
+
+#adminmenu li.menu-top:hover div.wp-menu-image::before,
+#adminmenu li.opensub > a.menu-top div.wp-menu-image::before {
+	color: var(--gbe-gold-light);
+}
+
+#adminmenu .wp-submenu,
+#adminmenu .wp-has-current-submenu .wp-submenu,
+#adminmenu a.wp-has-current-submenu:focus + .wp-submenu,
+.folded #adminmenu .wp-has-current-submenu .wp-submenu {
+	background: var(--gbe-green-darker);
+}
+
+#adminmenu .wp-submenu a {
+	color: rgba(255, 250, 240, 0.88);
+}
+
+#adminmenu .wp-submenu a:hover,
+#adminmenu .wp-submenu a:focus {
+	color: var(--gbe-gold-light);
+}
+
+#adminmenu .wp-has-current-submenu > a.menu-top,
+#adminmenu .current a.menu-top,
+#adminmenu a.wp-has-current-submenu {
+	background: var(--gbe-gold);
+	color: var(--gbe-bark-dark);
+}
+
+#adminmenu .wp-has-current-submenu > a.menu-top div.wp-menu-image::before,
+#adminmenu .current a.menu-top div.wp-menu-image::before {
+	color: var(--gbe-bark-dark);
+}
+
+#adminmenu li.wp-menu-separator {
+	background: rgba(216, 173, 75, 0.2);
+}
+
+#collapse-button {
+	color: var(--gbe-gold-light);
+}
+
+#collapse-button:hover,
+#collapse-button:focus {
+	color: var(--gbe-white);
+}
+
+/* Boutons principaux */
+.wp-core-ui .button-primary {
+	background: var(--gbe-green);
+	border-color: var(--gbe-green-dark);
+	color: var(--gbe-white);
+}
+
+.wp-core-ui .button-primary:hover,
+.wp-core-ui .button-primary:focus {
+	background: var(--gbe-gold);
+	border-color: var(--gbe-gold);
+	color: var(--gbe-bark-dark);
+}
+
+.wp-core-ui .button-primary:focus {
+	box-shadow: 0 0 0 1px var(--gbe-white), 0 0 0 3px var(--gbe-gold-light);
+}
+
+/* Liens et focus */
+a {
+	color: var(--gbe-green);
+}
+
+a:hover,
+a:active,
+a:focus {
+	color: var(--gbe-gold);
+}
+
+.wrap .add-new-h2,
+.wrap .page-title-action {
+	border-color: var(--gbe-green);
+	color: var(--gbe-green);
+}
+
+.wrap .add-new-h2:hover,
+.wrap .page-title-action:hover {
+	background: var(--gbe-green);
+	color: var(--gbe-white);
+	border-color: var(--gbe-green-dark);
+}
+
+/* Notifications */
+.notice.notice-success,
+div.updated {
+	border-left-color: var(--gbe-green);
+}
+
+.notice-info {
+	border-left-color: var(--gbe-gold);
+}
+
+/* Pied de page admin */
+#wpfooter {
+	color: #666;
+}
+
+#wpfooter a {
+	color: var(--gbe-green);
+}
+
+/* Page de connexion */
+body.login {
+	background:
+		radial-gradient(circle at 15% 20%, rgba(216, 173, 75, 0.2) 0, transparent 40%),
+		linear-gradient(160deg, var(--gbe-bark-dark) 0%, var(--gbe-green-dark) 45%, var(--gbe-green) 100%);
+}
+
+body.login #login {
+	padding-top: 6%;
+}
+
+body.login #login h1 a {
+	background-image: url("../images/gbecosmolingua-logo.png");
+	background-size: contain;
+	background-position: center;
+	width: 120px;
+	height: 120px;
+	margin: 0 auto 1.5rem;
+	border-radius: 50%;
+	border: 3px solid var(--gbe-gold);
+	background-color: var(--gbe-white);
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+body.login form {
+	border-top: 4px solid var(--gbe-gold);
+	border-radius: 4px;
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+}
+
+body.login form .input,
+body.login input[type="text"],
+body.login input[type="password"] {
+	border-color: #ccc;
+}
+
+body.login form .input:focus,
+body.login input[type="text"]:focus,
+body.login input[type="password"]:focus {
+	border-color: var(--gbe-gold);
+	box-shadow: 0 0 0 1px var(--gbe-gold);
+}
+
+body.login #nav a,
+body.login #backtoblog a {
+	color: var(--gbe-gold-light);
+}
+
+body.login #nav a:hover,
+body.login #backtoblog a:hover {
+	color: var(--gbe-white);
+}
+
+body.login .message,
+body.login .success {
+	border-left-color: var(--gbe-green);
+}
