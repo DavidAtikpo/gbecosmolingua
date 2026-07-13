@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'GBECOSMOLINGUA_VERSION', '1.3.9' );
+define( 'GBECOSMOLINGUA_VERSION', '1.5.7' );
 
 /**
  * Enqueue parent and child theme styles.
@@ -35,6 +35,20 @@ function gbecosmolingua_enqueue_styles() {
 	);
 }
 add_action( 'wp_enqueue_scripts', 'gbecosmolingua_enqueue_styles' );
+
+/**
+ * Ajuste dynamiquement l'espace sous l'en-tête fixe.
+ */
+function gbecosmolingua_enqueue_header_offset_script() {
+	wp_enqueue_script(
+		'gbecosmolingua-header-offset',
+		get_stylesheet_directory_uri() . '/assets/js/header-offset.js',
+		array(),
+		GBECOSMOLINGUA_VERSION,
+		true
+	);
+}
+add_action( 'wp_enqueue_scripts', 'gbecosmolingua_enqueue_header_offset_script' );
 
 /**
  * Register block pattern category.

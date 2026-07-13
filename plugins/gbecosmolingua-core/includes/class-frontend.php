@@ -19,6 +19,8 @@ class GBE_Frontend {
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ) );
 		add_filter( 'the_content', array( __CLASS__, 'append_proverbe_detail' ), 20 );
 		add_filter( 'the_content', array( __CLASS__, 'append_genre_oral_detail' ), 20 );
+		add_filter( 'the_content', array( __CLASS__, 'append_evenement_detail' ), 20 );
+		add_filter( 'the_content', array( __CLASS__, 'append_partenaire_detail' ), 20 );
 	}
 
 	/**
@@ -82,20 +84,35 @@ class GBE_Frontend {
 	 * Whether current page needs frontend CSS.
 	 */
 	private static function needs_frontend_styles() {
+		if ( is_front_page() ) {
+			return true;
+		}
 		if ( self::needs_map_assets() ) {
 			return true;
 		}
-		if ( is_post_type_archive( array( 'proverbe', 'genre_oral', 'ressource' ) ) ) {
+		if ( is_post_type_archive( array( 'proverbe', 'genre_oral', 'ressource', 'evenement' ) ) ) {
 			return true;
 		}
-		if ( is_singular( array( 'proverbe', 'genre_oral', 'ressource' ) ) ) {
+		if ( is_singular( array( 'proverbe', 'genre_oral', 'ressource', 'evenement', 'partenaire' ) ) ) {
 			return true;
 		}
 		global $post;
 		if ( ! $post ) {
 			return false;
 		}
-		$shortcodes = array( 'gbe_proverbes_list', 'gbe_bibliotheque', 'gbe_xotutu_list', 'gbe_formulaire', 'gbe_lang_switcher' );
+		$shortcodes = array(
+			'gbe_proverbes_list',
+			'gbe_bibliotheque',
+			'gbe_xotutu_list',
+			'gbe_formulaire',
+			'gbe_lang_switcher',
+			'gbe_actualites',
+			'gbe_agenda',
+			'gbe_partenaires',
+			'gbe_evenements_list',
+			'gbe_partenaires_list',
+			'gbe_menu_principal',
+		);
 		foreach ( $shortcodes as $sc ) {
 			if ( has_shortcode( $post->post_content, $sc ) ) {
 				return true;
@@ -126,6 +143,30 @@ class GBE_Frontend {
 			return $content;
 		}
 		return $content . GBE_Shortcodes::render_genre_oral_detail( get_the_ID(), false );
+	}
+
+	/**
+	 * Append event meta on single evenement pages.
+	 *
+	 * @param string $content Post content.
+	 */
+	public static function append_evenement_detail( $content ) {
+		if ( ! is_singular( 'evenement' ) || ! in_the_loop() || ! is_main_query() ) {
+			return $content;
+		}
+		return $content . GBE_Shortcodes::render_evenement_detail( get_the_ID(), false );
+	}
+
+	/**
+	 * Append partner meta on single partenaire pages.
+	 *
+	 * @param string $content Post content.
+	 */
+	public static function append_partenaire_detail( $content ) {
+		if ( ! is_singular( 'partenaire' ) || ! in_the_loop() || ! is_main_query() ) {
+			return $content;
+		}
+		return $content . GBE_Shortcodes::render_partenaire_detail( get_the_ID(), false );
 	}
 
 	/**

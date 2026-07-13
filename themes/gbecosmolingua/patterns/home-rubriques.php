@@ -61,7 +61,7 @@
 		<!-- wp:group {"className":"gbe-rubrique-card"} -->
 		<div class="wp-block-group gbe-rubrique-card">
 			<!-- wp:heading {"level":3} -->
-			<h3 class="wp-block-heading"><a href="/recherche-et-formation/">Recherche et Formation</a></h3>
+			<h3 class="wp-block-heading"><a href="/recherche-et-innovation/">Recherche et Innovation</a></h3>
 			<!-- /wp:heading -->
 			<!-- wp:paragraph -->
 			<p>Centre international d'études, colloques et ressources documentaires.</p>
@@ -83,7 +83,7 @@
 		<!-- wp:group {"className":"gbe-rubrique-card"} -->
 		<div class="wp-block-group gbe-rubrique-card">
 			<!-- wp:heading {"level":3} -->
-			<h3 class="wp-block-heading"><a href="/sport-et-interculturalite/">Sport et Interculturalité</a></h3>
+			<h3 class="wp-block-heading"><a href="/sport-et-jeunesse/">Sport et Jeunesse</a></h3>
 			<!-- /wp:heading -->
 			<!-- wp:paragraph -->
 			<p>Football, échanges jeunesse et valeurs interculturelles.</p>

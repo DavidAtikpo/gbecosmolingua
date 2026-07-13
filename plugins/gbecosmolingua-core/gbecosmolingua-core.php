@@ -3,7 +3,7 @@
  * Plugin Name: GbeCosmoLingua Core
  * Plugin URI: https://gbecosmolingua.org
  * Description: Types de contenu, import des pages et configuration de base pour GbeCosmoLingua.
- * Version: 1.2.8
+ * Version: 1.4.4
  * Author: GbeCosmoLingua
  * Text Domain: gbecosmolingua-core
  * Requires at least: 6.0
@@ -12,7 +12,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'GBE_CORE_VERSION', '1.2.8' );
+define( 'GBE_CORE_VERSION', '1.4.4' );
 define( 'GBE_CORE_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GBE_CORE_URL', plugin_dir_url( __FILE__ ) );
 
@@ -48,14 +48,38 @@ add_action( 'plugins_loaded', 'gbe_core_init' );
 function gbe_core_maybe_upgrade() {
 	$version = get_option( 'gbe_core_version', '0' );
 	if ( version_compare( $version, GBE_CORE_VERSION, '<' ) ) {
+		GBE_Page_Importer::import( true );
 		GBE_Page_Importer::patch_phase4_shortcodes();
 		GBE_Page_Importer::patch_phase5_forms();
+		GBE_Page_Importer::patch_phase7_content();
+		GBE_Page_Importer::configure_permalinks();
 		GBE_Page_Importer::restore_primary_menu();
+		GBE_Page_Importer::deduplicate_imported_pages();
+		GBE_Page_Importer::remove_obsolete_pages();
+		GBE_Page_Importer::reset_theme_template_parts( array( 'header', 'footer' ) );
 		update_option( 'gbe_core_version', GBE_CORE_VERSION );
 		flush_rewrite_rules();
 	}
 }
 add_action( 'init', 'gbe_core_maybe_upgrade', 20 );
+
+/**
+ * Ensure permalinks and .htaccess on front-end if still broken.
+ */
+function gbe_core_ensure_permalinks() {
+	if ( is_admin() && ! wp_doing_ajax() ) {
+		return;
+	}
+
+	$verified = get_option( 'gbe_permalinks_verified', '' );
+	if ( $verified === GBE_CORE_VERSION ) {
+		return;
+	}
+
+	GBE_Page_Importer::configure_permalinks();
+	update_option( 'gbe_permalinks_verified', GBE_CORE_VERSION );
+}
+add_action( 'init', 'gbe_core_ensure_permalinks', 5 );
 
 /**
  * Run setup on activation.

@@ -25,6 +25,7 @@ services:
       WORDPRESS_DB_PASSWORD: gbe_pass
     volumes:
       - wordpress_data:/var/www/html
+      - ./config/wordpress.htaccess:/var/www/html/.htaccess
       - ./wp-content:/var/www/html/wp-content
       - ./themes/gbecosmolingua:/var/www/html/wp-content/themes/gbecosmolingua
       - ./plugins/gbecosmolingua-core:/var/www/html/wp-content/plugins/gbecosmolingua-core
@@ -49,6 +50,7 @@ services:
     user: "33:33"
     volumes:
       - wordpress_data:/var/www/html
+      - ./config/wordpress.htaccess:/var/www/html/.htaccess
       - ./wp-content:/var/www/html/wp-content
       - ./themes/gbecosmolingua:/var/www/html/wp-content/themes/gbecosmolingua
       - ./plugins/gbecosmolingua-core:/var/www/html/wp-content/plugins/gbecosmolingua-core
