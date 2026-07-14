@@ -35,6 +35,54 @@ class GBE_Shortcodes {
 		add_shortcode( 'gbe_evenements_list', array( __CLASS__, 'evenements_list' ) );
 		add_shortcode( 'gbe_partenaires_list', array( __CLASS__, 'partenaires_list' ) );
 		add_shortcode( 'gbe_menu_principal', array( __CLASS__, 'menu_principal' ) );
+		add_shortcode( 'gbe_site_logo', array( __CLASS__, 'site_logo' ) );
+	}
+
+	/**
+	 * Site logo with dynamic theme URL (works on every machine).
+	 *
+	 * @param array<string, string> $atts Shortcode attributes.
+	 */
+	public static function site_logo( $atts ) {
+		$atts = shortcode_atts(
+			array(
+				'width' => '40',
+				'class' => 'gbe-site-brand__logo',
+				'link'  => '1',
+				'alt'   => 'GbeCosmoLingua',
+			),
+			$atts,
+			'gbe_site_logo'
+		);
+
+		$logo_path = get_stylesheet_directory() . '/assets/images/gbecosmolingua-logo.png';
+		if ( ! file_exists( $logo_path ) ) {
+			return '';
+		}
+
+		$logo_url = get_stylesheet_directory_uri() . '/assets/images/gbecosmolingua-logo.png';
+		$width    = max( 16, (int) $atts['width'] );
+		$class    = sanitize_html_class( $atts['class'] );
+		$alt      = esc_attr( $atts['alt'] );
+
+		$img = sprintf(
+			'<img src="%s" alt="%s" width="%d" height="%d" style="width:%dpx" loading="eager" decoding="async" />',
+			esc_url( $logo_url ),
+			$alt,
+			$width,
+			$width,
+			$width
+		);
+
+		$figure = sprintf(
+			'<figure class="wp-block-image size-full is-resized %s">%s</figure>',
+			esc_attr( $class ),
+			'1' === $atts['link']
+				? sprintf( '<a href="%s">%s</a>', esc_url( home_url( '/' ) ), $img )
+				: $img
+		);
+
+		return $figure;
 	}
 
 	/**

@@ -12,9 +12,9 @@
 	<div class="wp-block-columns are-vertically-aligned-center gbe-hero__layout">
 		<!-- wp:column {"verticalAlignment":"center","width":"34%"} -->
 		<div class="wp-block-column is-vertically-aligned-center" style="flex-basis:34%">
-			<!-- wp:image {"sizeSlug":"full","linkDestination":"none","className":"gbe-hero__logo"} -->
-			<figure class="wp-block-image size-full gbe-hero__logo"><img src="/wp-content/themes/gbecosmolingua/assets/images/gbecosmolingua-logo.png" alt="Logo GbeCosmoLingua"/></figure>
-			<!-- /wp:image -->
+			<!-- wp:shortcode -->
+			[gbe_site_logo width="240" class="gbe-hero__logo" link="0"]
+			<!-- /wp:shortcode -->
 		</div>
 		<!-- /wp:column -->
 

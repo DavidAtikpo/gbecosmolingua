@@ -3,7 +3,7 @@
  * Plugin Name: GbeCosmoLingua Core
  * Plugin URI: https://gbecosmolingua.org
  * Description: Types de contenu, import des pages et configuration de base pour GbeCosmoLingua.
- * Version: 1.4.4
+ * Version: 1.4.5
  * Author: GbeCosmoLingua
  * Text Domain: gbecosmolingua-core
  * Requires at least: 6.0
@@ -12,7 +12,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'GBE_CORE_VERSION', '1.4.4' );
+define( 'GBE_CORE_VERSION', '1.4.5' );
 define( 'GBE_CORE_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GBE_CORE_URL', plugin_dir_url( __FILE__ ) );
 

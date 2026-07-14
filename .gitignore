@@ -1,0 +1,14 @@
+# Sauvegardes SQL locales (ne pas committer les gros fichiers)
+*.sql
+!.gitkeep
+
+# Médias uploadés localement
+wp-content/uploads/**
+!wp-content/uploads/index.php
+!wp-content/uploads/.gitkeep
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

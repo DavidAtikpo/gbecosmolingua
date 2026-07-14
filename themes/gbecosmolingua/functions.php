@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'GBECOSMOLINGUA_VERSION', '1.5.7' );
+define( 'GBECOSMOLINGUA_VERSION', '1.5.8' );
 
 /**
  * Enqueue parent and child theme styles.

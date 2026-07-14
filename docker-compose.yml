@@ -27,6 +27,7 @@ services:
       - wordpress_data:/var/www/html
       - ./config/wordpress.htaccess:/var/www/html/.htaccess
       - ./wp-content:/var/www/html/wp-content
+      - uploads_data:/var/www/html/wp-content/uploads
       - ./themes/gbecosmolingua:/var/www/html/wp-content/themes/gbecosmolingua
       - ./plugins/gbecosmolingua-core:/var/www/html/wp-content/plugins/gbecosmolingua-core
     depends_on:
@@ -52,6 +53,7 @@ services:
       - wordpress_data:/var/www/html
       - ./config/wordpress.htaccess:/var/www/html/.htaccess
       - ./wp-content:/var/www/html/wp-content
+      - uploads_data:/var/www/html/wp-content/uploads
       - ./themes/gbecosmolingua:/var/www/html/wp-content/themes/gbecosmolingua
       - ./plugins/gbecosmolingua-core:/var/www/html/wp-content/plugins/gbecosmolingua-core
     environment:
@@ -66,5 +68,6 @@ services:
 volumes:
   db_data:
   wordpress_data:
+  uploads_data:
 
 
