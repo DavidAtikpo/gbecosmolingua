@@ -212,7 +212,6 @@ class GBE_Page_Importer {
 			'paremiologie',
 			'recherche-et-innovation',
 			'sejours-et-mobilite',
-			'sport-et-jeunesse',
 			'partenaires',
 			'nous-soutenir',
 			'notre-philosophie',
@@ -545,6 +544,202 @@ class GBE_Page_Importer {
 	}
 
 	/**
+	 * Crée les sous-pages Cultures Gbe (thèmes du hub).
+	 *
+	 * @return int Nombre de pages créées.
+	 */
+	public static function patch_culture_subpages() {
+		$parent = get_page_by_path( 'cultures-gbe', OBJECT, 'page' );
+		if ( ! $parent ) {
+			return 0;
+		}
+
+		$created = 0;
+		foreach ( gbe_get_cultures_gbe_children() as $rubrique ) {
+			$parent_path = 'cultures-gbe/' . $rubrique['slug'];
+			$rubrique_page = get_page_by_path( $parent_path, OBJECT, 'page' );
+			if ( ! $rubrique_page ) {
+				continue;
+			}
+
+			wp_update_post(
+				array(
+					'ID'           => (int) $rubrique_page->ID,
+					'post_content' => $rubrique['content'] ?? '',
+				)
+			);
+
+			if ( empty( $rubrique['children'] ) ) {
+				continue;
+			}
+
+			foreach ( $rubrique['children'] as $sub ) {
+				$result   = self::create_page_tree( $sub, (int) $rubrique_page->ID, $parent_path, true );
+				$created += $result['created'];
+			}
+		}
+
+		return $created;
+	}
+
+	/**
+	 * Crée les sous-pages Recherche et Innovation.
+	 *
+	 * @return int Nombre de pages créées.
+	 */
+	public static function patch_recherche_innovation_subpages() {
+		$parent = get_page_by_path( 'recherche-et-innovation', OBJECT, 'page' );
+		if ( ! $parent ) {
+			return 0;
+		}
+
+		$created = 0;
+		foreach ( gbe_get_recherche_innovation_children() as $rubrique ) {
+			$parent_path   = 'recherche-et-innovation/' . $rubrique['slug'];
+			$rubrique_page = get_page_by_path( $parent_path, OBJECT, 'page' );
+			if ( ! $rubrique_page ) {
+				continue;
+			}
+
+			wp_update_post(
+				array(
+					'ID'           => (int) $rubrique_page->ID,
+					'post_content' => $rubrique['content'] ?? '',
+				)
+			);
+
+			if ( empty( $rubrique['children'] ) ) {
+				continue;
+			}
+
+			foreach ( $rubrique['children'] as $sub ) {
+				$result   = self::create_page_tree( $sub, (int) $rubrique_page->ID, $parent_path, true );
+				$created += $result['created'];
+			}
+		}
+
+		return $created;
+	}
+
+	/**
+	 * Sous-pages Séjours et Partenaires.
+	 *
+	 * @return int
+	 */
+	public static function patch_site_hubs_subpages() {
+		$created = 0;
+		$trees   = array(
+			array( 'sejours-et-mobilite', 'gbe_get_sejours_mobilite_children' ),
+			array( 'partenaires', 'gbe_get_partenaires_children' ),
+		);
+		foreach ( $trees as $tree ) {
+			$parent = get_page_by_path( $tree[0], OBJECT, 'page' );
+			if ( ! $parent || ! function_exists( $tree[1] ) ) {
+				continue;
+			}
+			foreach ( call_user_func( $tree[1] ) as $rubrique ) {
+				$parent_path   = $tree[0] . '/' . $rubrique['slug'];
+				$rubrique_page = get_page_by_path( $parent_path, OBJECT, 'page' );
+				if ( ! $rubrique_page ) {
+					continue;
+				}
+				wp_update_post(
+					array(
+						'ID'           => (int) $rubrique_page->ID,
+						'post_content' => $rubrique['content'] ?? '',
+					)
+				);
+				if ( empty( $rubrique['children'] ) ) {
+					continue;
+				}
+				foreach ( $rubrique['children'] as $sub ) {
+					$result   = self::create_page_tree( $sub, (int) $rubrique_page->ID, $parent_path, true );
+					$created += $result['created'];
+				}
+			}
+		}
+		return $created;
+	}
+
+	/**
+	 * Crée les sous-pages Paremiologie (corpus, comparaisons, axes).
+	 *
+	 * @return int Nombre de pages créées.
+	 */
+	public static function patch_paremiologie_subpages() {
+		$parent = get_page_by_path( 'paremiologie', OBJECT, 'page' );
+		if ( ! $parent ) {
+			return 0;
+		}
+
+		$created = 0;
+		foreach ( gbe_get_paremiologie_children() as $rubrique ) {
+			$parent_path   = 'paremiologie/' . $rubrique['slug'];
+			$rubrique_page = get_page_by_path( $parent_path, OBJECT, 'page' );
+			if ( ! $rubrique_page ) {
+				continue;
+			}
+
+			wp_update_post(
+				array(
+					'ID'           => (int) $rubrique_page->ID,
+					'post_content' => $rubrique['content'] ?? '',
+				)
+			);
+
+			if ( empty( $rubrique['children'] ) ) {
+				continue;
+			}
+
+			foreach ( $rubrique['children'] as $sub ) {
+				$result   = self::create_page_tree( $sub, (int) $rubrique_page->ID, $parent_path, true );
+				$created += $result['created'];
+			}
+		}
+
+		return $created;
+	}
+
+	/**
+	 * Crée les sous-pages Le Gbe (thèmes du hub).
+	 *
+	 * @return int Nombre de pages créées.
+	 */
+	public static function patch_le_gbe_subpages() {
+		$parent = get_page_by_path( 'le-gbe', OBJECT, 'page' );
+		if ( ! $parent ) {
+			return 0;
+		}
+
+		$created = 0;
+		foreach ( gbe_get_le_gbe_children() as $rubrique ) {
+			$parent_path   = 'le-gbe/' . $rubrique['slug'];
+			$rubrique_page = get_page_by_path( $parent_path, OBJECT, 'page' );
+			if ( ! $rubrique_page ) {
+				continue;
+			}
+
+			wp_update_post(
+				array(
+					'ID'           => (int) $rubrique_page->ID,
+					'post_content' => $rubrique['content'] ?? '',
+				)
+			);
+
+			if ( empty( $rubrique['children'] ) ) {
+				continue;
+			}
+
+			foreach ( $rubrique['children'] as $sub ) {
+				$result   = self::create_page_tree( $sub, (int) $rubrique_page->ID, $parent_path, true );
+				$created += $result['created'];
+			}
+		}
+
+		return $created;
+	}
+
+	/**
 	 * Patch pages with phase 7 shortcodes and renamed paths.
 	 */
 	public static function patch_phase7_content() {
@@ -657,7 +852,6 @@ class GBE_Page_Importer {
 			array( 'Paremiologie', '/paremiologie/' ),
 			array( 'Recherche et Innovation', '/recherche-et-innovation/' ),
 			array( 'Séjours et Mobilité', '/sejours-et-mobilite/' ),
-			array( 'Sport et Jeunesse', '/sport-et-jeunesse/' ),
 			array( 'Partenaires', '/partenaires/' ),
 			array( 'Nous Soutenir', '/nous-soutenir/' ),
 			array( 'Notre philosophie', '/notre-philosophie/' ),
@@ -698,6 +892,41 @@ class GBE_Page_Importer {
 		foreach ( $slugs as $slug ) {
 			$template_id = $theme_slug . '//' . $slug;
 			$template    = get_block_template( $template_id, 'wp_template_part' );
+
+			if ( ! $template || empty( $template->wp_id ) ) {
+				continue;
+			}
+
+			if ( 'custom' === $template->source ) {
+				wp_delete_post( (int) $template->wp_id, true );
+				$reset[] = $slug;
+			}
+		}
+
+		if ( ! empty( $reset ) && function_exists( 'wp_clean_theme_json_cache' ) ) {
+			wp_clean_theme_json_cache();
+		}
+
+		return $reset;
+	}
+
+	/**
+	 * Remove customized block templates so theme files are used again (e.g. front-page hero).
+	 *
+	 * @param string[] $slugs Template slugs without extension.
+	 * @return string[] Reset slugs.
+	 */
+	public static function reset_theme_templates( $slugs = array( 'front-page' ) ) {
+		if ( ! function_exists( 'get_block_template' ) ) {
+			return array();
+		}
+
+		$theme_slug = get_stylesheet();
+		$reset      = array();
+
+		foreach ( $slugs as $slug ) {
+			$template_id = $theme_slug . '//' . $slug;
+			$template    = get_block_template( $template_id, 'wp_template' );
 
 			if ( ! $template || empty( $template->wp_id ) ) {
 				continue;

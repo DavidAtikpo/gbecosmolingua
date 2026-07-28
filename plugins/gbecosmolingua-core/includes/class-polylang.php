@@ -121,25 +121,223 @@ class GBE_Polylang {
 			'gbe_lang_switcher'
 		);
 
-		if ( ! function_exists( 'pll_the_languages' ) ) {
+		$languages = self::get_language_items();
+		if ( empty( $languages ) ) {
 			return '';
 		}
 
-		ob_start();
-		echo '<nav class="gbe-lang-switcher" aria-label="' . esc_attr__( 'Choisir la langue', 'gbecosmolingua-core' ) . '">';
-		pll_the_languages(
+		$use_dropdown = in_array( (string) $atts['dropdown'], array( '1', 'true', 'yes' ), true );
+		if ( $use_dropdown ) {
+			return self::render_language_switcher_dropdown( $languages );
+		}
+
+		return self::render_language_switcher_inline( $languages );
+	}
+
+	/**
+	 * Collect languages from Polylang or fallback list.
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
+	private static function get_language_items() {
+		if ( function_exists( 'pll_the_languages' ) ) {
+			$raw = pll_the_languages(
+				array(
+					'raw'                    => 1,
+					'hide_if_no_translation' => 0,
+				)
+			);
+			if ( is_array( $raw ) && ! empty( $raw ) ) {
+				$items = array();
+				foreach ( $raw as $lang ) {
+					if ( empty( $lang['slug'] ) ) {
+						continue;
+					}
+					$slug = sanitize_key( $lang['slug'] );
+					$items[] = array(
+						'slug'    => $slug,
+						'code'    => strtoupper( $slug ),
+						'label'   => self::language_full_name( $slug, ! empty( $lang['name'] ) ? $lang['name'] : '' ),
+						'url'     => ! empty( $lang['url'] ) ? $lang['url'] : home_url( '/' ),
+						'current' => ! empty( $lang['current_lang'] ),
+					);
+				}
+				if ( ! empty( $items ) ) {
+					return $items;
+				}
+			}
+		}
+
+		return self::get_language_items_fallback();
+	}
+
+	/**
+	 * @return array<int, array<string, mixed>>
+	 */
+	private static function get_language_items_fallback() {
+		$languages = apply_filters(
+			'gbe_language_switcher_languages',
 			array(
-				'dropdown'               => (int) $atts['dropdown'],
-				'show_flags'             => (int) $atts['flags'],
-				'show_names'             => 1,
-				'hide_current'           => 0,
-				'display_names_as'       => 'name',
-				'echo'                   => 1,
-				'hide_if_no_translation' => 0,
+				array(
+					'slug' => 'fr',
+					'name' => 'FR',
+				),
+				array(
+					'slug' => 'en',
+					'name' => 'EN',
+				),
+				array(
+					'slug' => 'es',
+					'name' => 'ES',
+				),
+				array(
+					'slug' => 'ru',
+					'name' => 'RU',
+				),
 			)
 		);
-		echo '</nav>';
-		return ob_get_clean();
+
+		$current = 'fr';
+		if ( function_exists( 'pll_current_language' ) ) {
+			$detected = pll_current_language( 'slug' );
+			if ( is_string( $detected ) && '' !== $detected ) {
+				$current = $detected;
+			}
+		}
+
+		$items = array();
+		foreach ( $languages as $lang ) {
+			if ( empty( $lang['slug'] ) ) {
+				continue;
+			}
+			$slug = sanitize_key( $lang['slug'] );
+			$code = ! empty( $lang['name'] ) ? $lang['name'] : strtoupper( $slug );
+			$url  = home_url( '/' );
+			if ( function_exists( 'pll_home_url' ) ) {
+				$maybe = pll_home_url( $slug );
+				if ( is_string( $maybe ) && '' !== $maybe ) {
+					$url = $maybe;
+				}
+			}
+			$items[] = array(
+				'slug'    => $slug,
+				'code'    => strtoupper( $slug ),
+				'label'   => self::language_full_name( $slug, $code ),
+				'url'     => $url,
+				'current' => ( $current === $slug ),
+			);
+		}
+
+		return $items;
+	}
+
+	/**
+	 * Dropdown with globe icon (header).
+	 *
+	 * @param array<int, array<string, mixed>> $languages Languages.
+	 */
+	private static function render_language_switcher_dropdown( $languages ) {
+		$current_code = 'FR';
+		foreach ( $languages as $lang ) {
+			if ( ! empty( $lang['current'] ) ) {
+				$current_code = $lang['code'];
+				break;
+			}
+		}
+
+		$items = '';
+		foreach ( $languages as $lang ) {
+			$li_class = ! empty( $lang['current'] ) ? ' class="lang-item current-lang"' : ' class="lang-item"';
+			$items   .= sprintf(
+				'<li%s role="option"><a href="%s" hreflang="%s" lang="%s">%s</a></li>',
+				$li_class,
+				esc_url( $lang['url'] ),
+				esc_attr( $lang['slug'] ),
+				esc_attr( $lang['slug'] ),
+				esc_html( $lang['label'] )
+			);
+		}
+
+		return sprintf(
+			'<nav class="gbe-lang-switcher gbe-lang-switcher--dropdown" aria-label="%1$s">' .
+			'<div class="gbe-lang-switcher__wrap">' .
+			'<button type="button" class="gbe-lang-switcher__toggle" aria-expanded="false" aria-haspopup="listbox" aria-controls="gbe-lang-menu-%2$s">' .
+			'%3$s<span class="gbe-lang-switcher__current">%4$s</span>' .
+			'<span class="gbe-lang-switcher__caret" aria-hidden="true"></span>' .
+			'</button>' .
+			'<ul id="gbe-lang-menu-%2$s" class="gbe-lang-switcher__menu" role="listbox" hidden>%5$s</ul>' .
+			'</div></nav>',
+			esc_attr__( 'Choisir la langue', 'gbecosmolingua-core' ),
+			esc_attr( wp_unique_id( 'gbe-lang-' ) ),
+			self::language_switcher_globe_icon(),
+			esc_html( $current_code ),
+			$items
+		);
+	}
+
+	/**
+	 * Inline list (footer and legacy).
+	 *
+	 * @param array<int, array<string, mixed>> $languages Languages.
+	 */
+	private static function render_language_switcher_inline( $languages ) {
+		$items = '';
+		foreach ( $languages as $lang ) {
+			$li_class = ! empty( $lang['current'] ) ? ' class="lang-item current-lang"' : ' class="lang-item"';
+			$items   .= sprintf(
+				'<li%s><a href="%s" hreflang="%s" lang="%s">%s</a></li>',
+				$li_class,
+				esc_url( $lang['url'] ),
+				esc_attr( $lang['slug'] ),
+				esc_attr( $lang['slug'] ),
+				esc_html( $lang['code'] )
+			);
+		}
+
+		return sprintf(
+			'<nav class="gbe-lang-switcher" aria-label="%s"><ul>%s</ul></nav>',
+			esc_attr__( 'Choisir la langue', 'gbecosmolingua-core' ),
+			$items
+		);
+	}
+
+	/**
+	 * Human-readable language name for the dropdown list.
+	 *
+	 * @param string $slug         Language slug.
+	 * @param string $polylang_name Name from Polylang when available.
+	 */
+	private static function language_full_name( $slug, $polylang_name = '' ) {
+		$polylang_name = trim( (string) $polylang_name );
+		if ( '' !== $polylang_name && strtoupper( $polylang_name ) !== strtoupper( $slug ) && strlen( $polylang_name ) > 3 ) {
+			return $polylang_name;
+		}
+
+		$names = array(
+			'fr' => 'Français',
+			'en' => 'English',
+			'es' => 'Español',
+			'ru' => 'Русский',
+		);
+
+		$slug = sanitize_key( $slug );
+		if ( isset( $names[ $slug ] ) ) {
+			return $names[ $slug ];
+		}
+
+		return strtoupper( $slug );
+	}
+
+	/**
+	 * Globe icon for the language toggle.
+	 */
+	private static function language_switcher_globe_icon() {
+		return '<span class="gbe-lang-switcher__globe" aria-hidden="true">' .
+			'<svg class="gbe-lang-switcher__globe-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">' .
+			'<circle cx="12" cy="12" r="10"/>' .
+			'<path d="M2 12h20"/>' .
+			'<path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>' .
+			'</svg></span>';
 	}
 
 	/**

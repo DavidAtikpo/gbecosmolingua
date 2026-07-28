@@ -36,6 +36,8 @@ class GBE_Shortcodes {
 		add_shortcode( 'gbe_partenaires_list', array( __CLASS__, 'partenaires_list' ) );
 		add_shortcode( 'gbe_menu_principal', array( __CLASS__, 'menu_principal' ) );
 		add_shortcode( 'gbe_site_logo', array( __CLASS__, 'site_logo' ) );
+		add_shortcode( 'gbe_header_socials', array( __CLASS__, 'header_socials' ) );
+		add_shortcode( 'gbe_header_contact', array( __CLASS__, 'header_contact' ) );
 	}
 
 	/**
@@ -62,11 +64,12 @@ class GBE_Shortcodes {
 
 		$logo_url = get_stylesheet_directory_uri() . '/assets/images/gbecosmolingua-logo.png';
 		$width    = max( 16, (int) $atts['width'] );
-		$class    = sanitize_html_class( $atts['class'] );
+		$class    = esc_attr( trim( $atts['class'] ) );
 		$alt      = esc_attr( $atts['alt'] );
+		$with_link = ! in_array( (string) $atts['link'], array( '0', 'false', 'no' ), true );
 
 		$img = sprintf(
-			'<img src="%s" alt="%s" width="%d" height="%d" style="width:%dpx" loading="eager" decoding="async" />',
+			'<img src="%s" alt="%s" width="%d" height="%d" style="width:%dpx;height:auto" loading="eager" decoding="async" />',
 			esc_url( $logo_url ),
 			$alt,
 			$width,
@@ -76,13 +79,115 @@ class GBE_Shortcodes {
 
 		$figure = sprintf(
 			'<figure class="wp-block-image size-full is-resized %s">%s</figure>',
-			esc_attr( $class ),
-			'1' === $atts['link']
+			$class,
+			$with_link
 				? sprintf( '<a href="%s">%s</a>', esc_url( home_url( '/' ) ), $img )
 				: $img
 		);
 
 		return $figure;
+	}
+
+	/**
+	 * Social network links for the header (left column).
+	 */
+	public static function header_socials() {
+		$links = apply_filters(
+			'gbe_header_social_links',
+			array(
+				array(
+					'label'   => 'Facebook',
+					'url'     => 'https://www.facebook.com/',
+					'network' => 'facebook',
+				),
+				array(
+					'label'   => 'X',
+					'url'     => 'https://x.com/',
+					'network' => 'x',
+				),
+				array(
+					'label'   => 'Instagram',
+					'url'     => 'https://www.instagram.com/',
+					'network' => 'instagram',
+				),
+				array(
+					'label'   => 'YouTube',
+					'url'     => 'https://www.youtube.com/',
+					'network' => 'youtube',
+				),
+			)
+		);
+
+		$items = '';
+		foreach ( $links as $link ) {
+			if ( empty( $link['url'] ) || empty( $link['label'] ) ) {
+				continue;
+			}
+			$network = ! empty( $link['network'] ) ? sanitize_key( $link['network'] ) : 'link';
+			$items  .= sprintf(
+				'<li><a class="gbe-header__social-link gbe-header__social-link--%s" href="%s" target="_blank" rel="noopener noreferrer"><span class="screen-reader-text">%s</span><span aria-hidden="true">%s</span></a></li>',
+				esc_attr( $network ),
+				esc_url( $link['url'] ),
+				esc_html( $link['label'] ),
+				esc_html( self::header_social_abbrev( $link['label'], $network ) )
+			);
+		}
+
+		if ( '' === $items ) {
+			return '';
+		}
+
+		return sprintf(
+			'<nav class="gbe-header__socials" aria-label="%s"><ul class="gbe-header__socials-list">%s</ul></nav>',
+			esc_attr__( 'Réseaux sociaux', 'gbecosmolingua-core' ),
+			$items
+		);
+	}
+
+	/**
+	 * Short label shown on social icon buttons.
+	 *
+	 * @param string $label   Link label.
+	 * @param string $network Network slug.
+	 */
+	private static function header_social_abbrev( $label, $network ) {
+		$map = array(
+			'facebook'  => 'f',
+			'x'         => 'X',
+			'twitter'   => 'X',
+			'instagram' => 'in',
+			'youtube'   => '▶',
+			'linkedin'  => 'in',
+		);
+		if ( isset( $map[ $network ] ) ) {
+			return $map[ $network ];
+		}
+		return mb_strtoupper( mb_substr( $label, 0, 1 ) );
+	}
+
+	/**
+	 * Contact link for the header (right of search).
+	 *
+	 * @param array<string, string> $atts Shortcode attributes.
+	 */
+	public static function header_contact( $atts ) {
+		$atts = shortcode_atts(
+			array(
+				'url'   => '',
+				'label' => __( 'Contact', 'gbecosmolingua-core' ),
+			),
+			$atts,
+			'gbe_header_contact'
+		);
+
+		$url = $atts['url'] ? $atts['url'] : home_url( '/nous-soutenir/' );
+		$url = apply_filters( 'gbe_header_contact_url', $url );
+
+		return sprintf(
+			'<a class="gbe-header__contact" href="%s">%s</a>',
+			esc_url( $url ),
+			esc_html( $atts['label'] )
+		);
 	}
 
 	/**
@@ -96,7 +201,6 @@ class GBE_Shortcodes {
 			'paremiologie',
 			'recherche-et-innovation',
 			'sejours-et-mobilite',
-			'sport-et-jeunesse',
 			'partenaires',
 			'nous-soutenir',
 			'notre-philosophie',

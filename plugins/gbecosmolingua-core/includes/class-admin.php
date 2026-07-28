@@ -180,6 +180,11 @@ class GBE_Admin {
 		GBE_Page_Importer::patch_phase4_shortcodes();
 		GBE_Page_Importer::patch_phase5_forms();
 		GBE_Page_Importer::patch_phase7_content();
+		GBE_Page_Importer::patch_culture_subpages();
+		GBE_Page_Importer::patch_le_gbe_subpages();
+		GBE_Page_Importer::patch_paremiologie_subpages();
+		GBE_Page_Importer::patch_recherche_innovation_subpages();
+		GBE_Page_Importer::patch_site_hubs_subpages();
 		GBE_Page_Importer::restore_primary_menu();
 
 		wp_safe_redirect(
@@ -201,12 +206,27 @@ class GBE_Admin {
 			wp_die( esc_html__( 'Accès refusé.', 'gbecosmolingua-core' ) );
 		}
 
-		$reset = GBE_Page_Importer::reset_theme_template_parts( array( 'header', 'footer' ) );
+		$reset_parts = GBE_Page_Importer::reset_theme_template_parts( array( 'header', 'footer' ) );
+		$reset_tpl   = GBE_Page_Importer::reset_theme_templates(
+			array(
+				'front-page',
+				'page-le-gbe',
+				'page-cultures-gbe',
+				'page-xotutu',
+				'page-paremiologie',
+				'page-recherche-innovation',
+				'page-sejours-mobilite',
+				'page-partenaires',
+				'page-nous-soutenir',
+				'page-philosophie',
+			)
+		);
+		$reset       = array_merge( $reset_parts, $reset_tpl );
 		GBE_Page_Importer::configure_permalinks();
 		GBE_Page_Importer::restore_primary_menu();
 
 		if ( empty( $reset ) ) {
-			$message = __( 'En-tête et pied de page réinitialisés depuis le thème.', 'gbecosmolingua-core' );
+			$message = __( 'En-tête, pied de page et page d\'accueil rechargés depuis le thème.', 'gbecosmolingua-core' );
 		} else {
 			$message = sprintf(
 				/* translators: %s: comma-separated template part names */
@@ -279,8 +299,14 @@ class GBE_Admin {
 
 		GBE_Page_Importer::import( true );
 		GBE_Page_Importer::patch_phase7_content();
+		GBE_Page_Importer::patch_culture_subpages();
+		GBE_Page_Importer::patch_le_gbe_subpages();
+		GBE_Page_Importer::patch_paremiologie_subpages();
+		GBE_Page_Importer::patch_recherche_innovation_subpages();
+		GBE_Page_Importer::patch_site_hubs_subpages();
 		GBE_Page_Importer::configure_permalinks();
 		GBE_Page_Importer::reset_theme_template_parts( array( 'header', 'footer' ) );
+		GBE_Page_Importer::reset_theme_templates( array( 'front-page', 'page-le-gbe', 'page-cultures-gbe' ) );
 		GBE_Page_Importer::restore_primary_menu();
 
 		wp_safe_redirect(

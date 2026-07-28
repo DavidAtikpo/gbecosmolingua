@@ -48,6 +48,7 @@ GBE_Page_Importer::patch_phase5_forms();
 GBE_Page_Importer::patch_phase7_content();
 GBE_Page_Importer::configure_permalinks();
 GBE_Page_Importer::reset_theme_template_parts( array( "header", "footer" ) );
+GBE_Page_Importer::reset_theme_templates( array( "front-page" ) );
 GBE_Page_Importer::restore_primary_menu();
 echo $result["message"] . "\n";
 '

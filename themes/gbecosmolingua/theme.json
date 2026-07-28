@@ -75,5 +75,47 @@
 			"name": "footer",
 			"title": "Pied de page GbeCosmoLingua"
 		}
+	],
+	"customTemplates": [
+		{
+			"name": "page-le-gbe",
+			"title": "Hub Le Gbe",
+			"postTypes": [ "page" ]
+		},
+		{
+			"name": "page-xotutu",
+			"title": "Hub Xótùtù",
+			"postTypes": [ "page" ]
+		},
+		{
+			"name": "page-paremiologie",
+			"title": "Hub Paremiologie",
+			"postTypes": [ "page" ]
+		},
+		{
+			"name": "page-recherche-innovation",
+			"title": "Hub Recherche et Innovation",
+			"postTypes": [ "page" ]
+		},
+		{
+			"name": "page-sejours-mobilite",
+			"title": "Hub Séjours et Mobilité",
+			"postTypes": [ "page" ]
+		},
+		{
+			"name": "page-partenaires",
+			"title": "Hub Partenaires",
+			"postTypes": [ "page" ]
+		},
+		{
+			"name": "page-nous-soutenir",
+			"title": "Hub Nous Soutenir",
+			"postTypes": [ "page" ]
+		},
+		{
+			"name": "page-philosophie",
+			"title": "Hub Notre philosophie",
+			"postTypes": [ "page" ]
+		}
 	]
 }

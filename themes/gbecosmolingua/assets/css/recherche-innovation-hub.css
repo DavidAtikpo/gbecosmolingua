@@ -1,0 +1,183 @@
+
+/* —— Page Recherche et Innovation (hub) —— */
+.gbe-main--recherche {
+	padding: 0 !important;
+	gap: 0;
+	max-width: none;
+	overflow-x: clip;
+	background: var(--gbe-sand, #f7f1df);
+}
+
+.gbe-main--recherche.is-layout-flow > * {
+	margin-block-start: 0;
+}
+
+.gbe-main--recherche > .wp-block-html {
+	max-width: none;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+.gbe-main--recherche .gbe-section.gbe-recherche-intro {
+	max-width: 1140px;
+	margin: 0 auto;
+	padding: clamp(1rem, 3vw, 1.5rem) clamp(1rem, 3vw, 1.5rem) 0;
+	line-height: 1.65;
+}
+
+.gbe-recherche-hero {
+	padding: clamp(3rem, 8vw, 5rem) clamp(1rem, 3vw, 1.5rem) clamp(5rem, 12vw, 7rem);
+	color: var(--gbe-white, #fff);
+	text-align: center;
+	background:
+		linear-gradient(180deg, rgba(35, 21, 12, 0.55) 0%, rgba(31, 91, 42, 0.65) 50%, rgba(18, 56, 25, 0.92) 100%),
+		var(--gbe-recherche-hero-image, none) center center / cover no-repeat,
+		linear-gradient(135deg, #23150c 0%, #1f5b2a 100%);
+}
+
+.gbe-recherche-hero__title {
+	font-size: clamp(2.25rem, 5.5vw, 3.5rem);
+	font-weight: 700;
+	color: var(--gbe-white) !important;
+	margin: 0 0 0.75rem;
+	line-height: 1.15;
+}
+
+.gbe-recherche-hero__lead {
+	max-width: 38rem;
+	margin: 0 auto 1.5rem;
+	font-size: clamp(1rem, 2.2vw, 1.12rem);
+	line-height: 1.55;
+	color: rgba(255, 250, 240, 0.95);
+}
+
+.gbe-recherche-hero__actions .wp-block-button__link {
+	border-radius: 999px;
+	font-weight: 600;
+}
+
+.gbe-recherche-hero__actions .is-style-fill .wp-block-button__link {
+	background: var(--gbe-green, #1f5b2a);
+	color: var(--gbe-white);
+	border: 1px solid rgba(255, 250, 240, 0.35);
+}
+
+.gbe-recherche-hero__actions .is-style-outline .wp-block-button__link {
+	border: 1px solid rgba(255, 250, 240, 0.65);
+	color: var(--gbe-white);
+	background: transparent;
+}
+
+.gbe-recherche-search-wrap {
+	position: relative;
+	max-width: 780px;
+	margin: -3rem auto 1.5rem;
+	padding: 0 clamp(1rem, 3vw, 1.5rem);
+	z-index: 2;
+}
+
+.gbe-recherche-search {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.75rem;
+	background: var(--gbe-white);
+	border-radius: 12px;
+	box-shadow: 0 10px 36px rgba(35, 21, 12, 0.12);
+}
+
+.gbe-recherche-search__input {
+	flex: 1 1 12rem;
+	min-width: 0;
+	border: 1px solid rgba(35, 21, 12, 0.12);
+	border-radius: 8px;
+	padding: 0.6rem 0.85rem;
+}
+
+.gbe-recherche-search__submit {
+	border: none;
+	border-radius: 8px;
+	padding: 0.6rem 1rem;
+	background: var(--gbe-green);
+	color: var(--gbe-white);
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.gbe-recherche-search__link {
+	font-size: 0.88rem;
+	color: var(--gbe-copper, #8a4a12);
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.gbe-recherche-featured {
+	max-width: 1140px;
+	margin: 0 auto 2rem;
+	padding: 0 clamp(1rem, 3vw, 1.5rem);
+}
+
+.gbe-recherche-featured__inner {
+	background: var(--gbe-white);
+	border-radius: 14px;
+	padding: 1.35rem 1.5rem;
+	border-left: 4px solid var(--gbe-green);
+	box-shadow: 0 4px 18px rgba(35, 21, 12, 0.06);
+}
+
+.gbe-recherche-featured__kicker {
+	text-transform: uppercase;
+	font-size: 0.72rem;
+	letter-spacing: 0.08em;
+	color: var(--gbe-copper);
+	margin: 0 0 0.35rem;
+}
+
+.gbe-recherche-featured__meta {
+	font-size: 0.9rem;
+	color: rgba(35, 21, 12, 0.7);
+	margin: 0 0 0.5rem;
+}
+
+.gbe-recherche-featured h2 {
+	margin: 0 0 0.35rem;
+	color: var(--gbe-green);
+	font-size: 1.35rem;
+}
+
+.gbe-recherche-rubriques .gbe-culture-rubrique--feature .gbe-culture-subtopics {
+	display: none;
+}
+
+.gbe-recherche-cta {
+	margin-top: 0;
+	padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 3vw, 1.5rem);
+	background: linear-gradient(120deg, #1f5b2a 0%, #23150c 100%);
+	color: var(--gbe-white);
+	text-align: center;
+}
+
+.gbe-recherche-cta__inner {
+	max-width: 640px;
+	margin: 0 auto;
+}
+
+.gbe-recherche-cta h2 {
+	color: var(--gbe-white);
+	margin: 0 0 0.65rem;
+}
+
+.gbe-recherche-cta .gbe-culture-rubrique__btn {
+	background: var(--gbe-white);
+	color: var(--gbe-green) !important;
+	margin-top: 0.75rem;
+}
+
+@media (max-width: 560px) {
+	.gbe-recherche-search {
+		flex-direction: column;
+		align-items: stretch;
+	}
+}

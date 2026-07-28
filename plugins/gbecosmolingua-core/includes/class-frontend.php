@@ -17,6 +17,7 @@ class GBE_Frontend {
 	 */
 	public static function init() {
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ) );
+		add_filter( 'render_block', array( __CLASS__, 'render_shortcode_blocks' ), 9, 2 );
 		add_filter( 'the_content', array( __CLASS__, 'append_proverbe_detail' ), 20 );
 		add_filter( 'the_content', array( __CLASS__, 'append_genre_oral_detail' ), 20 );
 		add_filter( 'the_content', array( __CLASS__, 'append_evenement_detail' ), 20 );
@@ -64,9 +65,14 @@ class GBE_Frontend {
 			wp_localize_script( 'gbe-map', 'gbeMapData', gbe_get_map_data() );
 		}
 
-		if ( self::needs_frontend_styles() ) {
-			wp_enqueue_style( 'gbe-frontend' );
-		}
+		wp_enqueue_style( 'gbe-frontend' );
+		wp_enqueue_script(
+			'gbe-lang-switcher',
+			GBE_CORE_URL . 'assets/js/lang-switcher.js',
+			array(),
+			GBE_CORE_VERSION,
+			true
+		);
 	}
 
 	/**
@@ -119,6 +125,32 @@ class GBE_Frontend {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Ensure theme shortcodes render inside block templates (hero, footer, etc.).
+	 *
+	 * @param string $block_content Block HTML.
+	 * @param array  $block         Block data.
+	 */
+	public static function render_shortcode_blocks( $block_content, $block ) {
+		if ( empty( $block['blockName'] ) || 'core/shortcode' !== $block['blockName'] ) {
+			return $block_content;
+		}
+
+		$text = '';
+		if ( ! empty( $block['attrs']['text'] ) ) {
+			$text = $block['attrs']['text'];
+		} elseif ( ! empty( $block['innerHTML'] ) ) {
+			$text = $block['innerHTML'];
+		}
+
+		$text = trim( wp_strip_all_tags( $text ) );
+		if ( '' === $text || false === strpos( $text, '[gbe_' ) ) {
+			return $block_content;
+		}
+
+		return do_shortcode( $text );
 	}
 
 	/**

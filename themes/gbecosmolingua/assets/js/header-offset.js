@@ -18,7 +18,12 @@
 		if (typeof ResizeObserver !== 'undefined') {
 			var header = document.querySelector('.gbe-site-header');
 			if (header) {
-				new ResizeObserver(updateHeaderOffset).observe(header);
+				var ro = new ResizeObserver(updateHeaderOffset);
+				ro.observe(header);
+				var inner = header.querySelector('.gbe-header__inner');
+				if (inner) {
+					ro.observe(inner);
+				}
 			}
 		}
 

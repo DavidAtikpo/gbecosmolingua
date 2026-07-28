@@ -413,7 +413,28 @@
 	align-items: center;
 }
 
-.gbe-lang-switcher ul {
+.gbe-lang-switcher--dropdown {
+	display: inline-block;
+	position: relative;
+	vertical-align: middle;
+}
+
+.gbe-lang-switcher__wrap {
+	position: relative;
+}
+
+.gbe-lang-switcher__menu {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: none !important;
+}
+
+.gbe-lang-switcher.is-open .gbe-lang-switcher__menu {
+	display: block !important;
+}
+
+.gbe-lang-switcher:not(.gbe-lang-switcher--dropdown) > ul {
 	list-style: none;
 	margin: 0;
 	padding: 0;

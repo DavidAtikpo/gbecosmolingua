@@ -1,39 +1,41 @@
 <?php
 /**
- * Title: Bannière accueil
+ * Title: Accueil — Bannière patrimoine
  * Slug: gbecosmolingua/home-hero
  * Categories: gbecosmolingua
  * Inserter: false
+ *
+ * @package GbeCosmoLingua
  */
+
+$hero_path = get_stylesheet_directory() . '/assets/images/home/hero-patrimoine.jpg';
+$hero_url  = file_exists( $hero_path ) ? get_stylesheet_directory_uri() . '/assets/images/home/hero-patrimoine.jpg' : '';
+$hero_var  = $hero_url ? '--gbe-home-hero-image:url(' . esc_url( $hero_url ) . ');' : '';
 ?>
-<!-- wp:group {"align":"full","className":"gbe-hero","layout":{"type":"constrained"}} -->
-<div class="wp-block-group alignfull gbe-hero">
-	<!-- wp:columns {"verticalAlignment":"center","className":"gbe-hero__layout"} -->
-	<div class="wp-block-columns are-vertically-aligned-center gbe-hero__layout">
-		<!-- wp:column {"verticalAlignment":"center","width":"34%"} -->
-		<div class="wp-block-column is-vertically-aligned-center" style="flex-basis:34%">
-			<!-- wp:shortcode -->
-			[gbe_site_logo width="240" class="gbe-hero__logo" link="0"]
-			<!-- /wp:shortcode -->
+<!-- wp:group {"align":"full","className":"gbe-home-hero","layout":{"type":"default"}} -->
+<div class="wp-block-group alignfull gbe-home-hero" style="<?php echo esc_attr( $hero_var ); ?>">
+	<!-- wp:group {"layout":{"type":"constrained","contentSize":"1140px"}} -->
+	<div class="wp-block-group">
+		<!-- wp:heading {"level":1,"className":"gbe-home-hero__title"} -->
+		<h1 class="wp-block-heading gbe-home-hero__title">Préserver, transmettre et faire rayonner le patrimoine Gbe.</h1>
+		<!-- /wp:heading -->
+
+		<!-- wp:paragraph {"className":"gbe-home-hero__lead"} -->
+		<p class="gbe-home-hero__lead">GbeCosmoLingua rassemble langues, cultures et savoirs du continuum gbe au Togo, au Bénin, au Ghana et au Nigeria — pour la recherche, la transmission et le dialogue interculturel.</p>
+		<!-- /wp:paragraph -->
+
+		<!-- wp:buttons {"className":"gbe-home-hero__actions"} -->
+		<div class="wp-block-buttons gbe-home-hero__actions">
+			<!-- wp:button -->
+			<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/nous-soutenir/">Rejoindre la communauté Gbe</a></div>
+			<!-- /wp:button -->
+
+			<!-- wp:button {"className":"is-style-outline"} -->
+			<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/le-gbe/">Découvrir le continuum</a></div>
+			<!-- /wp:button -->
 		</div>
-		<!-- /wp:column -->
-
-		<!-- wp:column {"verticalAlignment":"center","width":"66%"} -->
-		<div class="wp-block-column is-vertically-aligned-center" style="flex-basis:66%">
-			<!-- wp:paragraph {"className":"gbe-tagline"} -->
-			<p class="gbe-tagline">Observatoire international</p>
-			<!-- /wp:paragraph -->
-
-			<!-- wp:heading {"level":1} -->
-			<h1 class="wp-block-heading">Bienvenue à GbeCosmoLingua</h1>
-			<!-- /wp:heading -->
-
-			<!-- wp:paragraph {"fontSize":"large"} -->
-			<p class="has-large-font-size">Un pont entre les langues, les cultures et les peuples du continuum gbe.</p>
-			<!-- /wp:paragraph -->
-		</div>
-		<!-- /wp:column -->
+		<!-- /wp:buttons -->
 	</div>
-	<!-- /wp:columns -->
+	<!-- /wp:group -->
 </div>
 <!-- /wp:group -->

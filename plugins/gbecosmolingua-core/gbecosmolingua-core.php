@@ -3,7 +3,7 @@
  * Plugin Name: GbeCosmoLingua Core
  * Plugin URI: https://gbecosmolingua.org
  * Description: Types de contenu, import des pages et configuration de base pour GbeCosmoLingua.
- * Version: 1.4.5
+ * Version: 1.5.8
  * Author: GbeCosmoLingua
  * Text Domain: gbecosmolingua-core
  * Requires at least: 6.0
@@ -12,7 +12,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'GBE_CORE_VERSION', '1.4.5' );
+define( 'GBE_CORE_VERSION', '1.5.8' );
 define( 'GBE_CORE_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GBE_CORE_URL', plugin_dir_url( __FILE__ ) );
 
@@ -52,11 +52,30 @@ function gbe_core_maybe_upgrade() {
 		GBE_Page_Importer::patch_phase4_shortcodes();
 		GBE_Page_Importer::patch_phase5_forms();
 		GBE_Page_Importer::patch_phase7_content();
+		GBE_Page_Importer::patch_culture_subpages();
+		GBE_Page_Importer::patch_le_gbe_subpages();
+		GBE_Page_Importer::patch_paremiologie_subpages();
+		GBE_Page_Importer::patch_recherche_innovation_subpages();
+		GBE_Page_Importer::patch_site_hubs_subpages();
 		GBE_Page_Importer::configure_permalinks();
 		GBE_Page_Importer::restore_primary_menu();
 		GBE_Page_Importer::deduplicate_imported_pages();
 		GBE_Page_Importer::remove_obsolete_pages();
 		GBE_Page_Importer::reset_theme_template_parts( array( 'header', 'footer' ) );
+		GBE_Page_Importer::reset_theme_templates(
+			array(
+				'front-page',
+				'page-le-gbe',
+				'page-cultures-gbe',
+				'page-xotutu',
+				'page-paremiologie',
+				'page-recherche-innovation',
+				'page-sejours-mobilite',
+				'page-partenaires',
+				'page-nous-soutenir',
+				'page-philosophie',
+			)
+		);
 		update_option( 'gbe_core_version', GBE_CORE_VERSION );
 		flush_rewrite_rules();
 	}
