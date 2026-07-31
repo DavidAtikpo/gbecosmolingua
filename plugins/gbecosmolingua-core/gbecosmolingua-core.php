@@ -3,7 +3,7 @@
  * Plugin Name: GbeCosmoLingua Core
  * Plugin URI: https://gbecosmolingua.org
  * Description: Types de contenu, import des pages et configuration de base pour GbeCosmoLingua.
- * Version: 1.5.8
+ * Version: 1.6.3
  * Author: GbeCosmoLingua
  * Text Domain: gbecosmolingua-core
  * Requires at least: 6.0
@@ -12,10 +12,11 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'GBE_CORE_VERSION', '1.5.8' );
+define( 'GBE_CORE_VERSION', '1.6.5' );
 define( 'GBE_CORE_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GBE_CORE_URL', plugin_dir_url( __FILE__ ) );
 
+require_once GBE_CORE_PATH . 'includes/class-dynamic-dev-url.php';
 require_once GBE_CORE_PATH . 'includes/class-cpt.php';
 require_once GBE_CORE_PATH . 'includes/class-meta-boxes.php';
 require_once GBE_CORE_PATH . 'includes/class-page-importer.php';
@@ -26,6 +27,8 @@ require_once GBE_CORE_PATH . 'includes/class-demo-content.php';
 require_once GBE_CORE_PATH . 'includes/class-polylang.php';
 require_once GBE_CORE_PATH . 'includes/class-settings.php';
 require_once GBE_CORE_PATH . 'includes/class-forms.php';
+require_once GBE_CORE_PATH . 'includes/class-le-gbe-hub-admin.php';
+require_once GBE_CORE_PATH . 'includes/class-home-composer-admin.php';
 
 /**
  * Plugin bootstrap.
@@ -34,6 +37,8 @@ function gbe_core_init() {
 	GBE_CPT::register();
 	GBE_Meta_Boxes::init();
 	GBE_Admin::init();
+	GBE_Le_Gbe_Hub_Admin::init();
+	GBE_Home_Composer_Admin::init();
 	GBE_Frontend::init();
 	GBE_Shortcodes::init();
 	GBE_Settings::init();
@@ -76,6 +81,7 @@ function gbe_core_maybe_upgrade() {
 				'page-philosophie',
 			)
 		);
+		GBE_Home_Composer_Admin::maybe_seed_defaults();
 		update_option( 'gbe_core_version', GBE_CORE_VERSION );
 		flush_rewrite_rules();
 	}

@@ -13,7 +13,8 @@ $featured = gbecosmolingua_recherche_featured_highlight();
 
 ob_start();
 gbecosmolingua_recherche_render_search();
-?>
+if ( $featured ) :
+	?>
 <div class="gbe-recherche-featured">
 	<div class="gbe-recherche-featured__inner">
 		<p class="gbe-recherche-featured__kicker"><?php esc_html_e( 'À la une', 'gbecosmolingua' ); ?></p>
@@ -23,10 +24,15 @@ gbecosmolingua_recherche_render_search();
 		<a class="gbe-culture-rubrique__btn" href="<?php echo esc_url( $featured['url'] ); ?>"><?php esc_html_e( 'En savoir plus', 'gbecosmolingua' ); ?></a>
 	</div>
 </div>
+	<?php
+endif;
+?>
 <div class="gbe-culture-rubriques gbe-recherche-rubriques">
 <?php
 foreach ( $sections as $index => $section ) {
-	$thumb_style = gbecosmolingua_recherche_image_style( $section['thumb'], '--gbe-culture-section-image' );
+	$thumb_style = ! empty( $section['page_id'] )
+		? gbecosmolingua_public_featured_image_style( (int) $section['page_id'], '--gbe-culture-section-image' )
+		: '';
 	$page_url    = gbecosmolingua_recherche_page_url( $section['slug'] );
 	$reverse     = ( 1 === $index % 2 );
 	$is_feature  = ( isset( $section['layout'] ) && 'feature' === $section['layout'] );

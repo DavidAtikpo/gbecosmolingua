@@ -240,6 +240,7 @@ class GBE_Shortcodes {
 
 		$has_children = ! empty( $children );
 		$url          = get_permalink( $page );
+		$panel_id     = 'gbe-main-menu-panel-' . (int) $page->ID;
 
 		ob_start();
 		?>
@@ -248,24 +249,20 @@ class GBE_Shortcodes {
 				<?php echo esc_html( $page->post_title ); ?>
 			</a>
 			<?php if ( $has_children ) : ?>
-				<?php
-				$visible_children = array_slice( $children, 0, self::MENU_COLUMN_LIMIT );
-				$has_more_columns = count( $children ) > self::MENU_COLUMN_LIMIT;
-				?>
-				<div class="gbe-main-menu__panel" role="region" aria-label="<?php echo esc_attr( sprintf( __( 'Sous-menu %s', 'gbecosmolingua-core' ), $page->post_title ) ); ?>">
+				<button
+					type="button"
+					class="gbe-main-menu__toggle"
+					aria-expanded="false"
+					aria-controls="<?php echo esc_attr( $panel_id ); ?>"
+					aria-label="<?php echo esc_attr( sprintf( __( 'Afficher le sous-menu %s', 'gbecosmolingua-core' ), $page->post_title ) ); ?>"
+				>
+					<span class="gbe-main-menu__toggle-icon" aria-hidden="true">▾</span>
+				</button>
+				<div id="<?php echo esc_attr( $panel_id ); ?>" class="gbe-main-menu__panel" role="region" aria-label="<?php echo esc_attr( sprintf( __( 'Sous-menu %s', 'gbecosmolingua-core' ), $page->post_title ) ); ?>">
 					<div class="gbe-main-menu__panel-inner">
-						<?php foreach ( $visible_children as $child ) : ?>
+						<?php foreach ( $children as $child ) : ?>
 							<?php echo self::render_menu_column( $child ); ?>
 						<?php endforeach; ?>
-						<?php if ( $has_more_columns ) : ?>
-							<div class="gbe-main-menu__column gbe-main-menu__column--more">
-								<p class="gbe-main-menu__column-title">
-									<a href="<?php echo esc_url( $url ); ?>">
-										<?php esc_html_e( 'Voir plus', 'gbecosmolingua-core' ); ?>
-									</a>
-								</p>
-							</div>
-						<?php endif; ?>
 					</div>
 				</div>
 			<?php endif; ?>
@@ -275,68 +272,44 @@ class GBE_Shortcodes {
 	}
 
 	/**
-	 * Render one horizontal submenu column (grand titre + sections).
+	 * Render one horizontal submenu column (grand titre uniquement).
 	 *
 	 * @param WP_Post $page Child page.
 	 */
 	private static function render_menu_column( $page ) {
-		$grandchildren = get_pages(
-			array(
-				'parent'      => $page->ID,
-				'sort_column' => 'menu_order,post_title',
-				'post_status' => 'publish',
-			)
-		);
-
-		$sections = array();
-		if ( ! empty( $grandchildren ) ) {
-			foreach ( $grandchildren as $grandchild ) {
-				$sections[] = array(
-					'label' => $grandchild->post_title,
-					'url'   => get_permalink( $grandchild ),
-				);
-			}
-		} else {
-			$sections = self::get_page_section_labels( $page->post_content, get_permalink( $page ) );
-		}
-
-		$visible_sections = array_slice( $sections, 0, self::MENU_SECTION_LIMIT );
-		$has_more_sections = count( $sections ) > self::MENU_SECTION_LIMIT;
-		$page_url           = get_permalink( $page );
+		$page_url = get_permalink( $page );
 
 		ob_start();
 		?>
 		<div class="gbe-main-menu__column">
 			<p class="gbe-main-menu__column-title">
 				<a href="<?php echo esc_url( $page_url ); ?>">
-					<?php echo esc_html( $page->post_title ); ?>
+					<?php echo self::render_menu_column_title_markup( $page->post_title ); ?>
 				</a>
 			</p>
-			<?php if ( ! empty( $visible_sections ) || $has_more_sections ) : ?>
-				<ul class="gbe-main-menu__column-list">
-					<?php foreach ( $visible_sections as $section ) : ?>
-						<li class="gbe-main-menu__column-item">
-							<?php if ( ! empty( $section['url'] ) ) : ?>
-								<a href="<?php echo esc_url( $section['url'] ); ?>">
-									<?php echo esc_html( $section['label'] ); ?>
-								</a>
-							<?php else : ?>
-								<span><?php echo esc_html( $section['label'] ); ?></span>
-							<?php endif; ?>
-						</li>
-					<?php endforeach; ?>
-					<?php if ( $has_more_sections ) : ?>
-						<li class="gbe-main-menu__column-item gbe-main-menu__column-item--more">
-							<a href="<?php echo esc_url( $page_url ); ?>">
-								<?php esc_html_e( 'Plus', 'gbecosmolingua-core' ); ?>
-							</a>
-						</li>
-					<?php endif; ?>
-				</ul>
-			<?php endif; ?>
 		</div>
 		<?php
 		return ob_get_clean();
+	}
+
+	/**
+	 * Markup for a column title (two words stacked vertically).
+	 *
+	 * @param string $title Page title.
+	 */
+	private static function render_menu_column_title_markup( $title ) {
+		$title = trim( wp_strip_all_tags( $title ) );
+		$words = preg_split( '/\s+/u', $title, -1, PREG_SPLIT_NO_EMPTY );
+
+		if ( 2 !== count( $words ) ) {
+			return esc_html( $title );
+		}
+
+		return sprintf(
+			'<span class="gbe-main-menu__column-title-stack"><span class="gbe-main-menu__column-title-line">%1$s</span><span class="gbe-main-menu__column-title-line">%2$s</span></span>',
+			esc_html( $words[0] ),
+			esc_html( $words[1] )
+		);
 	}
 
 	/**

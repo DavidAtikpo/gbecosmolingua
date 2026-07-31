@@ -7,11 +7,15 @@
  *
  * @package GbeCosmoLingua
  */
+
+$page = gbecosmolingua_public_hub_page( 'recherche-et-innovation' );
+$html = gbecosmolingua_public_page_intro_html( $page );
+if ( '' === $html ) {
+	return;
+}
 ?>
 <!-- wp:group {"align":"wide","className":"gbe-section gbe-recherche-intro","layout":{"type":"constrained"}} -->
 <div class="wp-block-group alignwide gbe-section gbe-recherche-intro">
-	<!-- wp:paragraph -->
-	<p>GbeCosmoLingua fédère <strong>corpus numériques</strong>, <strong>humanités numériques</strong> et <strong>coopération internationale</strong> pour faire avancer la connaissance des langues, cultures et patrimoines gbe.</p>
-	<!-- /wp:paragraph -->
+	<?php echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 </div>
 <!-- /wp:group -->

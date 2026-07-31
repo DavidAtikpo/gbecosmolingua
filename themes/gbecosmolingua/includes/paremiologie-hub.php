@@ -245,7 +245,7 @@ function gbecosmolingua_paremiologie_hub_sections() {
 
 	$parent = get_page_by_path( 'paremiologie' );
 	if ( ! $parent ) {
-		$cache = gbecosmolingua_paremiologie_hub_sections_fallback();
+		$cache = array();
 		return $cache;
 	}
 
@@ -258,17 +258,10 @@ function gbecosmolingua_paremiologie_hub_sections() {
 	);
 
 	if ( empty( $children ) ) {
-		$cache = gbecosmolingua_paremiologie_hub_sections_fallback();
+		$cache = array();
 		return $cache;
 	}
 
-	$fallback       = gbecosmolingua_paremiologie_hub_sections_fallback();
-	$fallback_by_id = array();
-	foreach ( $fallback as $row ) {
-		$fallback_by_id[ $row['id'] ] = $row;
-	}
-
-	$thumbs       = gbecosmolingua_paremiologie_thumb_map();
 	$corpus_slugs = gbecosmolingua_paremiologie_corpus_slugs();
 	$feature      = gbecosmolingua_paremiologie_feature_slugs();
 	$sections     = array();
@@ -281,6 +274,7 @@ function gbecosmolingua_paremiologie_hub_sections() {
 				'label'      => $child->post_title,
 				'slug'       => $slug,
 				'child_slug' => '',
+				'page_id'    => (int) $child->ID,
 			);
 			continue;
 		}
@@ -300,28 +294,29 @@ function gbecosmolingua_paremiologie_hub_sections() {
 
 		$layout            = in_array( $slug, $feature, true ) ? 'feature' : 'split';
 		$sections[ $slug ] = array(
-			'id'     => 'gbe-paremiologie-' . sanitize_title( $slug ),
-			'title'  => $child->post_title,
-			'slug'   => $slug,
-			'thumb'  => isset( $thumbs[ $slug ] ) ? $thumbs[ $slug ] : 'arts-sculpture.jpg',
-			'mod'    => $slug,
-			'layout' => $layout,
-			'intro'  => $intro,
-			'items'  => $topics,
+			'id'      => 'gbe-paremiologie-' . sanitize_title( $slug ),
+			'page_id' => (int) $child->ID,
+			'title'   => $child->post_title,
+			'slug'    => $slug,
+			'thumb'   => '',
+			'mod'     => $slug,
+			'layout'  => $layout,
+			'intro'   => $intro,
+			'items'   => $topics,
 		);
 	}
 
 	if ( ! empty( $corpus_items ) ) {
-		$fb = $fallback_by_id['gbe-paremiologie-corpus-group'] ?? null;
 		$sections['gbe-paremiologie-corpus-group'] = array(
-			'id'     => 'gbe-paremiologie-corpus-group',
-			'title'  => $fb ? $fb['title'] : __( 'Corpus par variété', 'gbecosmolingua' ),
-			'slug'   => $corpus_items[0]['slug'],
-			'thumb'  => 'arts-artisanat.jpg',
-			'mod'    => 'corpus',
-			'layout' => 'split',
-			'intro'  => $fb ? $fb['intro'] : '',
-			'items'  => $corpus_items,
+			'id'      => 'gbe-paremiologie-corpus-group',
+			'title'   => __( 'Corpus par variété', 'gbecosmolingua' ),
+			'slug'    => $corpus_items[0]['slug'],
+			'page_id' => (int) ( $corpus_items[0]['page_id'] ?? 0 ),
+			'thumb'   => '',
+			'mod'     => 'corpus',
+			'layout'  => 'split',
+			'intro'   => '',
+			'items'   => $corpus_items,
 		);
 	}
 
@@ -336,7 +331,7 @@ function gbecosmolingua_paremiologie_hub_sections() {
 		$ordered[] = $row;
 	}
 
-	$cache = ! empty( $ordered ) ? $ordered : gbecosmolingua_paremiologie_hub_sections_fallback();
+	$cache = $ordered;
 	return $cache;
 }
 
@@ -387,12 +382,7 @@ function gbecosmolingua_paremiologie_featured_proverbe() {
 		return $data;
 	}
 
-	return array(
-		'title'   => __( 'La sagesse du terroir', 'gbecosmolingua' ),
-		'meta'    => 'Fon · ' . __( 'Lododowo', 'gbecosmolingua' ),
-		'excerpt' => __( 'Découvrez la banque numérique : transcriptions, traductions et commentaires culturels des proverbes du continuum gbe.', 'gbecosmolingua' ),
-		'url'     => gbecosmolingua_paremiologie_page_url( 'banque-numerique-proverbes' ),
-	);
+	return null;
 }
 
 /**

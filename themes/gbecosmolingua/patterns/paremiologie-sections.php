@@ -13,7 +13,8 @@ $featured = gbecosmolingua_paremiologie_featured_proverbe();
 
 ob_start();
 gbecosmolingua_paremiologie_render_search();
-?>
+if ( $featured ) :
+	?>
 <div class="gbe-paremiologie-featured">
 	<div class="gbe-paremiologie-featured__inner">
 		<p class="gbe-paremiologie-featured__kicker"><?php esc_html_e( 'Proverbe à la une', 'gbecosmolingua' ); ?></p>
@@ -23,10 +24,15 @@ gbecosmolingua_paremiologie_render_search();
 		<a class="gbe-culture-rubrique__btn" href="<?php echo esc_url( $featured['url'] ); ?>"><?php esc_html_e( 'Lire la fiche', 'gbecosmolingua' ); ?></a>
 	</div>
 </div>
+	<?php
+endif;
+?>
 <div class="gbe-culture-rubriques gbe-paremiologie-rubriques">
 <?php
 foreach ( $sections as $index => $section ) {
-	$thumb_style = gbecosmolingua_paremiologie_image_style( $section['thumb'], '--gbe-culture-section-image' );
+	$thumb_style = ! empty( $section['page_id'] )
+		? gbecosmolingua_public_featured_image_style( (int) $section['page_id'], '--gbe-culture-section-image' )
+		: '';
 	$page_url    = gbecosmolingua_paremiologie_page_url( $section['slug'] );
 	$reverse     = ( 1 === $index % 2 );
 	$is_feature  = ( isset( $section['layout'] ) && 'feature' === $section['layout'] );

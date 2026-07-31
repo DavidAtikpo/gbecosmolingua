@@ -1,0 +1,325 @@
+/**
+ * Animations page Le Gbe — hero carousel, cartes, boutons.
+ */
+
+/* —— Hero carousel —— */
+.gbe-le-gbe-hero.gbe-le-gbe-hero--carousel {
+	position: relative;
+	min-height: clamp(420px, 52vh, 560px);
+	padding: 0;
+	color: var(--gbe-white);
+	overflow: hidden;
+	background: linear-gradient(135deg, #1f5b2a 0%, #23150c 100%) !important;
+}
+
+.gbe-le-gbe-hero--overlay-light {
+	color: var(--gbe-bark);
+}
+
+.gbe-le-gbe-hero__slides {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+}
+
+.gbe-le-gbe-hero__slide {
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+	transition: opacity 2.8s ease-in-out;
+	pointer-events: none;
+}
+
+.gbe-le-gbe-hero__slide.is-active {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.gbe-le-gbe-hero__slide-bg {
+	position: absolute;
+	inset: -6%;
+	background: var(--gbe-le-gbe-slide-image, none) center center / cover no-repeat;
+	transform: scale(1);
+	transition: transform 20s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.gbe-le-gbe-hero__slide.is-active .gbe-le-gbe-hero__slide-bg {
+	transform: scale(1.06);
+}
+
+.gbe-le-gbe-hero__slide-overlay {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		135deg,
+		rgba(35, 21, 12, 0.82) 0%,
+		rgba(31, 91, 42, 0.72) 45%,
+		rgba(18, 56, 25, 0.88) 100%
+	);
+}
+
+.gbe-le-gbe-hero--overlay-light .gbe-le-gbe-hero__slide-overlay,
+.gbe-le-gbe-hero__slide--overlay-light .gbe-le-gbe-hero__slide-overlay {
+	background: linear-gradient(
+		135deg,
+		rgba(255, 250, 240, 0.88) 0%,
+		rgba(255, 250, 240, 0.78) 50%,
+		rgba(230, 220, 200, 0.85) 100%
+	);
+}
+
+.gbe-le-gbe-hero__inner {
+	position: relative;
+	z-index: 2;
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 3rem clamp(1rem, 3vw, 1.5rem) 3.5rem;
+	box-sizing: border-box;
+}
+
+.gbe-le-gbe-hero__layout {
+	display: grid;
+	grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+	gap: clamp(1.25rem, 3vw, 2.5rem);
+	align-items: center;
+}
+
+.gbe-le-gbe-hero__text-slides {
+	position: relative;
+	min-height: 12rem;
+}
+
+.gbe-le-gbe-hero__text-slide {
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+	transform: translateY(18px);
+	transition: opacity 1.4s ease-in-out, transform 1.4s ease-in-out;
+	pointer-events: none;
+}
+
+.gbe-le-gbe-hero__text-slide.is-active {
+	position: relative;
+	opacity: 1;
+	transform: translateY(0);
+	pointer-events: auto;
+}
+
+.gbe-le-gbe-hero--overlay-light .gbe-le-gbe-hero__title {
+	color: var(--gbe-green-dark) !important;
+	text-shadow: none;
+}
+
+.gbe-le-gbe-hero--overlay-light .gbe-le-gbe-hero__lead {
+	color: var(--gbe-bark);
+}
+
+.gbe-le-gbe-hero--overlay-light .gbe-le-gbe-hero__actions .is-style-outline .wp-block-button__link {
+	color: var(--gbe-green-dark);
+	border-color: var(--gbe-green-dark);
+}
+
+.gbe-le-gbe-hero__dots {
+	display: flex;
+	gap: 0.5rem;
+	margin-top: 1.25rem;
+	flex-wrap: wrap;
+}
+
+.gbe-le-gbe-hero__dot {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	border: 2px solid rgba(255, 250, 240, 0.75);
+	background: transparent;
+	padding: 0;
+	cursor: pointer;
+	transition: transform 0.45s ease-out, background 0.45s ease-out, border-color 0.45s ease-out;
+}
+
+.gbe-le-gbe-hero--overlay-light .gbe-le-gbe-hero__dot {
+	border-color: rgba(31, 91, 42, 0.55);
+}
+
+.gbe-le-gbe-hero__dot.is-active,
+.gbe-le-gbe-hero__dot:hover {
+	background: var(--gbe-gold);
+	border-color: var(--gbe-gold);
+	transform: scale(1.1);
+}
+
+.gbe-le-gbe-hero__figure-wrap {
+	display: flex;
+	justify-content: center;
+	animation: gbe-hero-figure-in 1s ease 0.3s backwards;
+}
+
+@keyframes gbe-hero-figure-in {
+	from {
+		opacity: 0;
+		transform: translateX(24px) scale(0.96);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0) scale(1);
+	}
+}
+
+.gbe-le-gbe-hero__figure img {
+	transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.gbe-le-gbe-hero__figure-wrap:hover img {
+	transform: scale(1.02);
+	box-shadow: 0 16px 40px rgba(35, 21, 12, 0.4);
+}
+
+/* —— Cartes : ombre, entrée, zoom image —— */
+.gbe-le-gbe-rubriques .gbe-culture-band,
+.gbe-hub-rubriques .gbe-culture-band {
+	opacity: 0;
+	transform: translateY(28px);
+	transition: opacity 0.65s ease, transform 0.65s ease;
+}
+
+.gbe-le-gbe-rubriques .gbe-culture-band.gbe-is-visible,
+.gbe-hub-rubriques .gbe-culture-band.gbe-is-visible {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.gbe-le-gbe-rubriques .gbe-culture-rubrique,
+.gbe-hub-rubriques .gbe-culture-rubrique {
+	transition: transform 0.6s ease-out;
+}
+
+/* Zoom image fluide (transform sur calque, pas background-size) */
+.gbe-le-gbe-rubriques .gbe-culture-rubrique__media,
+.gbe-le-gbe-rubriques .gbe-culture-subtopic__media,
+.gbe-hub-rubriques .gbe-culture-rubrique__media,
+.gbe-hub-rubriques .gbe-culture-subtopic__media {
+	position: relative;
+	overflow: hidden;
+	background-image: linear-gradient(145deg, rgba(31, 91, 42, 0.55), rgba(74, 37, 12, 0.45)) !important;
+	background-size: cover !important;
+	background-position: center !important;
+	transition: box-shadow 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+	box-shadow: 0 12px 32px rgba(74, 37, 12, 0.16);
+}
+
+.gbe-le-gbe-rubriques .gbe-culture-subtopic__media,
+.gbe-hub-rubriques .gbe-culture-subtopic__media {
+	min-height: 130px;
+	background-image: linear-gradient(145deg, rgba(31, 91, 42, 0.45), rgba(74, 37, 12, 0.35)) !important;
+}
+
+.gbe-le-gbe-rubriques .gbe-culture-rubrique__media::before,
+.gbe-le-gbe-rubriques .gbe-culture-subtopic__media::before,
+.gbe-hub-rubriques .gbe-culture-rubrique__media::before,
+.gbe-hub-rubriques .gbe-culture-subtopic__media::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	background-image: var(--gbe-culture-section-image, none);
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	transition: transform 1.6s cubic-bezier(0.22, 1, 0.36, 1);
+	transform: scale(1);
+	will-change: transform;
+}
+
+.gbe-le-gbe-rubriques .gbe-culture-rubrique:hover .gbe-culture-rubrique__media::before,
+.gbe-le-gbe-rubriques .gbe-culture-subtopic:hover .gbe-culture-subtopic__media::before,
+.gbe-hub-rubriques .gbe-culture-rubrique:hover .gbe-culture-rubrique__media::before,
+.gbe-hub-rubriques .gbe-culture-subtopic:hover .gbe-culture-subtopic__media::before {
+	transform: scale(1.07);
+}
+
+.gbe-le-gbe-rubriques .gbe-culture-rubrique:hover .gbe-culture-rubrique__media,
+.gbe-le-gbe-rubriques .gbe-culture-subtopic:hover .gbe-culture-subtopic__media,
+.gbe-hub-rubriques .gbe-culture-rubrique:hover .gbe-culture-rubrique__media,
+.gbe-hub-rubriques .gbe-culture-subtopic:hover .gbe-culture-subtopic__media {
+	box-shadow: 0 20px 40px rgba(74, 37, 12, 0.22);
+}
+
+.gbe-le-gbe-rubriques .gbe-culture-subtopic,
+.gbe-hub-rubriques .gbe-culture-subtopic {
+	transition: transform 0.6s ease-out, box-shadow 0.6s ease-out;
+	box-shadow: 0 6px 18px rgba(74, 37, 12, 0.08);
+}
+
+.gbe-le-gbe-rubriques .gbe-culture-subtopic:hover,
+.gbe-hub-rubriques .gbe-culture-subtopic:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 14px 28px rgba(74, 37, 12, 0.12);
+}
+
+.gbe-le-gbe-rubriques .gbe-culture-rubrique__btn,
+.gbe-hub-rubriques .gbe-culture-rubrique__btn {
+	transition:
+		transform 0.55s ease-out,
+		box-shadow 0.55s ease-out,
+		background 0.55s ease-out,
+		color 0.55s ease-out;
+}
+
+.gbe-le-gbe-rubriques .gbe-culture-rubrique__btn:hover,
+.gbe-le-gbe-rubriques .gbe-culture-rubrique__btn:focus-visible,
+.gbe-hub-rubriques .gbe-culture-rubrique__btn:hover,
+.gbe-hub-rubriques .gbe-culture-rubrique__btn:focus-visible {
+	transform: translateY(-2px) scale(1.02);
+	box-shadow: 0 8px 18px rgba(31, 91, 42, 0.28);
+}
+
+.gbe-le-gbe-rubriques .gbe-culture-rubrique__btn:active,
+.gbe-hub-rubriques .gbe-culture-rubrique__btn:active {
+	transform: translateY(0) scale(0.99);
+}
+
+.gbe-le-gbe-hero__actions .wp-block-button__link {
+	transition: transform 0.55s ease-out, box-shadow 0.55s ease-out, background 0.55s ease-out;
+}
+
+.gbe-le-gbe-hero__actions .wp-block-button__link:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 781px) {
+	.gbe-le-gbe-hero__layout {
+		grid-template-columns: 1fr;
+	}
+
+	.gbe-le-gbe-hero__text-slides {
+		min-height: 10rem;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.gbe-le-gbe-hero__slide,
+	.gbe-le-gbe-hero__slide-bg,
+	.gbe-le-gbe-hero__text-slide,
+	.gbe-le-gbe-rubriques .gbe-culture-band,
+	.gbe-hub-rubriques .gbe-culture-band,
+	.gbe-le-gbe-rubriques .gbe-culture-rubrique__media,
+	.gbe-hub-rubriques .gbe-culture-rubrique__media,
+	.gbe-le-gbe-rubriques .gbe-culture-subtopic__media,
+	.gbe-hub-rubriques .gbe-culture-subtopic__media,
+	.gbe-le-gbe-rubriques .gbe-culture-rubrique__media::before,
+	.gbe-hub-rubriques .gbe-culture-rubrique__media::before,
+	.gbe-le-gbe-rubriques .gbe-culture-subtopic__media::before,
+	.gbe-hub-rubriques .gbe-culture-subtopic__media::before,
+	.gbe-le-gbe-rubriques .gbe-culture-rubrique__btn,
+	.gbe-hub-rubriques .gbe-culture-rubrique__btn {
+		transition: none !important;
+		animation: none !important;
+	}
+
+	.gbe-le-gbe-rubriques .gbe-culture-band,
+	.gbe-hub-rubriques .gbe-culture-band {
+		opacity: 1;
+		transform: none;
+	}
+}

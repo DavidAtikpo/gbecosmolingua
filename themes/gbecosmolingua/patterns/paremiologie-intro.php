@@ -7,11 +7,15 @@
  *
  * @package GbeCosmoLingua
  */
+
+$page = gbecosmolingua_public_hub_page( 'paremiologie' );
+$html = gbecosmolingua_public_page_intro_html( $page );
+if ( '' === $html ) {
+	return;
+}
 ?>
 <!-- wp:group {"align":"wide","className":"gbe-section gbe-paremiologie-intro","layout":{"type":"constrained"}} -->
 <div class="wp-block-group alignwide gbe-section gbe-paremiologie-intro">
-	<!-- wp:paragraph -->
-	<p><strong>Axe scientifique majeur</strong> de GbeCosmoLingua — la paremiologie recueille, analyse et compare les proverbes, dictons et formules sapientielles du continuum gbe, au service de la recherche et de la transmission interculturelle.</p>
-	<!-- /wp:paragraph -->
+	<?php echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 </div>
 <!-- /wp:group -->

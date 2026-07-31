@@ -15,7 +15,9 @@ ob_start();
 <div class="gbe-culture-rubriques">
 <?php
 foreach ( $sections as $index => $section ) {
-	$thumb_style = gbecosmolingua_culture_image_style( $section['thumb'], '--gbe-culture-section-image' );
+	$thumb_style = ! empty( $section['page_id'] )
+		? gbecosmolingua_public_featured_image_style( (int) $section['page_id'], '--gbe-culture-section-image' )
+		: '';
 	$page_url    = gbecosmolingua_culture_page_url( $section['slug'] );
 	$reverse     = ( 1 === $index % 2 );
 	$is_banner   = ( isset( $section['layout'] ) && 'banner' === $section['layout'] );

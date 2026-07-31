@@ -231,27 +231,7 @@ function gbecosmolingua_hub_image_style( $dir, $filename, $var = '--gbe-hub-hero
 }
 
 function gbecosmolingua_hub_build_fallback_from_config( $hub_key ) {
-	$config = gbecosmolingua_hub_configs()[ $hub_key ];
-	if ( ! empty( $config['fallback'] ) ) {
-		return $config['fallback'];
-	}
-	if ( empty( $config['hub_order'] ) ) {
-		return array();
-	}
-	$sections = array();
-	foreach ( $config['hub_order'] as $slug ) {
-		$sections[] = array(
-			'id'     => 'gbe-hub-' . sanitize_title( $hub_key . '-' . $slug ),
-			'title'  => ucwords( str_replace( '-', ' ', $slug ) ),
-			'slug'   => $slug,
-			'thumb'  => 'arts-sculpture.jpg',
-			'mod'    => $slug,
-			'layout' => in_array( $slug, $config['feature_slugs'], true ) ? 'feature' : 'split',
-			'intro'  => '',
-			'items'  => array(),
-		);
-	}
-	return $sections;
+	return array();
 }
 
 function gbecosmolingua_hub_sections( $hub_key ) {
@@ -262,7 +242,7 @@ function gbecosmolingua_hub_sections( $hub_key ) {
 	$config = $configs[ $hub_key ];
 	$parent = get_page_by_path( $config['parent_slug'] );
 	if ( ! $parent ) {
-		return gbecosmolingua_hub_build_fallback_from_config( $hub_key );
+		return array();
 	}
 
 	$children = get_pages(
@@ -273,12 +253,11 @@ function gbecosmolingua_hub_sections( $hub_key ) {
 		)
 	);
 
-	$feature = isset( $config['feature_slugs'] ) ? $config['feature_slugs'] : array();
-	$fb_map  = array();
-	foreach ( gbecosmolingua_hub_build_fallback_from_config( $hub_key ) as $row ) {
-		$fb_map[ $row['slug'] ] = $row;
+	if ( empty( $children ) ) {
+		return array();
 	}
 
+	$feature = isset( $config['feature_slugs'] ) ? $config['feature_slugs'] : array();
 	$by_slug = array();
 	foreach ( $children as $child ) {
 		$slug   = $child->post_name;
@@ -295,6 +274,7 @@ function gbecosmolingua_hub_sections( $hub_key ) {
 				'label'      => $kid->post_title,
 				'slug'       => $slug,
 				'child_slug' => $kid->post_name,
+				'page_id'    => $kid->ID,
 			);
 		}
 		if ( empty( $topics ) ) {
@@ -305,28 +285,20 @@ function gbecosmolingua_hub_sections( $hub_key ) {
 		}
 
 		$intro = gbecosmolingua_culture_extract_intro( $child->post_content );
-		if ( '' === $intro && isset( $fb_map[ $slug ] ) ) {
-			$intro = $fb_map[ $slug ]['intro'];
-		}
 		if ( '' === $intro ) {
 			$intro = wp_trim_words( wp_strip_all_tags( $child->post_content ), 32, '…' );
 		}
-		if ( empty( $topics ) && isset( $fb_map[ $slug ]['items'] ) ) {
-			$topics = $fb_map[ $slug ]['items'];
-		}
-
-		$thumb = isset( $fb_map[ $slug ]['thumb'] ) ? $fb_map[ $slug ]['thumb'] : 'arts-sculpture.jpg';
-		$mod   = isset( $fb_map[ $slug ]['mod'] ) ? $fb_map[ $slug ]['mod'] : $slug;
 
 		$by_slug[ $slug ] = array(
-			'id'     => 'gbe-hub-' . sanitize_title( $hub_key . '-' . $slug ),
-			'title'  => $child->post_title,
-			'slug'   => $slug,
-			'thumb'  => $thumb,
-			'mod'    => $mod,
-			'layout' => in_array( $slug, $feature, true ) ? 'feature' : 'split',
-			'intro'  => $intro,
-			'items'  => $topics,
+			'id'      => 'gbe-hub-' . sanitize_title( $hub_key . '-' . $slug ),
+			'page_id' => (int) $child->ID,
+			'title'   => $child->post_title,
+			'slug'    => $slug,
+			'thumb'   => '',
+			'mod'     => $slug,
+			'layout'  => in_array( $slug, $feature, true ) ? 'feature' : 'split',
+			'intro'   => $intro,
+			'items'   => $topics,
 		);
 	}
 
@@ -335,8 +307,6 @@ function gbecosmolingua_hub_sections( $hub_key ) {
 		if ( isset( $by_slug[ $slug ] ) ) {
 			$ordered[] = $by_slug[ $slug ];
 			unset( $by_slug[ $slug ] );
-		} elseif ( isset( $fb_map[ $slug ] ) ) {
-			$ordered[] = $fb_map[ $slug ];
 		}
 	}
 	foreach ( $by_slug as $row ) {
@@ -354,23 +324,21 @@ function gbecosmolingua_hub_resolve_url( $url ) {
 }
 
 function gbecosmolingua_hub_render_hero( $hub_key ) {
-	$c     = gbecosmolingua_hub_configs()[ $hub_key ];
-	$style = gbecosmolingua_hub_image_style(
-		$c['image_dir'],
-		isset( $c['hero_image'] ) ? $c['hero_image'] : 'hero.jpg',
-		'--gbe-hub-hero-image'
-	);
-	$primary_url   = gbecosmolingua_hub_resolve_url( $c['hero_primary']['url'] );
-	$secondary_url = gbecosmolingua_hub_resolve_url( $c['hero_secondary']['url'] );
+	$c    = gbecosmolingua_hub_configs()[ $hub_key ];
+	$page = gbecosmolingua_public_hub_page( $c['parent_slug'] );
+	if ( ! $page ) {
+		return;
+	}
+
+	$style = gbecosmolingua_public_featured_image_style( $page->ID, '--gbe-hub-hero-image' );
+	$lead  = gbecosmolingua_public_page_excerpt_text( $page );
 	?>
-	<div class="wp-block-group alignfull gbe-hub-hero gbe-hub-hero--<?php echo esc_attr( $hub_key ); ?>" style="<?php echo esc_attr( $style ); ?>">
+	<div class="wp-block-group alignfull gbe-hub-hero gbe-hub-hero--<?php echo esc_attr( $hub_key ); ?>"<?php echo $style ? ' style="' . esc_attr( $style ) . '"' : ''; ?>>
 		<div class="gbe-hub-hero__inner">
-			<h1 class="gbe-hub-hero__title"><?php echo esc_html( $c['hero_title'] ); ?></h1>
-			<p class="gbe-hub-hero__lead"><?php echo esc_html( $c['hero_lead'] ); ?></p>
-			<div class="gbe-hub-hero__actions">
-				<a class="gbe-hub-hero__btn gbe-hub-hero__btn--fill" href="<?php echo esc_url( $primary_url ); ?>"><?php echo esc_html( $c['hero_primary']['label'] ); ?></a>
-				<a class="gbe-hub-hero__btn gbe-hub-hero__btn--outline" href="<?php echo esc_url( $secondary_url ); ?>"><?php echo esc_html( $c['hero_secondary']['label'] ); ?></a>
-			</div>
+			<h1 class="gbe-hub-hero__title"><?php echo esc_html( $page->post_title ); ?></h1>
+			<?php if ( $lead ) : ?>
+				<p class="gbe-hub-hero__lead"><?php echo esc_html( $lead ); ?></p>
+			<?php endif; ?>
 		</div>
 	</div>
 	<?php
@@ -387,8 +355,9 @@ function gbecosmolingua_hub_render_subtopics( $section, $hub_key, $parent_slug )
 		<div class="gbe-culture-subtopics__grid">
 			<?php foreach ( $section['items'] as $item ) : ?>
 				<?php
-				$file  = isset( $section['thumb'] ) ? $section['thumb'] : 'arts-sculpture.jpg';
-				$style = gbecosmolingua_hub_image_style( $dir, $file, '--gbe-culture-section-image' );
+				$style = ! empty( $item['page_id'] )
+					? gbecosmolingua_public_featured_image_style( (int) $item['page_id'], '--gbe-culture-section-image' )
+					: '';
 				if ( ! empty( $item['child_slug'] ) ) {
 					$url = gbecosmolingua_hub_page_url( $parent_slug, $item['slug'], $item['child_slug'] );
 				} else {
@@ -396,7 +365,9 @@ function gbecosmolingua_hub_render_subtopics( $section, $hub_key, $parent_slug )
 				}
 				?>
 				<article class="gbe-culture-subtopic">
+					<?php if ( $style ) : ?>
 					<div class="gbe-culture-subtopic__media" style="<?php echo esc_attr( $style ); ?>"></div>
+					<?php endif; ?>
 					<div class="gbe-culture-subtopic__body">
 						<h4><?php echo esc_html( $item['label'] ); ?></h4>
 						<p><?php echo esc_html( sprintf( __( 'Découvrir « %s ».', 'gbecosmolingua' ), $item['label'] ) ); ?></p>
@@ -427,7 +398,9 @@ function gbecosmolingua_hub_render_body( $hub_key ) {
 	<div class="gbe-culture-rubriques gbe-hub-rubriques gbe-hub-rubriques--<?php echo esc_attr( $hub_key ); ?>">
 	<?php
 	foreach ( $sections as $index => $section ) {
-		$thumb_style = gbecosmolingua_hub_image_style( $image_dir, $section['thumb'], '--gbe-culture-section-image' );
+		$thumb_style = ! empty( $section['page_id'] )
+			? gbecosmolingua_public_featured_image_style( (int) $section['page_id'], '--gbe-culture-section-image' )
+			: '';
 		$page_url    = gbecosmolingua_hub_page_url( $parent_slug, $section['slug'] );
 		$reverse     = ( 1 === $index % 2 );
 		$is_feature  = ( isset( $section['layout'] ) && 'feature' === $section['layout'] );
@@ -437,7 +410,9 @@ function gbecosmolingua_hub_render_body( $hub_key ) {
 		<div class="<?php echo esc_attr( $band_class ); ?>" id="<?php echo esc_attr( $section['id'] ); ?>">
 			<div class="gbe-culture-band__inner">
 				<section class="<?php echo esc_attr( $classes ); ?>">
+					<?php if ( $thumb_style ) : ?>
 					<div class="gbe-culture-rubrique__media gbe-culture-rubrique__media--<?php echo esc_attr( $section['mod'] ); ?>" style="<?php echo esc_attr( $thumb_style ); ?>"></div>
+					<?php endif; ?>
 					<div class="gbe-culture-rubrique__content">
 						<h2><?php echo esc_html( $section['title'] ); ?></h2>
 						<p class="gbe-culture-rubrique__lead"><?php echo esc_html( $section['intro'] ); ?></p>
@@ -459,55 +434,31 @@ function gbecosmolingua_hub_render_body( $hub_key ) {
 	?>
 	</div>
 	<?php
-	if ( ! empty( $c['cta'] ) ) {
-		$cta = $c['cta'];
-		?>
-		<section class="gbe-hub-cta alignfull gbe-hub-cta--<?php echo esc_attr( $hub_key ); ?>">
-			<div class="gbe-hub-cta__inner">
-				<h2><?php echo esc_html( $cta['title'] ); ?></h2>
-				<p><?php echo esc_html( $cta['text'] ); ?></p>
-				<a class="gbe-culture-rubrique__btn" href="<?php echo esc_url( $cta['url'] ); ?>"><?php echo esc_html( $cta['label'] ); ?></a>
-			</div>
-		</section>
-		<?php
-	}
 }
 
 function gbecosmolingua_hub_render_philosophie() {
-	$c     = gbecosmolingua_hub_configs()['philosophie'];
-	$style = gbecosmolingua_hub_image_style( $c['image_dir'], 'hero-philosophie.jpg', '--gbe-hub-hero-image' );
+	$page = gbecosmolingua_public_hub_page( 'notre-philosophie' );
+	if ( ! $page ) {
+		return;
+	}
+
+	$style = gbecosmolingua_public_featured_image_style( $page->ID, '--gbe-hub-hero-image' );
+	$lead  = gbecosmolingua_public_page_excerpt_text( $page );
+	$content = gbecosmolingua_public_page_intro_html( $page );
 	?>
-	<div class="wp-block-group alignfull gbe-hub-hero gbe-hub-hero--philosophie" style="<?php echo esc_attr( $style ); ?>">
+	<div class="wp-block-group alignfull gbe-hub-hero gbe-hub-hero--philosophie"<?php echo $style ? ' style="' . esc_attr( $style ) . '"' : ''; ?>>
 		<div class="gbe-hub-hero__inner">
-			<h1 class="gbe-hub-hero__title"><?php esc_html_e( 'Notre philosophie', 'gbecosmolingua' ); ?></h1>
-			<p class="gbe-hub-hero__lead"><?php esc_html_e( 'Un pont entre les langues, les cultures et les peuples.', 'gbecosmolingua' ); ?></p>
+			<h1 class="gbe-hub-hero__title"><?php echo esc_html( $page->post_title ); ?></h1>
+			<?php if ( $lead ) : ?>
+				<p class="gbe-hub-hero__lead"><?php echo esc_html( $lead ); ?></p>
+			<?php endif; ?>
 		</div>
 	</div>
+	<?php if ( $content ) : ?>
 	<div class="gbe-philosophie-content alignwide">
-		<p><?php esc_html_e( 'Face aux défis de la mondialisation et aux risques d\'uniformisation culturelle, GbeCosmoLingua défend la diversité linguistique et culturelle comme une richesse fondamentale de l\'humanité.', 'gbecosmolingua' ); ?></p>
-		<p><?php esc_html_e( 'Nous croyons que les langues, les traditions orales, les savoirs endogènes et les patrimoines culturels constituent des ressources essentielles pour construire un monde fondé sur le respect, la compréhension mutuelle et le dialogue entre les peuples.', 'gbecosmolingua' ); ?></p>
-		<div class="gbe-philosophie-pillars">
-			<article class="gbe-philosophie-pillar">
-				<h2><?php esc_html_e( 'Diversité', 'gbecosmolingua' ); ?></h2>
-				<p><?php esc_html_e( 'Chaque variété gbe et chaque expression culturelle compte.', 'gbecosmolingua' ); ?></p>
-			</article>
-			<article class="gbe-philosophie-pillar">
-				<h2><?php esc_html_e( 'Transmission', 'gbecosmolingua' ); ?></h2>
-				<p><?php esc_html_e( 'De génération en génération, la mémoire vivante des peuples.', 'gbecosmolingua' ); ?></p>
-			</article>
-			<article class="gbe-philosophie-pillar">
-				<h2><?php esc_html_e( 'Dialogue', 'gbecosmolingua' ); ?></h2>
-				<p><?php esc_html_e( 'Coopération internationale et respect des savoirs locaux.', 'gbecosmolingua' ); ?></p>
-			</article>
-		</div>
-		<blockquote class="gbe-philosophie-quote">
-			<p><strong><?php esc_html_e( 'GbeCosmoLingua', 'gbecosmolingua' ); ?></strong> — <?php esc_html_e( 'Observatoire international des langues, cultures et patrimoines gbe.', 'gbecosmolingua' ); ?></p>
-		</blockquote>
-		<p class="gbe-philosophie-actions">
-			<a class="gbe-culture-rubrique__btn" href="<?php echo esc_url( home_url( '/nous-soutenir/' ) ); ?>"><?php esc_html_e( 'Soutenir le projet', 'gbecosmolingua' ); ?></a>
-			<a class="gbe-culture-rubrique__btn gbe-hub-btn-ghost" href="<?php echo esc_url( home_url( '/le-gbe/' ) ); ?>"><?php esc_html_e( 'Découvrir le continuum gbe', 'gbecosmolingua' ); ?></a>
-		</p>
+		<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 	</div>
+	<?php endif; ?>
 	<?php
 }
 
@@ -517,9 +468,15 @@ function gbecosmolingua_hub_render_pattern( $hub_key ) {
 		return;
 	}
 	?>
-	<div class="gbe-section gbe-hub-intro alignwide">
-		<p><?php echo esc_html( gbecosmolingua_hub_configs()[ $hub_key ]['intro'] ); ?></p>
-	</div>
 	<?php
+	$page = gbecosmolingua_public_hub_page( gbecosmolingua_hub_configs()[ $hub_key ]['parent_slug'] );
+	$intro = gbecosmolingua_public_page_intro_html( $page );
+	if ( $intro ) :
+		?>
+	<div class="gbe-section gbe-hub-intro alignwide">
+		<?php echo $intro; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+	</div>
+		<?php
+	endif;
 	gbecosmolingua_hub_render_body( $hub_key );
 }

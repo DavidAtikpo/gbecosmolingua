@@ -211,7 +211,7 @@ function gbecosmolingua_recherche_hub_sections() {
 
 	$parent = get_page_by_path( 'recherche-et-innovation' );
 	if ( ! $parent ) {
-		$cache = gbecosmolingua_recherche_hub_sections_fallback();
+		$cache = array();
 		return $cache;
 	}
 
@@ -224,17 +224,10 @@ function gbecosmolingua_recherche_hub_sections() {
 	);
 
 	if ( empty( $children ) ) {
-		$cache = gbecosmolingua_recherche_hub_sections_fallback();
+		$cache = array();
 		return $cache;
 	}
 
-	$fallback   = gbecosmolingua_recherche_hub_sections_fallback();
-	$fb_by_slug = array();
-	foreach ( $fallback as $row ) {
-		$fb_by_slug[ $row['slug'] ] = $row;
-	}
-
-	$thumbs  = gbecosmolingua_recherche_thumb_map();
 	$feature = gbecosmolingua_recherche_feature_slugs();
 	$by_slug = array();
 
@@ -249,27 +242,22 @@ function gbecosmolingua_recherche_hub_sections() {
 		}
 
 		$intro = gbecosmolingua_culture_extract_intro( $child->post_content );
-		if ( '' === $intro && isset( $fb_by_slug[ $slug ] ) ) {
-			$intro = $fb_by_slug[ $slug ]['intro'];
-		}
 		if ( '' === $intro ) {
 			$intro = wp_trim_words( wp_strip_all_tags( $child->post_content ), 32, '…' );
-		}
-		if ( empty( $topics ) && isset( $fb_by_slug[ $slug ]['items'] ) ) {
-			$topics = $fb_by_slug[ $slug ]['items'];
 		}
 
 		$layout = in_array( $slug, $feature, true ) ? 'feature' : 'split';
 
 		$by_slug[ $slug ] = array(
-			'id'     => 'gbe-recherche-' . sanitize_title( $slug ),
-			'title'  => $child->post_title,
-			'slug'   => $slug,
-			'thumb'  => isset( $thumbs[ $slug ] ) ? $thumbs[ $slug ] : 'arts-sculpture.jpg',
-			'mod'    => $slug,
-			'layout' => $layout,
-			'intro'  => $intro,
-			'items'  => $topics,
+			'id'      => 'gbe-recherche-' . sanitize_title( $slug ),
+			'page_id' => (int) $child->ID,
+			'title'   => $child->post_title,
+			'slug'    => $slug,
+			'thumb'   => '',
+			'mod'     => $slug,
+			'layout'  => $layout,
+			'intro'   => $intro,
+			'items'   => $topics,
 		);
 	}
 
@@ -284,7 +272,7 @@ function gbecosmolingua_recherche_hub_sections() {
 		$ordered[] = $row;
 	}
 
-	$cache = ! empty( $ordered ) ? $ordered : gbecosmolingua_recherche_hub_sections_fallback();
+	$cache = $ordered;
 	return $cache;
 }
 
@@ -330,12 +318,7 @@ function gbecosmolingua_recherche_featured_highlight() {
 		return $data;
 	}
 
-	return array(
-		'title'   => __( 'Colloques et séminaires gbe', 'gbecosmolingua' ),
-		'meta'    => __( 'Agenda scientifique', 'gbecosmolingua' ),
-		'excerpt' => __( 'Retrouvez conférences, colloques et publications du réseau GbeCosmoLingua.', 'gbecosmolingua' ),
-		'url'     => gbecosmolingua_recherche_page_url( 'activites' ),
-	);
+	return null;
 }
 
 /**

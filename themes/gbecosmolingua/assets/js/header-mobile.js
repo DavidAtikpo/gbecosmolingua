@@ -7,6 +7,20 @@
 		return mobileQuery.matches;
 	}
 
+	function setItemOpen(item, open) {
+		item.classList.toggle('is-open', open);
+		var toggle = item.querySelector(':scope > .gbe-main-menu__toggle');
+		if (toggle) {
+			toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+		}
+	}
+
+	function closeAllPanels() {
+		document.querySelectorAll('.gbe-main-menu__item.is-open').forEach(function (item) {
+			setItemOpen(item, false);
+		});
+	}
+
 	function closeSiblingPanels(item) {
 		var list = item.parentElement;
 		if (!list) {
@@ -14,40 +28,52 @@
 		}
 		list.querySelectorAll('.gbe-main-menu__item.is-open').forEach(function (sibling) {
 			if (sibling !== item) {
-				sibling.classList.remove('is-open');
+				setItemOpen(sibling, false);
 			}
 		});
 	}
 
 	function initMobileMenu() {
+		var menu = document.querySelector('.gbe-main-menu');
+		if (!menu) {
+			return;
+		}
+
 		document.querySelectorAll('.gbe-main-menu__item.has-children').forEach(function (item) {
-			var link = item.querySelector(':scope > .gbe-main-menu__link');
+			var toggle = item.querySelector(':scope > .gbe-main-menu__toggle');
 			var panel = item.querySelector(':scope > .gbe-main-menu__panel');
-			if (!link || !panel) {
+			if (!toggle || !panel) {
 				return;
 			}
 
-			link.addEventListener('click', function (event) {
+			toggle.addEventListener('click', function (event) {
 				if (!isMobileMenu()) {
 					return;
 				}
 				event.preventDefault();
+				event.stopPropagation();
 				var open = item.classList.contains('is-open');
 				closeSiblingPanels(item);
-				item.classList.toggle('is-open', !open);
-				if (!open && typeof item.scrollIntoView === 'function') {
-					window.setTimeout(function () {
-						item.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
-					}, 50);
-				}
+				setItemOpen(item, !open);
 			});
+
+			panel.addEventListener('click', function (event) {
+				event.stopPropagation();
+			});
+		});
+
+		document.addEventListener('click', function (event) {
+			if (!isMobileMenu()) {
+				return;
+			}
+			if (!menu.contains(event.target)) {
+				closeAllPanels();
+			}
 		});
 
 		mobileQuery.addEventListener('change', function () {
 			if (!isMobileMenu()) {
-				document.querySelectorAll('.gbe-main-menu__item.is-open').forEach(function (item) {
-					item.classList.remove('is-open');
-				});
+				closeAllPanels();
 			}
 		});
 	}

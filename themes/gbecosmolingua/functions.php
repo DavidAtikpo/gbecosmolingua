@@ -7,8 +7,12 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'GBECOSMOLINGUA_VERSION', '1.11.0' );
+define( 'GBECOSMOLINGUA_VERSION', '1.12.38' );
 
+require_once get_stylesheet_directory() . '/includes/hub-page-public.php';
+require_once get_stylesheet_directory() . '/includes/hub-composer-public.php';
+require_once get_stylesheet_directory() . '/includes/home-composer-public.php';
+require_once get_stylesheet_directory() . '/includes/le-gbe-public.php';
 require_once get_stylesheet_directory() . '/includes/xotutu-hub.php';
 require_once get_stylesheet_directory() . '/includes/paremiologie-hub.php';
 require_once get_stylesheet_directory() . '/includes/recherche-innovation-hub.php';
@@ -99,6 +103,14 @@ function gbecosmolingua_enqueue_header_offset_script() {
 	wp_enqueue_script(
 		'gbecosmolingua-header-mobile',
 		get_stylesheet_directory_uri() . '/assets/js/header-mobile.js',
+		array(),
+		GBECOSMOLINGUA_VERSION,
+		true
+	);
+
+	wp_enqueue_script(
+		'gbecosmolingua-header-scroll-nav',
+		get_stylesheet_directory_uri() . '/assets/js/header-scroll-nav.js',
 		array(),
 		GBECOSMOLINGUA_VERSION,
 		true
@@ -622,7 +634,7 @@ function gbecosmolingua_culture_hub_sections() {
 
 	$parent = get_page_by_path( 'cultures-gbe' );
 	if ( ! $parent ) {
-		$cache = gbecosmolingua_culture_hub_sections_fallback();
+		$cache = array();
 		return $cache;
 	}
 
@@ -635,15 +647,8 @@ function gbecosmolingua_culture_hub_sections() {
 	);
 
 	if ( empty( $children ) ) {
-		$cache = gbecosmolingua_culture_hub_sections_fallback();
+		$cache = array();
 		return $cache;
-	}
-
-	$thumbs   = gbecosmolingua_culture_hub_thumb_map();
-	$fallback = gbecosmolingua_culture_hub_sections_fallback();
-	$fallback_by_slug = array();
-	foreach ( $fallback as $row ) {
-		$fallback_by_slug[ $row['slug'] ] = $row;
 	}
 
 	$by_slug = array();
@@ -651,14 +656,8 @@ function gbecosmolingua_culture_hub_sections() {
 		$slug   = $child->post_name;
 		$topics = gbecosmolingua_culture_topics_from_children( (int) $child->ID, $slug );
 		$intro  = gbecosmolingua_culture_extract_intro( $child->post_content );
-		if ( '' === $intro && isset( $fallback_by_slug[ $slug ] ) ) {
-			$intro = $fallback_by_slug[ $slug ]['intro'];
-		}
 		if ( '' === $intro ) {
 			$intro = wp_trim_words( wp_strip_all_tags( $child->post_content ), 32, '…' );
-		}
-		if ( empty( $topics ) && isset( $fallback_by_slug[ $slug ] ) ) {
-			$topics = $fallback_by_slug[ $slug ]['items'];
 		}
 
 		$mod = $slug;
@@ -671,14 +670,15 @@ function gbecosmolingua_culture_hub_sections() {
 		}
 
 		$by_slug[ $slug ] = array(
-			'id'     => 'gbe-culture-' . sanitize_title( $slug ),
-			'title'  => $child->post_title,
-			'slug'   => $slug,
-			'thumb'  => isset( $thumbs[ $slug ] ) ? $thumbs[ $slug ] : 'arts-sculpture.jpg',
-			'mod'    => $mod,
-			'layout' => 'danse' === $slug ? 'banner' : 'split',
-			'intro'  => $intro,
-			'items'  => $topics,
+			'id'      => 'gbe-culture-' . sanitize_title( $slug ),
+			'page_id' => (int) $child->ID,
+			'title'   => $child->post_title,
+			'slug'    => $slug,
+			'thumb'   => '',
+			'mod'     => $mod,
+			'layout'  => 'danse' === $slug ? 'banner' : 'split',
+			'intro'   => $intro,
+			'items'   => $topics,
 		);
 	}
 
@@ -693,7 +693,7 @@ function gbecosmolingua_culture_hub_sections() {
 		$ordered[] = $row;
 	}
 
-	$cache = ! empty( $ordered ) ? $ordered : gbecosmolingua_culture_hub_sections_fallback();
+	$cache = $ordered;
 	return $cache;
 }
 
@@ -790,482 +790,6 @@ function gbecosmolingua_culture_render_subtopics( $section ) {
 					<div class="gbe-culture-subtopic__body">
 						<h4><?php echo esc_html( $item['label'] ); ?></h4>
 						<p><?php echo esc_html( gbecosmolingua_culture_subtopic_blurb( $item['label'] ) ); ?></p>
-						<a class="gbe-culture-rubrique__btn gbe-culture-rubrique__btn--sm" href="<?php echo esc_url( $url ); ?>">
-							<?php esc_html_e( 'Découvrir', 'gbecosmolingua' ); ?>
-						</a>
-					</div>
-				</article>
-			<?php endforeach; ?>
-		</div>
-	</div>
-	<?php
-}
-
-/**
- * URL d'une image du hub Le Gbe (dossier le-gbe, repli culture-gbe).
- *
- * @param string $filename Nom de fichier.
- */
-function gbecosmolingua_le_gbe_image( $filename ) {
-	$filename = ltrim( (string) $filename, '/' );
-	$path     = get_stylesheet_directory() . '/assets/images/le-gbe/' . $filename;
-	if ( file_exists( $path ) ) {
-		return get_stylesheet_directory_uri() . '/assets/images/le-gbe/' . $filename;
-	}
-	return gbecosmolingua_culture_image( $filename );
-}
-
-/**
- * Variable CSS inline pour une image Le Gbe.
- *
- * @param string $filename Nom de fichier.
- * @param string $var_name Nom de la variable CSS.
- */
-function gbecosmolingua_le_gbe_image_style( $filename, $var_name ) {
-	$url = gbecosmolingua_le_gbe_image( $filename );
-	if ( ! $url ) {
-		return '';
-	}
-	return $var_name . ':url(' . esc_url( $url ) . ');';
-}
-
-/**
- * URL d'une sous-page Le Gbe.
- *
- * @param string $slug       Slug rubrique (ex. les-langues).
- * @param string $child_slug Slug enfant (ex. ewe).
- */
-function gbecosmolingua_le_gbe_page_url( $slug = '', $child_slug = '' ) {
-	$path = 'le-gbe';
-	if ( $slug ) {
-		$path .= '/' . ltrim( (string) $slug, '/' );
-	}
-	if ( $child_slug ) {
-		$path .= '/' . ltrim( (string) $child_slug, '/' );
-	}
-	return home_url( trailingslashit( $path ) );
-}
-
-/**
- * URL d'un sous-thème Le Gbe (carte hub).
- *
- * @param array{label: string, slug: string, child_slug?: string} $item Item hub.
- */
-function gbecosmolingua_le_gbe_topic_url( $item ) {
-	if ( ! empty( $item['child_slug'] ) ) {
-		return gbecosmolingua_le_gbe_page_url( $item['slug'], $item['child_slug'] );
-	}
-	return gbecosmolingua_le_gbe_page_url( $item['slug'] );
-}
-
-/**
- * Item sous-thème Le Gbe.
- *
- * @param string $label       Titre.
- * @param string $parent_slug Slug rubrique parente.
- * @param string $child_slug  Slug page enfant.
- * @return array{label: string, slug: string, child_slug: string}
- */
-function gbecosmolingua_le_gbe_hub_item( $label, $parent_slug, $child_slug = '' ) {
-	if ( ! $child_slug ) {
-		$child_slug = sanitize_title( $label );
-	}
-	return array(
-		'label'      => $label,
-		'slug'       => $parent_slug,
-		'child_slug' => $child_slug,
-	);
-}
-
-/**
- * Sous-thèmes depuis les pages enfants WordPress (Le Gbe).
- *
- * @param int    $parent_page_id ID rubrique.
- * @param string $parent_slug    Slug rubrique.
- * @return array<int, array{label: string, slug: string, child_slug: string}>
- */
-function gbecosmolingua_le_gbe_topics_from_children( $parent_page_id, $parent_slug ) {
-	$topics   = array();
-	$children = get_pages(
-		array(
-			'parent'      => $parent_page_id,
-			'sort_column' => 'menu_order,post_title',
-			'post_status' => 'publish',
-		)
-	);
-	foreach ( $children as $child ) {
-		$topics[] = array(
-			'label'      => $child->post_title,
-			'slug'       => $parent_slug,
-			'child_slug' => $child->post_name,
-		);
-	}
-	return $topics;
-}
-
-/**
- * Images par défaut pour les rubriques Le Gbe.
- *
- * @return array<string, string>
- */
-function gbecosmolingua_le_gbe_hub_thumb_map() {
-	return array(
-		'bibliotheque-linguistique' => 'arts-sculpture.jpg',
-		'carte-interactive'         => 'architecture.jpg',
-		'corpus-numeriques'         => 'musique.jpg',
-		'histoire-et-migrations'    => 'fetes.jpg',
-		'le-continuum-gbe'          => 'architecture.jpg',
-		'les-langues'               => 'arts-artisanat.jpg',
-		'linguistique'              => 'gastronomie.jpg',
-		'presentation-generale'     => 'architecture.jpg',
-		'peuples-du-continuum'      => 'danse.jpg',
-	);
-}
-
-/**
- * Ordre d'affichage des rubriques sur le hub Le Gbe (aligné menu).
- *
- * @return string[]
- */
-function gbecosmolingua_le_gbe_hub_order() {
-	return array(
-		'bibliotheque-linguistique',
-		'carte-interactive',
-		'corpus-numeriques',
-		'histoire-et-migrations',
-		'le-continuum-gbe',
-		'les-langues',
-		'linguistique',
-	);
-}
-
-/**
- * Rubriques « Voir plus » sur le hub Le Gbe.
- *
- * @return string[]
- */
-function gbecosmolingua_le_gbe_hub_more_slugs() {
-	return array(
-		'presentation-generale',
-		'peuples-du-continuum',
-	);
-}
-
-/**
- * Rubriques sans grille de sous-thèmes (carte unique).
- *
- * @return string[]
- */
-function gbecosmolingua_le_gbe_hub_feature_slugs() {
-	return array(
-		'bibliotheque-linguistique',
-		'carte-interactive',
-		'corpus-numeriques',
-	);
-}
-
-/**
- * Données de repli pour le hub Le Gbe.
- *
- * @return array<int, array<string, mixed>>
- */
-function gbecosmolingua_le_gbe_hub_sections_fallback() {
-	$thumbs = gbecosmolingua_le_gbe_hub_thumb_map();
-	$map    = function ( $id, $title, $slug, $intro, $items, $layout = 'split' ) use ( $thumbs ) {
-		return array(
-			'id'     => $id,
-			'title'  => $title,
-			'slug'   => $slug,
-			'thumb'  => isset( $thumbs[ $slug ] ) ? $thumbs[ $slug ] : 'arts-sculpture.jpg',
-			'mod'    => $slug,
-			'layout' => $layout,
-			'intro'  => $intro,
-			'items'  => $items,
-		);
-	};
-	$item   = function ( $label, $slug, $child_slug = '' ) {
-		return gbecosmolingua_le_gbe_hub_item( $label, $slug, $child_slug ?: sanitize_title( $label ) );
-	};
-
-	return array(
-		$map(
-			'gbe-le-gbe-bibliotheque',
-			'Bibliothèque',
-			'bibliotheque-linguistique',
-			'Bibliothèque numérique des langues et patrimoines gbe.',
-			array(),
-			'feature'
-		),
-		$map(
-			'gbe-le-gbe-carte',
-			'Carte interactive',
-			'carte-interactive',
-			'Répartition géographique des langues, zones culturelles et routes migratoires.',
-			array(),
-			'feature'
-		),
-		$map(
-			'gbe-le-gbe-corpus',
-			'Corpus numériques',
-			'corpus-numeriques',
-			'Proverbes, archives orales et ressources documentaires de GbeCosmoLingua.',
-			array(),
-			'feature'
-		),
-		$map(
-			'gbe-le-gbe-histoire',
-			'Histoire et migrations',
-			'histoire-et-migrations',
-			'Récits fondateurs, royaumes et circulations des peuples gbe.',
-			array(
-				$item( 'Les récits fondateurs', 'histoire-et-migrations', 'les-recits-fondateurs' ),
-				$item( 'Royaumes et formations politiques', 'histoire-et-migrations', 'royaumes-et-formations-politiques' ),
-				$item( 'Migrations et échanges', 'histoire-et-migrations', 'migrations-et-echanges' ),
-			)
-		),
-		$map(
-			'gbe-le-gbe-continuum',
-			'Le continuum gbe',
-			'le-continuum-gbe',
-			'Variétés principales et aires géographiques du continuum.',
-			array(
-				$item( 'Variétés principales', 'le-continuum-gbe', 'varietes-principales' ),
-				$item( 'Pays et territoires', 'le-continuum-gbe', 'pays-et-territoires' ),
-			)
-		),
-		$map(
-			'gbe-le-gbe-langues',
-			'Les langues',
-			'les-langues',
-			'Documentation des variétés principales du continuum gbe.',
-			array(
-				$item( 'Éwé', 'les-langues', 'ewe' ),
-				$item( 'Gen (Mina)', 'les-langues', 'gen-mina' ),
-				$item( 'Fon', 'les-langues', 'fon' ),
-				$item( 'Aja', 'les-langues', 'aja' ),
-				$item( 'Gun', 'les-langues', 'gun' ),
-				$item( 'Phla-Phera', 'les-langues', 'phla-phera' ),
-				$item( 'Autres variétés', 'les-langues', 'autres-varietes' ),
-			)
-		),
-		$map(
-			'gbe-le-gbe-linguistique',
-			'Linguistique',
-			'linguistique',
-			'Ressources pour l\'étude scientifique des variétés gbe.',
-			array(
-				$item( 'Alphabet', 'linguistique', 'alphabet' ),
-				$item( 'Phonologie', 'linguistique', 'phonologie' ),
-				$item( 'Morphologie', 'linguistique', 'morphologie' ),
-				$item( 'Syntaxe', 'linguistique', 'syntaxe' ),
-				$item( 'Lexicologie', 'linguistique', 'lexicologie' ),
-				$item( 'Dialectologie', 'linguistique', 'dialectologie' ),
-			)
-		),
-	);
-}
-
-/**
- * Rubriques du hub Le Gbe.
- *
- * @return array<int, array<string, mixed>>
- */
-function gbecosmolingua_le_gbe_hub_sections() {
-	static $cache = null;
-	if ( null !== $cache ) {
-		return $cache;
-	}
-
-	$parent = get_page_by_path( 'le-gbe' );
-	if ( ! $parent ) {
-		$cache = gbecosmolingua_le_gbe_hub_sections_fallback();
-		return $cache;
-	}
-
-	$children = get_pages(
-		array(
-			'parent'      => $parent->ID,
-			'sort_column' => 'menu_order,post_title',
-			'post_status' => 'publish',
-		)
-	);
-
-	if ( empty( $children ) ) {
-		$cache = gbecosmolingua_le_gbe_hub_sections_fallback();
-		return $cache;
-	}
-
-	$thumbs           = gbecosmolingua_le_gbe_hub_thumb_map();
-	$fallback         = gbecosmolingua_le_gbe_hub_sections_fallback();
-	$fallback_by_slug = array();
-	foreach ( $fallback as $row ) {
-		$fallback_by_slug[ $row['slug'] ] = $row;
-	}
-
-	$feature_slugs = gbecosmolingua_le_gbe_hub_feature_slugs();
-	$more_slugs    = gbecosmolingua_le_gbe_hub_more_slugs();
-	$by_slug       = array();
-
-	foreach ( $children as $child ) {
-		$slug = $child->post_name;
-		if ( in_array( $slug, $more_slugs, true ) ) {
-			continue;
-		}
-
-		$topics = gbecosmolingua_le_gbe_topics_from_children( (int) $child->ID, $slug );
-		$intro  = gbecosmolingua_culture_extract_intro( $child->post_content );
-		if ( '' === $intro && isset( $fallback_by_slug[ $slug ] ) ) {
-			$intro = $fallback_by_slug[ $slug ]['intro'];
-		}
-		if ( '' === $intro ) {
-			$intro = wp_trim_words( wp_strip_all_tags( $child->post_content ), 32, '…' );
-		}
-		if ( empty( $topics ) && isset( $fallback_by_slug[ $slug ] ) ) {
-			$topics = $fallback_by_slug[ $slug ]['items'];
-		}
-
-		$layout = in_array( $slug, $feature_slugs, true ) ? 'feature' : 'split';
-		if ( isset( $fallback_by_slug[ $slug ]['layout'] ) && 'feature' === $fallback_by_slug[ $slug ]['layout'] ) {
-			$layout = 'feature';
-		}
-
-		$by_slug[ $slug ] = array(
-			'id'     => 'gbe-le-gbe-' . sanitize_title( $slug ),
-			'title'  => $child->post_title,
-			'slug'   => $slug,
-			'thumb'  => isset( $thumbs[ $slug ] ) ? $thumbs[ $slug ] : 'arts-sculpture.jpg',
-			'mod'    => $slug,
-			'layout' => $layout,
-			'intro'  => $intro,
-			'items'  => $topics,
-		);
-	}
-
-	$ordered = array();
-	foreach ( gbecosmolingua_le_gbe_hub_order() as $slug ) {
-		if ( isset( $by_slug[ $slug ] ) ) {
-			$ordered[] = $by_slug[ $slug ];
-			unset( $by_slug[ $slug ] );
-		}
-	}
-	foreach ( $by_slug as $row ) {
-		$ordered[] = $row;
-	}
-
-	$cache = ! empty( $ordered ) ? $ordered : gbecosmolingua_le_gbe_hub_sections_fallback();
-	return $cache;
-}
-
-/**
- * Rubriques « Voir plus » (Le Gbe).
- *
- * @return array<int, array<string, mixed>>
- */
-function gbecosmolingua_le_gbe_hub_more_sections() {
-	$parent = get_page_by_path( 'le-gbe' );
-	if ( ! $parent ) {
-		return array();
-	}
-
-	$thumbs = gbecosmolingua_le_gbe_hub_thumb_map();
-	$rows   = array();
-	foreach ( gbecosmolingua_le_gbe_hub_more_slugs() as $slug ) {
-		$page = get_page_by_path( 'le-gbe/' . $slug, OBJECT, 'page' );
-		if ( ! $page ) {
-			continue;
-		}
-		$intro = gbecosmolingua_culture_extract_intro( $page->post_content );
-		if ( '' === $intro ) {
-			$intro = wp_trim_words( wp_strip_all_tags( $page->post_content ), 28, '…' );
-		}
-		$rows[] = array(
-			'id'     => 'gbe-le-gbe-more-' . sanitize_title( $slug ),
-			'title'  => $page->post_title,
-			'slug'   => $slug,
-			'thumb'  => isset( $thumbs[ $slug ] ) ? $thumbs[ $slug ] : 'arts-sculpture.jpg',
-			'intro'  => $intro,
-			'url'    => gbecosmolingua_le_gbe_page_url( $slug ),
-		);
-	}
-	return $rows;
-}
-
-/**
- * Image suggérée pour un sous-thème Le Gbe.
- *
- * @param string $label       Libellé.
- * @param string $parent_slug Slug rubrique.
- */
-function gbecosmolingua_le_gbe_subtopic_thumb( $label, $parent_slug ) {
-	$by_label = array(
-		'Éwé'                               => 'arts-artisanat.jpg',
-		'Gen (Mina)'                        => 'arts-artisanat.jpg',
-		'Fon'                               => 'arts-sculpture.jpg',
-		'Aja'                               => 'danse.jpg',
-		'Gun'                               => 'musique.jpg',
-		'Phla-Phera'                        => 'fetes.jpg',
-		'Autres variétés'                   => 'architecture.jpg',
-		'Les récits fondateurs'             => 'fetes.jpg',
-		'Royaumes et formations politiques' => 'architecture.jpg',
-		'Migrations et échanges'            => 'danse.jpg',
-		'Variétés principales'              => 'arts-artisanat.jpg',
-		'Pays et territoires'               => 'architecture.jpg',
-		'Alphabet'                          => 'arts-sculpture.jpg',
-		'Phonologie'                        => 'musique.jpg',
-		'Morphologie'                       => 'gastronomie.jpg',
-		'Syntaxe'                           => 'architecture.jpg',
-		'Lexicologie'                       => 'arts-artisanat.jpg',
-		'Dialectologie'                     => 'danse.jpg',
-	);
-
-	if ( isset( $by_label[ $label ] ) ) {
-		return $by_label[ $label ];
-	}
-
-	$parent_thumbs = gbecosmolingua_le_gbe_hub_thumb_map();
-	return isset( $parent_thumbs[ $parent_slug ] ) ? $parent_thumbs[ $parent_slug ] : 'arts-sculpture.jpg';
-}
-
-/**
- * Phrase d'accroche sous-thème Le Gbe.
- *
- * @param string $label Libellé.
- */
-function gbecosmolingua_le_gbe_subtopic_blurb( $label ) {
-	return sprintf(
-		/* translators: %s: sub-topic name */
-		__( 'Approfondir « %s » dans le continuum linguistique gbe.', 'gbecosmolingua' ),
-		$label
-	);
-}
-
-/**
- * Grille de sous-thèmes Le Gbe.
- *
- * @param array<string, mixed> $section Section hub.
- */
-function gbecosmolingua_le_gbe_render_subtopics( $section ) {
-	if ( empty( $section['items'] ) ) {
-		return;
-	}
-	?>
-	<div class="gbe-culture-subtopics" aria-labelledby="<?php echo esc_attr( $section['id'] . '-subtopics' ); ?>">
-		<h3 class="gbe-culture-subtopics__heading" id="<?php echo esc_attr( $section['id'] . '-subtopics' ); ?>">
-			<?php echo esc_html( $section['title'] ); ?>
-		</h3>
-		<div class="gbe-culture-subtopics__grid">
-			<?php foreach ( $section['items'] as $item ) : ?>
-				<?php
-				$file   = gbecosmolingua_le_gbe_subtopic_thumb( $item['label'], $section['slug'] );
-				$style  = gbecosmolingua_le_gbe_image_style( $file, '--gbe-culture-section-image' );
-				$url    = gbecosmolingua_le_gbe_topic_url( $item );
-				$anchor = sanitize_title( $item['label'] );
-				?>
-				<article class="gbe-culture-subtopic" id="<?php echo esc_attr( $section['id'] . '-' . $anchor ); ?>">
-					<div class="gbe-culture-subtopic__media" style="<?php echo esc_attr( $style ); ?>"></div>
-					<div class="gbe-culture-subtopic__body">
-						<h4><?php echo esc_html( $item['label'] ); ?></h4>
-						<p><?php echo esc_html( gbecosmolingua_le_gbe_subtopic_blurb( $item['label'] ) ); ?></p>
 						<a class="gbe-culture-rubrique__btn gbe-culture-rubrique__btn--sm" href="<?php echo esc_url( $url ); ?>">
 							<?php esc_html_e( 'Découvrir', 'gbecosmolingua' ); ?>
 						</a>
@@ -1449,3 +973,83 @@ function gbecosmolingua_admin_footer_text() {
 	return __( 'GbeCosmoLingua — Observatoire des langues, cultures et patrimoines gbe', 'gbecosmolingua' );
 }
 add_filter( 'admin_footer_text', 'gbecosmolingua_admin_footer_text' );
+
+/**
+ * Scripts/styles page Le Gbe (hero carousel + animations cartes).
+ */
+function gbecosmolingua_enqueue_le_gbe_public_assets() {
+	if ( ! is_page() ) {
+		return;
+	}
+
+	global $post;
+	if ( ! $post instanceof WP_Post || ! class_exists( 'GBE_Le_Gbe_Hub_Admin' ) ) {
+		return;
+	}
+	if ( ! in_array( $post->post_name, GBE_Le_Gbe_Hub_Admin::main_menu_slugs(), true ) ) {
+		return;
+	}
+
+	$motion = get_stylesheet_directory() . '/assets/css/le-gbe-motion.css';
+	if ( file_exists( $motion ) ) {
+		wp_enqueue_style(
+			'gbecosmolingua-le-gbe-motion',
+			get_stylesheet_directory_uri() . '/assets/css/le-gbe-motion.css',
+			array( 'gbecosmolingua-custom' ),
+			GBECOSMOLINGUA_VERSION
+		);
+	}
+
+	$hub_css = get_stylesheet_directory() . '/assets/css/hub-composer.css';
+	if ( file_exists( $hub_css ) ) {
+		wp_enqueue_style(
+			'gbecosmolingua-hub-composer',
+			get_stylesheet_directory_uri() . '/assets/css/hub-composer.css',
+			array( 'gbecosmolingua-custom' ),
+			GBECOSMOLINGUA_VERSION
+		);
+	}
+
+	$hero_js = get_stylesheet_directory() . '/assets/js/le-gbe-hero.js';
+	if ( file_exists( $hero_js ) ) {
+		wp_enqueue_script(
+			'gbecosmolingua-le-gbe-hero',
+			get_stylesheet_directory_uri() . '/assets/js/le-gbe-hero.js',
+			array(),
+			GBECOSMOLINGUA_VERSION,
+			true
+		);
+	}
+
+	$cards_js = get_stylesheet_directory() . '/assets/js/le-gbe-cards-motion.js';
+	if ( file_exists( $cards_js ) ) {
+		wp_enqueue_script(
+			'gbecosmolingua-le-gbe-cards-motion',
+			get_stylesheet_directory_uri() . '/assets/js/le-gbe-cards-motion.js',
+			array(),
+			GBECOSMOLINGUA_VERSION,
+			true
+		);
+	}
+}
+add_action( 'wp_enqueue_scripts', 'gbecosmolingua_enqueue_le_gbe_public_assets' );
+
+/**
+ * Classe body sur les pages hub (espacement header / hero).
+ *
+ * @param string[] $classes Classes body.
+ * @return string[]
+ */
+function gbecosmolingua_hub_body_class( $classes ) {
+	if ( ! is_page() || ! class_exists( 'GBE_Le_Gbe_Hub_Admin' ) ) {
+		return $classes;
+	}
+
+	global $post;
+	if ( $post instanceof WP_Post && in_array( $post->post_name, GBE_Le_Gbe_Hub_Admin::main_menu_slugs(), true ) ) {
+		$classes[] = 'gbe-hub-page';
+	}
+
+	return $classes;
+}
+add_filter( 'body_class', 'gbecosmolingua_hub_body_class' );

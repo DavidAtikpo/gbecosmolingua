@@ -7,11 +7,14 @@
  *
  * @package GbeCosmoLingua
  */
+
+ob_start();
+gbecosmolingua_le_gbe_render_public_intro();
+$html = ob_get_clean();
+if ( '' === trim( $html ) ) {
+	return;
+}
 ?>
-<!-- wp:group {"align":"wide","className":"gbe-section gbe-le-gbe-intro","layout":{"type":"constrained"}} -->
-<div class="wp-block-group alignwide gbe-section gbe-le-gbe-intro">
-	<!-- wp:paragraph -->
-	<p>Le continuum gbe constitue un vaste ensemble linguistique parlé principalement au <strong>Togo</strong>, au <strong>Bénin</strong>, au <strong>Ghana</strong> et au <strong>Nigeria</strong>. Les variétés gbe partagent une forte intercompréhension et un héritage culturel commun — explorez ci-dessous les ressources, l'histoire et la diversité linguistique.</p>
-	<!-- /wp:paragraph -->
-</div>
-<!-- /wp:group -->
+<!-- wp:html -->
+<?php echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+<!-- /wp:html -->
