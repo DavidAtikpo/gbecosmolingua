@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'GBECOSMOLINGUA_VERSION', '1.12.38' );
+define( 'GBECOSMOLINGUA_VERSION', '1.12.39' );
 
 require_once get_stylesheet_directory() . '/includes/hub-page-public.php';
 require_once get_stylesheet_directory() . '/includes/hub-composer-public.php';
@@ -77,6 +77,16 @@ function gbecosmolingua_enqueue_styles() {
 		array( 'gbecosmolingua-custom', 'gbecosmolingua-culture-gbe' ),
 		GBECOSMOLINGUA_VERSION
 	);
+
+	$hub_css = get_stylesheet_directory() . '/assets/css/hub-composer.css';
+	if ( file_exists( $hub_css ) ) {
+		wp_enqueue_style(
+			'gbecosmolingua-hub-composer',
+			get_stylesheet_directory_uri() . '/assets/css/hub-composer.css',
+			array( 'gbecosmolingua-custom' ),
+			GBECOSMOLINGUA_VERSION
+		);
+	}
 }
 add_action( 'wp_enqueue_scripts', 'gbecosmolingua_enqueue_styles' );
 
@@ -978,15 +988,7 @@ add_filter( 'admin_footer_text', 'gbecosmolingua_admin_footer_text' );
  * Scripts/styles page Le Gbe (hero carousel + animations cartes).
  */
 function gbecosmolingua_enqueue_le_gbe_public_assets() {
-	if ( ! is_page() ) {
-		return;
-	}
-
-	global $post;
-	if ( ! $post instanceof WP_Post || ! class_exists( 'GBE_Le_Gbe_Hub_Admin' ) ) {
-		return;
-	}
-	if ( ! in_array( $post->post_name, GBE_Le_Gbe_Hub_Admin::main_menu_slugs(), true ) ) {
+	if ( ! gbecosmolingua_is_main_menu_hub_page() ) {
 		return;
 	}
 
@@ -995,16 +997,6 @@ function gbecosmolingua_enqueue_le_gbe_public_assets() {
 		wp_enqueue_style(
 			'gbecosmolingua-le-gbe-motion',
 			get_stylesheet_directory_uri() . '/assets/css/le-gbe-motion.css',
-			array( 'gbecosmolingua-custom' ),
-			GBECOSMOLINGUA_VERSION
-		);
-	}
-
-	$hub_css = get_stylesheet_directory() . '/assets/css/hub-composer.css';
-	if ( file_exists( $hub_css ) ) {
-		wp_enqueue_style(
-			'gbecosmolingua-hub-composer',
-			get_stylesheet_directory_uri() . '/assets/css/hub-composer.css',
 			array( 'gbecosmolingua-custom' ),
 			GBECOSMOLINGUA_VERSION
 		);
@@ -1041,12 +1033,7 @@ add_action( 'wp_enqueue_scripts', 'gbecosmolingua_enqueue_le_gbe_public_assets' 
  * @return string[]
  */
 function gbecosmolingua_hub_body_class( $classes ) {
-	if ( ! is_page() || ! class_exists( 'GBE_Le_Gbe_Hub_Admin' ) ) {
-		return $classes;
-	}
-
-	global $post;
-	if ( $post instanceof WP_Post && in_array( $post->post_name, GBE_Le_Gbe_Hub_Admin::main_menu_slugs(), true ) ) {
+	if ( gbecosmolingua_is_main_menu_hub_page() ) {
 		$classes[] = 'gbe-hub-page';
 	}
 

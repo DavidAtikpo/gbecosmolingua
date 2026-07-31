@@ -17,6 +17,7 @@ define( 'GBE_CORE_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GBE_CORE_URL', plugin_dir_url( __FILE__ ) );
 
 require_once GBE_CORE_PATH . 'includes/class-dynamic-dev-url.php';
+require_once GBE_CORE_PATH . 'includes/class-upload-limits.php';
 require_once GBE_CORE_PATH . 'includes/class-cpt.php';
 require_once GBE_CORE_PATH . 'includes/class-meta-boxes.php';
 require_once GBE_CORE_PATH . 'includes/class-page-importer.php';

@@ -480,3 +480,48 @@ function gbecosmolingua_hub_render_pattern( $hub_key ) {
 	endif;
 	gbecosmolingua_hub_render_body( $hub_key );
 }
+
+/**
+ * Slugs des 9 rubriques du menu principal (fallback si le plugin n'est pas chargé).
+ *
+ * @return string[]
+ */
+function gbecosmolingua_main_menu_slugs() {
+	if ( class_exists( 'GBE_Le_Gbe_Hub_Admin' ) ) {
+		return GBE_Le_Gbe_Hub_Admin::main_menu_slugs();
+	}
+
+	return array(
+		'le-gbe',
+		'cultures-gbe',
+		'xotutu',
+		'paremiologie',
+		'recherche-et-innovation',
+		'sejours-et-mobilite',
+		'partenaires',
+		'nous-soutenir',
+		'notre-philosophie',
+	);
+}
+
+/**
+ * Page hub du menu principal ?
+ *
+ * @param WP_Post|null $post Page courante.
+ * @return bool
+ */
+function gbecosmolingua_is_main_menu_hub_page( $post = null ) {
+	if ( ! is_page() ) {
+		return false;
+	}
+
+	if ( ! $post instanceof WP_Post ) {
+		global $post;
+	}
+
+	if ( ! $post instanceof WP_Post ) {
+		return false;
+	}
+
+	return in_array( $post->post_name, gbecosmolingua_main_menu_slugs(), true );
+}

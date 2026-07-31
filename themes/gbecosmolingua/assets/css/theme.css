@@ -307,6 +307,31 @@ body {
 	padding-top: var(--gbe-header-height);
 }
 
+/* Espacement header / hero — toutes les pages hub (chargé via theme.css pour tous les devs) */
+main[class*="gbe-main--"] {
+	padding-top: 0 !important;
+	margin-top: 0 !important;
+}
+
+main[class*="gbe-main--"].is-layout-flow > * {
+	margin-block-start: 0 !important;
+}
+
+main[class*="gbe-main--"] > .wp-block-html {
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+main[class*="gbe-main--"] .gbe-le-gbe-hero,
+main[class*="gbe-main--"] .gbe-hub-hero,
+main[class*="gbe-main--"] .gbe-culture-hero,
+main[class*="gbe-main--"] .gbe-home-hero,
+main[class*="gbe-main--"] .gbe-paremiologie-hero,
+main[class*="gbe-main--"] .gbe-recherche-hero,
+main[class*="gbe-main--"] .gbe-xotutu-hero {
+	margin-top: 0 !important;
+}
+
 body.admin-bar .gbe-site-header {
 	top: 32px;
 }
