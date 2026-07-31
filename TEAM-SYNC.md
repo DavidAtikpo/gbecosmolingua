@@ -5,17 +5,17 @@
 | Dans Git (partagé) | Hors Git (local à chaque PC) |
 |--------------------|------------------------------|
 | Thème `gbecosmolingua` | **Pages WordPress** |
-| Plugin `gbecosmolingua-core` | Articles, proverbes, partenaires |
-| `docker-compose.yml` | **Base MySQL** (`db_data`) |
-| Scripts | Médias uploadés (`uploads_data`) |
+| Plugin `gbecosmolingua-core` | Textes, réglages composeur admin |
+| `docker-compose.yml` | **Base MySQL** (volume Docker `db_data`) |
+| Scripts | **Médias uploadés** (volume Docker `uploads_data`) |
 
-Quand vous créez ou modifiez des **pages dans l'admin WordPress**, cela reste dans **votre base Docker locale**. Vos collègues ne les voient pas avec un simple `git pull`.
+Quand vous ajoutez des **images** ou modifiez des **textes** dans l’admin WordPress, cela reste sur **votre PC**. Un simple `git pull` ne suffit pas.
 
 ---
 
-## Workflow recommandé
+## Workflow — responsable (après modifications contenu)
 
-### Responsable (après avoir créé/modifié des pages)
+**Linux / macOS / Git Bash (Windows) :**
 
 ```bash
 cd gbecosmolingua
@@ -23,45 +23,90 @@ git add .
 git commit -m "Mise à jour code"
 git push
 
-# Exporter la base
-bash scripts/export-db.sh
+bash scripts/export-content.sh
 ```
 
-Envoyer **`backups/gbe_wp-latest.sql`** à l'équipe (Google Drive, Slack, WeTransfer…).
+Envoyer à l’équipe (Drive, Slack, WeTransfer…) **deux fichiers** :
 
-### Chaque développeur (Linux, macOS, Git Bash Windows)
+| Fichier | Contenu |
+|---------|---------|
+| `backups/gbe_wp-latest.sql` | Pages, textes, liens vers les images |
+| `backups/gbe_uploads-latest.tar.gz` | Fichiers images réels |
+
+Ne pas mettre ces fichiers sur GitHub (trop lourds).
+
+---
+
+## Windows — prérequis collègues
+
+1. [Git for Windows](https://git-scm.com/download/win) (inclut **Git Bash**)
+2. [Docker Desktop](https://www.docker.com/products/docker-desktop/) — activer **WSL 2** si demandé
+3. Cloner le dépôt :
+
+```bash
+git clone git@github.com:DavidAtikpo/gbecosmolingua.git
+cd gbecosmolingua
+```
+
+> Utiliser **Git Bash** pour les commandes `bash scripts/...` ci-dessous (pas obligatoire en PowerShell).
+
+---
+
+## Windows — première installation
+
+1. Ouvrir **Git Bash** dans le dossier du projet.
+
+2. Démarrer Docker :
+
+```bash
+docker compose up -d
+```
+
+3. (Optionnel) Squelette initial des pages :
+
+```bash
+bash scripts/start-and-seed.sh
+```
+
+4. Placer les fichiers reçus dans `backups/` :
+   - `gbe_wp-latest.sql`
+   - `gbe_uploads-latest.tar.gz`
+
+5. Importer **base + médias** :
+
+```bash
+bash scripts/import-db.sh
+bash scripts/import-uploads.sh
+```
+
+6. Ouvrir : **http://localhost:8080**
+
+7. Admin : **http://localhost:8080/wp-admin**  
+   Si besoin : **GbeCosmoLingua → Réinitialiser en-tête et pied de page**
+
+---
+
+## Windows — mise à jour (collègue)
+
+1. Recevoir les 2 fichiers du responsable → les mettre dans `backups/`
+
+2. Git Bash :
 
 ```bash
 cd gbecosmolingua
 git pull
 docker compose up -d
-
-# Importer la base du responsable
-bash scripts/import-db.sh backups/gbe_wp-latest.sql
-
-# Code + en-tête à jour
-bash scripts/start-and-seed.sh   # optionnel si import complet
+bash scripts/import-db.sh
+bash scripts/import-uploads.sh
 ```
 
-Puis dans l'admin : **GbeCosmoLingua → Réinitialiser en-tête et pied de page**
+3. Rechargement forcé du navigateur : **Ctrl + F5**
 
 ---
 
-## Première installation (nouveau collègue)
+## Windows — PowerShell (Docker uniquement)
 
-```bash
-git clone git@github.com:DavidAtikpo/gbecosmolingua.git
-cd gbecosmolingua
-docker compose up -d
-bash scripts/start-and-seed.sh          # structure ~120 pages
-bash scripts/import-db.sh chemin/gbe_wp-latest.sql   # vos vraies pages
-```
-
-Sans le fichier SQL : seulement le **squelette** des pages (contenu minimal).
-
----
-
-## Windows (PowerShell + Docker Desktop)
+PowerShell suffit pour Git et Docker :
 
 ```powershell
 cd gbecosmolingua
@@ -69,39 +114,65 @@ git pull
 docker compose up -d
 ```
 
-Puis **Git Bash** :
+Puis ouvrir **Git Bash** pour l’import :
 
 ```bash
-bash scripts/import-db.sh backups/gbe_wp-latest.sql
+bash scripts/import-db.sh
+bash scripts/import-uploads.sh
 ```
 
 ---
 
-## Docker : permission denied
+## Linux / macOS — rappel
 
 ```bash
-sudo usermod -aG docker $USER
-# Déconnexion / reconnexion
-newgrp docker
+git pull
+docker compose up -d
+bash scripts/import-db.sh
+bash scripts/import-uploads.sh
 ```
 
-Ou temporairement : `sudo docker compose up -d`
+Export complet :
+
+```bash
+bash scripts/export-content.sh
+```
 
 ---
 
-## Uploads (images)
+## Dépannage Windows
 
-Les images restent dans le volume Docker `uploads_data`. Pour les partager :
+### « bash: command not found »
 
-- ré-uploader via **Médias** après import SQL, ou
-- exporter le volume (avancé)
+Ouvrir **Git Bash** (menu Démarrer → Git Bash), pas l’invite CMD seule.
 
-Le **logo du thème** est dans Git : `themes/gbecosmolingua/assets/images/`
+### « permission denied » sur Docker
+
+Docker Desktop doit être **lancé** (icône dans la barre des tâches). Redémarrer Docker Desktop si besoin.
+
+### « permission denied » sur `backups/`
+
+Dans Git Bash :
+
+```bash
+rm -f backups/gbe_wp-latest.sql
+bash scripts/export-db.sh
+```
+
+### Les images ne s’affichent pas
+
+Importer **les deux** fichiers : SQL **et** `gbe_uploads-latest.tar.gz`.
+
+### Port 8080 déjà utilisé
+
+Modifier `docker-compose.yml` : `"8080:80"` → `"8088:80"`, puis `http://localhost:8088`
 
 ---
 
 ## Résumé
 
-1. **Code** → GitHub (`git push` / `git pull`)
-2. **Pages et contenus** → fichier `gbe_wp-latest.sql` (`export-db.sh` / `import-db.sh`)
-3. **En-tête/menu** → bouton admin « Réinitialiser en-tête et pied de page »
+| Quoi | Comment |
+|------|---------|
+| **Code** (CSS, JS, PHP) | `git push` / `git pull` |
+| **Contenu** (pages, textes, images) | `export-content.sh` → envoyer SQL + tar.gz → `import-db.sh` + `import-uploads.sh` |
+| **En-tête / menu** | Admin → Réinitialiser en-tête et pied de page |

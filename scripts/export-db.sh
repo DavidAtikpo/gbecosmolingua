@@ -10,6 +10,12 @@ LATEST="${BACKUP_DIR}/gbe_wp-latest.sql"
 
 mkdir -p "${BACKUP_DIR}"
 
+if [[ ! -w "${BACKUP_DIR}" ]]; then
+	echo "Erreur : le dossier backups/ n'est pas accessible en écriture."
+	echo "Corrigez avec : sudo chown -R \$(whoami):\$(whoami) \"${BACKUP_DIR}\""
+	exit 1
+fi
+
 cd "${ROOT}"
 
 if ! docker compose ps -q db 2>/dev/null | grep -q .; then
@@ -24,8 +30,10 @@ docker compose exec -T db mysqldump \
 	--single-transaction \
 	--quick \
 	--lock-tables=false \
+	--no-tablespaces \
 	gbe_wp > "${OUTPUT}"
 
+rm -f "${LATEST}"
 cp "${OUTPUT}" "${LATEST}"
 
 echo ""

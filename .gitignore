@@ -1,5 +1,6 @@
 # Sauvegardes SQL locales (ne pas committer les gros fichiers)
 *.sql
+backups/*.tar.gz
 !.gitkeep
 
 # Médias uploadés localement
