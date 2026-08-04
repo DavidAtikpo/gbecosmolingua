@@ -6,8 +6,8 @@
  * Inserter: false
  */
 ?>
-<!-- wp:group {"className":"gbe-section","layout":{"type":"constrained"}} -->
-<div class="wp-block-group gbe-section">
+<!-- wp:group {"className":"gbe-section gbe-home-intro","layout":{"type":"constrained"}} -->
+<div class="wp-block-group gbe-section gbe-home-intro">
 	<!-- wp:paragraph -->
 	<p>GbeCosmoLingua est un observatoire international consacré à la recherche, à la promotion et à la valorisation des langues, cultures et patrimoines des peuples du continuum gbe.</p>
 	<!-- /wp:paragraph -->

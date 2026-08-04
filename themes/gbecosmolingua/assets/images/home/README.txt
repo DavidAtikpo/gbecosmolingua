@@ -1,13 +1,49 @@
-Image hero de la page d'accueil (pleine largeur) :
+Images statiques page d'accueil (thème GbeCosmoLingua)
+========================================================
 
-- hero-patrimoine.jpg — scène culturelle / patrimoine gbe (~1920×1080)
+Ces fichiers sont servis directement par le thème via `includes/home-assets.php`.
+Ils ne passent pas par la médiathèque WordPress — pratique pour le partage Git.
 
-Remplacez le dégradé par défaut dès que le fichier est présent.
+Fichiers principaux
+-------------------
+- hero-slide-01.jpg … hero-slide-07.jpg — slider bannière hero
+- hero-patrimoine.jpg   — repli / fond vision-mission (copie slide 01)
+- map-preview.jpg       — aperçu carte interactive
 
-Section « carte » (accueil) — optionnel :
+Langues (cartes)
+----------------
+- lang-ewe.jpg, lang-fon.jpg, lang-gen.jpg, lang-aja.jpg, lang-gun.jpg, lang-phera.jpg
 
-- map-preview.jpg — image statique (~1200×675) remplace la carte satellite Leaflet.
-  Par défaut : vue satellite Esri (Afrique de l'Ouest, Ghana → Nigeria) + pastilles pays.
-  Carte interactive complète : /le-gbe/carte-interactive/ (OpenStreetMap).
+Bibliothèque numérique
+----------------------
+- biblio-books.jpg, biblio-audio.jpg, biblio-video.jpg, biblio-photos.jpg, biblio-maps.jpg
 
-Pour la galerie, remplacez plus tard les tuiles CSS par des blocs Image dans le motif home-gallery.
+Galerie
+-------
+- gallery-01.jpg … gallery-12.jpg
+
+Recherche & innovation
+----------------------
+- research-map.jpg, research-book.jpg, research-code.jpg, research-manuscript.jpg, research-server.jpg, research-audio.jpg
+
+Actualités & témoignages
+------------------------
+- news-01.jpg … news-03.jpg
+- avatar-01.jpg … avatar-04.jpg
+
+Régénération
+------------
+Placeholders thématiques (PIL) :
+
+    python3 scripts/generate-home-images.py
+
+Photos patrimoine culturel gbe (6 sources) :
+
+    python3 scripts/deploy-home-user-images.py
+
+Slider hero (7 diapositives) :
+
+    python3 scripts/deploy-home-hero-slides.py
+
+Sources : architecture traditionnelle, couloir à bas-reliefs, danses togolaises,
+échassiers, danse raffia, village rural.

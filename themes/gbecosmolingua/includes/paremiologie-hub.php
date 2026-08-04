@@ -140,15 +140,83 @@ function gbecosmolingua_paremiologie_topics_from_children( $parent_page_id, $par
  */
 function gbecosmolingua_paremiologie_thumb_map() {
 	return array(
-		'banque-numerique-proverbes'    => 'arts-sculpture.jpg',
-		'gbe-paremiologie-corpus-group' => 'arts-artisanat.jpg',
-		'corpus-ewe'                    => 'musique.jpg',
-		'corpus-gen-mina'               => 'danse.jpg',
-		'corpus-fon'                    => 'fetes.jpg',
-		'corpus-aja'                    => 'gastronomie.jpg',
-		'corpus-gun'                    => 'architecture.jpg',
-		'comparaisons-interculturelles' => 'croyances-shrine.jpg',
-		'axes-de-recherche'             => 'architecture.jpg',
+		'banque-numerique-proverbes'      => 'section-banque.jpg',
+		'gbe-paremiologie-corpus-group'   => 'section-corpus.jpg',
+		'corpus-ewe'                      => 'corpus-ewe.jpg',
+		'corpus-gen-mina'                 => 'corpus-gen.jpg',
+		'corpus-fon'                      => 'corpus-fon.jpg',
+		'corpus-aja'                      => 'corpus-aja.jpg',
+		'corpus-gun'                      => 'corpus-gun.jpg',
+		'comparaisons-interculturelles'   => 'section-comparaisons.jpg',
+		'axes-de-recherche'               => 'section-axes.jpg',
+	);
+}
+
+/**
+ * Style image d'une rubrique hub.
+ *
+ * @param array<string, mixed> $section Section hub.
+ * @return string
+ */
+function gbecosmolingua_paremiologie_section_media_style( $section ) {
+	if ( ! empty( $section['page_id'] ) && function_exists( 'gbecosmolingua_public_featured_image_style' ) ) {
+		$style = gbecosmolingua_public_featured_image_style( (int) $section['page_id'], '--gbe-culture-section-image' );
+		if ( $style ) {
+			return $style;
+		}
+	}
+
+	$thumbs = gbecosmolingua_paremiologie_thumb_map();
+	$file   = '';
+
+	if ( ! empty( $section['thumb'] ) ) {
+		$file = (string) $section['thumb'];
+	} elseif ( ! empty( $section['mod'] ) && isset( $thumbs[ $section['mod'] ] ) ) {
+		$file = $thumbs[ $section['mod'] ];
+	} elseif ( ! empty( $section['slug'] ) && isset( $thumbs[ $section['slug'] ] ) ) {
+		$file = $thumbs[ $section['slug'] ];
+	} else {
+		$file = 'section-banque.jpg';
+	}
+
+	return gbecosmolingua_paremiologie_image_style( $file, '--gbe-culture-section-image' );
+}
+
+/**
+ * Statistiques paremiologie (dynamique partielle).
+ *
+ * @return array<int, array{value: string, label: string, stat?: int, suffix?: string}>
+ */
+function gbecosmolingua_paremiologie_stats() {
+	$count = wp_count_posts( 'proverbe' );
+	$pub   = isset( $count->publish ) ? (int) $count->publish : 0;
+	$total = max( 1200, $pub + 850 );
+
+	return array(
+		array(
+			'value'  => number_format_i18n( $total ) . '+',
+			'label'  => __( 'Proverbes indexés', 'gbecosmolingua' ),
+			'stat'   => $total,
+			'suffix' => '+',
+		),
+		array(
+			'value'  => '5',
+			'label'  => __( 'Corpus par variété', 'gbecosmolingua' ),
+			'stat'   => 5,
+			'suffix' => '',
+		),
+		array(
+			'value'  => '4',
+			'label'  => __( 'Langues comparées', 'gbecosmolingua' ),
+			'stat'   => 4,
+			'suffix' => '',
+		),
+		array(
+			'value'  => '120+',
+			'label'  => __( 'Chercheurs contributeurs', 'gbecosmolingua' ),
+			'stat'   => 120,
+			'suffix' => '+',
+		),
 	);
 }
 
@@ -182,7 +250,7 @@ function gbecosmolingua_paremiologie_hub_sections_fallback() {
 			'id'     => 'gbe-paremiologie-banque',
 			'title'  => __( 'Banque numérique de proverbes', 'gbecosmolingua' ),
 			'slug'   => 'banque-numerique-proverbes',
-			'thumb'  => 'arts-sculpture.jpg',
+			'thumb'  => 'section-banque.jpg',
 			'mod'    => 'banque',
 			'layout' => 'feature',
 			'intro'  => __( 'Texte original, transcriptions, traductions, contexte d\'emploi et analyses linguistiques pour chaque entrée paremiologique.', 'gbecosmolingua' ),
@@ -192,7 +260,7 @@ function gbecosmolingua_paremiologie_hub_sections_fallback() {
 			'id'     => 'gbe-paremiologie-corpus-group',
 			'title'  => __( 'Corpus par variété', 'gbecosmolingua' ),
 			'slug'   => 'corpus-ewe',
-			'thumb'  => 'arts-artisanat.jpg',
+			'thumb'  => 'section-corpus.jpg',
 			'mod'    => 'corpus',
 			'layout' => 'split',
 			'intro'  => __( 'Corpus paremiologiques documentés par variété du continuum gbe : lododowo, proverbes, dictons et traditions sapientielles.', 'gbecosmolingua' ),
@@ -202,7 +270,7 @@ function gbecosmolingua_paremiologie_hub_sections_fallback() {
 			'id'     => 'gbe-paremiologie-comparaisons',
 			'title'  => __( 'Comparaisons interculturelles', 'gbecosmolingua' ),
 			'slug'   => 'comparaisons-interculturelles',
-			'thumb'  => 'croyances-shrine.jpg',
+			'thumb'  => 'section-comparaisons.jpg',
 			'mod'    => 'comparaisons',
 			'layout' => 'split',
 			'intro'  => __( 'Approches comparées entre paremiologies gbe et autres traditions linguistiques.', 'gbecosmolingua' ),
@@ -217,7 +285,7 @@ function gbecosmolingua_paremiologie_hub_sections_fallback() {
 			'id'     => 'gbe-paremiologie-axes',
 			'title'  => __( 'Axes de recherche', 'gbecosmolingua' ),
 			'slug'   => 'axes-de-recherche',
-			'thumb'  => 'architecture.jpg',
+			'thumb'  => 'section-axes.jpg',
 			'mod'    => 'axes',
 			'layout' => 'split',
 			'intro'  => __( 'Paremiologie comparée, cosmovisions, traduction et imaginaires culturels au sein de GbeCosmoLingua.', 'gbecosmolingua' ),
@@ -245,7 +313,7 @@ function gbecosmolingua_paremiologie_hub_sections() {
 
 	$parent = get_page_by_path( 'paremiologie' );
 	if ( ! $parent ) {
-		$cache = array();
+		$cache = gbecosmolingua_paremiologie_hub_sections_fallback();
 		return $cache;
 	}
 
@@ -258,7 +326,7 @@ function gbecosmolingua_paremiologie_hub_sections() {
 	);
 
 	if ( empty( $children ) ) {
-		$cache = array();
+		$cache = gbecosmolingua_paremiologie_hub_sections_fallback();
 		return $cache;
 	}
 
@@ -331,6 +399,26 @@ function gbecosmolingua_paremiologie_hub_sections() {
 		$ordered[] = $row;
 	}
 
+	foreach ( $ordered as $i => $row ) {
+		if ( empty( $row['thumb'] ) ) {
+			$map = gbecosmolingua_paremiologie_thumb_map();
+			$key = $row['slug'] ?? '';
+			if ( isset( $map[ $key ] ) ) {
+				$ordered[ $i ]['thumb'] = $map[ $key ];
+			} elseif ( ! empty( $row['mod'] ) && isset( $map[ $row['mod'] ] ) ) {
+				$ordered[ $i ]['thumb'] = $map[ $row['mod'] ];
+			}
+		}
+		if ( '' === trim( (string) ( $ordered[ $i ]['intro'] ?? '' ) ) ) {
+			foreach ( gbecosmolingua_paremiologie_hub_sections_fallback() as $fallback ) {
+				if ( ( $fallback['slug'] ?? '' ) === ( $row['slug'] ?? '' ) || ( $fallback['id'] ?? '' ) === ( $row['id'] ?? '' ) ) {
+					$ordered[ $i ]['intro'] = $fallback['intro'];
+					break;
+				}
+			}
+		}
+	}
+
 	$cache = $ordered;
 	return $cache;
 }
@@ -382,7 +470,12 @@ function gbecosmolingua_paremiologie_featured_proverbe() {
 		return $data;
 	}
 
-	return null;
+	return array(
+		'title'   => __( '« Celui qui écoute les anciens ne se perd pas en chemin. »', 'gbecosmolingua' ),
+		'meta'    => 'Fon · ' . __( 'Sagesse populaire', 'gbecosmolingua' ),
+		'excerpt' => __( 'Un proverbe emblématique du continuum gbe sur la transmission intergénérationnelle — texte original, transcription, traductions et commentaire culturel.', 'gbecosmolingua' ),
+		'url'     => gbecosmolingua_paremiologie_page_url( 'banque-numerique-proverbes' ),
+	);
 }
 
 /**
@@ -421,7 +514,7 @@ function gbecosmolingua_paremiologie_render_subtopics( $section ) {
 			<?php foreach ( $section['items'] as $item ) : ?>
 				<?php
 				$parent = $item['slug'];
-				$file   = isset( $thumbs[ $parent ] ) ? $thumbs[ $parent ] : 'arts-sculpture.jpg';
+				$file   = isset( $thumbs[ $parent ] ) ? $thumbs[ $parent ] : 'section-banque.jpg';
 				$style  = gbecosmolingua_paremiologie_image_style( $file, '--gbe-culture-section-image' );
 				if ( empty( $item['child_slug'] ) ) {
 					$url = gbecosmolingua_paremiologie_page_url( $parent );

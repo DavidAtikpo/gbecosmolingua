@@ -8,7 +8,7 @@
  * @package GbeCosmoLingua
  */
 
-$hero_style = gbecosmolingua_xotutu_image_style( 'hero-orality.jpg', '--gbe-xotutu-hero-image' );
+$hero_style = gbecosmolingua_xotutu_hero_image_style();
 ?>
 <!-- wp:group {"align":"full","className":"gbe-xotutu-hero","layout":{"type":"default"}} -->
 <div class="wp-block-group alignfull gbe-xotutu-hero" style="<?php echo esc_attr( $hero_style ); ?>">

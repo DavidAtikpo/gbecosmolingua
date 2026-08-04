@@ -7,10 +7,11 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'GBECOSMOLINGUA_VERSION', '1.12.39' );
+define( 'GBECOSMOLINGUA_VERSION', '1.14.5' );
 
 require_once get_stylesheet_directory() . '/includes/hub-page-public.php';
 require_once get_stylesheet_directory() . '/includes/hub-composer-public.php';
+require_once get_stylesheet_directory() . '/includes/home-assets.php';
 require_once get_stylesheet_directory() . '/includes/home-composer-public.php';
 require_once get_stylesheet_directory() . '/includes/le-gbe-public.php';
 require_once get_stylesheet_directory() . '/includes/xotutu-hub.php';
@@ -133,6 +134,24 @@ function gbecosmolingua_enqueue_header_offset_script() {
 		GBECOSMOLINGUA_VERSION,
 		true
 	);
+
+	wp_enqueue_script(
+		'gbecosmolingua-home-scroll-animations',
+		get_stylesheet_directory_uri() . '/assets/js/home-scroll-animations.js',
+		array(),
+		GBECOSMOLINGUA_VERSION,
+		true
+	);
+
+	if ( is_front_page() ) {
+		wp_enqueue_script(
+			'gbecosmolingua-home-hero-slider',
+			get_stylesheet_directory_uri() . '/assets/js/home-hero-slider.js',
+			array(),
+			GBECOSMOLINGUA_VERSION,
+			true
+		);
+	}
 
 	if ( is_front_page() && ! file_exists( get_stylesheet_directory() . '/assets/images/home/map-preview.jpg' ) ) {
 		wp_enqueue_style(

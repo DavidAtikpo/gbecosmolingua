@@ -6,8 +6,8 @@
  * Inserter: false
  */
 ?>
-<!-- wp:group {"className":"gbe-section","layout":{"type":"constrained"}} -->
-<div class="wp-block-group gbe-section">
+<!-- wp:group {"className":"gbe-section gbe-home-rubriques","layout":{"type":"constrained"}} -->
+<div class="wp-block-group gbe-section gbe-home-rubriques">
 	<!-- wp:heading -->
 	<h2 class="wp-block-heading">Explorer GbeCosmoLingua</h2>
 	<!-- /wp:heading -->

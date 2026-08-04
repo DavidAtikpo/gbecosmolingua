@@ -9,10 +9,28 @@
  */
 
 $sections = gbecosmolingua_paremiologie_hub_sections();
+if ( empty( $sections ) ) {
+	$sections = gbecosmolingua_paremiologie_hub_sections_fallback();
+}
 $featured = gbecosmolingua_paremiologie_featured_proverbe();
+$stats    = gbecosmolingua_paremiologie_stats();
 
 ob_start();
 gbecosmolingua_paremiologie_render_search();
+?>
+<section class="gbe-paremiologie-stats">
+	<div class="gbe-paremiologie-stats__grid">
+		<?php foreach ( $stats as $stat ) : ?>
+			<div class="gbe-paremiologie-stats__item">
+				<p class="gbe-paremiologie-stats__value" <?php echo isset( $stat['stat'] ) ? 'data-gbe-stat="' . esc_attr( (string) $stat['stat'] ) . '" data-gbe-suffix="' . esc_attr( $stat['suffix'] ?? '' ) . '"' : ''; ?>>
+					<?php echo esc_html( $stat['value'] ); ?>
+				</p>
+				<p class="gbe-paremiologie-stats__label"><?php echo esc_html( $stat['label'] ); ?></p>
+			</div>
+		<?php endforeach; ?>
+	</div>
+</section>
+<?php
 if ( $featured ) :
 	?>
 <div class="gbe-paremiologie-featured">
@@ -30,9 +48,7 @@ endif;
 <div class="gbe-culture-rubriques gbe-paremiologie-rubriques">
 <?php
 foreach ( $sections as $index => $section ) {
-	$thumb_style = ! empty( $section['page_id'] )
-		? gbecosmolingua_public_featured_image_style( (int) $section['page_id'], '--gbe-culture-section-image' )
-		: '';
+	$thumb_style = gbecosmolingua_paremiologie_section_media_style( $section );
 	$page_url    = gbecosmolingua_paremiologie_page_url( $section['slug'] );
 	$reverse     = ( 1 === $index % 2 );
 	$is_feature  = ( isset( $section['layout'] ) && 'feature' === $section['layout'] );

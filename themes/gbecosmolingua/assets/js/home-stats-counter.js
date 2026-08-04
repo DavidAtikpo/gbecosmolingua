@@ -49,18 +49,15 @@
 		requestAnimationFrame(frame);
 	}
 
-	function init() {
-		var section = document.querySelector('.gbe-home-stats');
+	function initStatsSection(section, reduced) {
 		if (!section || section.getAttribute('data-gbe-stats-init') === '1') {
 			return;
 		}
 
-		var values = section.querySelectorAll('.gbe-home-stats__value[data-gbe-stat], .gbe-home-stats__value[data-gbe-text]');
+		var values = section.querySelectorAll('.gbe-home-stats__value[data-gbe-stat], .gbe-home-stats__value[data-gbe-text], .gbe-xotutu-stats__value[data-gbe-stat], .gbe-paremiologie-stats__value[data-gbe-stat]');
 		if (!values.length) {
 			return;
 		}
-
-		var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 		function play() {
 			if (section.getAttribute('data-gbe-stats-init') === '1') {
@@ -107,6 +104,13 @@
 		} else {
 			play();
 		}
+	}
+
+	function init() {
+		var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		document.querySelectorAll('.gbe-home-stats, .gbe-xotutu-stats, .gbe-paremiologie-stats').forEach(function (section) {
+			initStatsSection(section, reduced);
+		});
 	}
 
 	if (document.readyState === 'loading') {

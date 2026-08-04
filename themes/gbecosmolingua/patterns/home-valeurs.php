@@ -6,8 +6,8 @@
  * Inserter: false
  */
 ?>
-<!-- wp:group {"className":"gbe-section","layout":{"type":"constrained"}} -->
-<div class="wp-block-group gbe-section">
+<!-- wp:group {"className":"gbe-section gbe-home-valeurs","layout":{"type":"constrained"}} -->
+<div class="wp-block-group gbe-section gbe-home-valeurs">
 	<!-- wp:heading -->
 	<h2 class="wp-block-heading">Nos valeurs</h2>
 	<!-- /wp:heading -->

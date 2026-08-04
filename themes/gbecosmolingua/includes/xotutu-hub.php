@@ -53,6 +53,33 @@ function gbecosmolingua_xotutu_image_style( $filename, $var_name ) {
 }
 
 /**
+ * Image de bannière Xótùtù (heroxotutu.png prioritaire).
+ *
+ * @param string $var_name Variable CSS.
+ * @return string
+ */
+function gbecosmolingua_xotutu_hero_image_style( $var_name = '--gbe-xotutu-hero-image' ) {
+	$candidates = array(
+		'heroxotutu.png',
+		'hero-orality.jpg',
+	);
+
+	foreach ( $candidates as $file ) {
+		$style = gbecosmolingua_xotutu_image_style( $file, $var_name );
+		if ( $style ) {
+			return $style;
+		}
+	}
+
+	$home_path = get_stylesheet_directory() . '/assets/images/home/heroxotutu.png';
+	if ( file_exists( $home_path ) ) {
+		return $var_name . ':url(' . esc_url( get_stylesheet_directory_uri() . '/assets/images/home/heroxotutu.png' ) . ');';
+	}
+
+	return '';
+}
+
+/**
  * Collections principales (maquette).
  *
  * @return array<int, array{title: string, count: string, icon: string, url: string, mod: string, image: string}>

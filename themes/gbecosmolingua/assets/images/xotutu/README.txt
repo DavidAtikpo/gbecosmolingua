@@ -1,7 +1,8 @@
 Images optionnelles pour le hub Xótùtù (hero et cartes collections).
 Placez les fichiers ici puis rechargez /xotutu/ (Ctrl+F5).
 
-hero-orality.jpg          — bannière (tradition orale, atelier, conteur)
+hero-orality.jpg          — bannière (repli si heroxotutu.png absent)
+heroxotutu.png            — bannière principale (tradition orale, conteur)
 collection-oral.jpg       — Littérature orale
 collection-chants.jpg     — Chants
 collection-audio.jpg      — Archives audio
