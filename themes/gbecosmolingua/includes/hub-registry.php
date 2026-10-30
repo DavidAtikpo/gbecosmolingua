@@ -452,6 +452,12 @@ function gbecosmolingua_hub_render_philosophie() {
 			<?php if ( $lead ) : ?>
 				<p class="gbe-hub-hero__lead"><?php echo esc_html( $lead ); ?></p>
 			<?php endif; ?>
+			<div class="gbe-hub-hero__actions">
+				<a class="gbe-hub-hero__btn gbe-hub-hero__btn--outline" href="#philosophie"><?php esc_html_e( 'Philosophie', 'gbecosmolingua' ); ?></a>
+				<a class="gbe-hub-hero__btn gbe-hub-hero__btn--outline" href="#objet"><?php esc_html_e( 'Objet', 'gbecosmolingua' ); ?></a>
+				<a class="gbe-hub-hero__btn gbe-hub-hero__btn--fill" href="#missions"><?php esc_html_e( 'Missions', 'gbecosmolingua' ); ?></a>
+				<a class="gbe-hub-hero__btn gbe-hub-hero__btn--outline" href="#fondateurs"><?php esc_html_e( 'Fondateurs', 'gbecosmolingua' ); ?></a>
+			</div>
 		</div>
 	</div>
 	<?php if ( $content ) : ?>
@@ -493,12 +499,11 @@ function gbecosmolingua_main_menu_slugs() {
 
 	return array(
 		'le-gbe',
+		'linguistique',
 		'cultures-gbe',
 		'xotutu',
+		'onomastique',
 		'paremiologie',
-		'recherche-et-innovation',
-		'sejours-et-mobilite',
-		'partenaires',
 		'nous-soutenir',
 		'notre-philosophie',
 	);

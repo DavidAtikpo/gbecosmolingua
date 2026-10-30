@@ -1,0 +1,20 @@
+<!-- wp:template-part {"slug":"header","area":"header","tagName":"header"} /-->
+
+<!-- wp:group {"tagName":"main","align":"full","className":"gbe-main gbe-main--proverbes","layout":{"type":"default"}} -->
+<main class="wp-block-group alignfull gbe-main gbe-main--proverbes">
+	<!-- wp:group {"align":"full","className":"gbe-proverbes-page-hero","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group alignfull gbe-proverbes-page-hero">
+		<!-- wp:query-title {"type":"archive","level":1,"className":"gbe-proverbes-page-hero__title"} /-->
+		<!-- wp:paragraph {"className":"gbe-proverbes-page-hero__lead"} -->
+		<p class="gbe-proverbes-page-hero__lead">Banque numérique de proverbes du continuum gbe — textes originaux, traductions et analyses.</p>
+		<!-- /wp:paragraph -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:shortcode -->
+	[gbe_proverbes_list limit="24"]
+	<!-- /wp:shortcode -->
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","area":"footer","tagName":"footer"} /-->

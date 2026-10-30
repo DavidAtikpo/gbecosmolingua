@@ -5,7 +5,7 @@
 	gap: 0;
 	max-width: none;
 	overflow-x: clip;
-	background: var(--gbe-sand, #f7f1df);
+	background: var(--gbe-sand, #F2E9D8);
 }
 
 .gbe-main--recherche.is-layout-flow > * {
@@ -27,13 +27,12 @@
 }
 
 .gbe-recherche-hero {
-	padding: clamp(3rem, 8vw, 5rem) clamp(1rem, 3vw, 1.5rem) clamp(5rem, 12vw, 7rem);
 	color: var(--gbe-white, #fff);
 	text-align: center;
 	background:
-		linear-gradient(180deg, rgba(35, 21, 12, 0.55) 0%, rgba(31, 91, 42, 0.65) 50%, rgba(18, 56, 25, 0.92) 100%),
+		linear-gradient(180deg, rgba(13, 27, 61, 0.55) 0%, rgba(8, 20, 40, 0.72) 50%, rgba(8, 20, 40, 0.94) 100%),
 		var(--gbe-recherche-hero-image, none) center center / cover no-repeat,
-		linear-gradient(135deg, #23150c 0%, #1f5b2a 100%);
+		linear-gradient(135deg, #0d1b3d 0%, #081428 100%);
 }
 
 .gbe-recherche-hero__title {
@@ -58,9 +57,9 @@
 }
 
 .gbe-recherche-hero__actions .is-style-fill .wp-block-button__link {
-	background: var(--gbe-green, #1f5b2a);
-	color: var(--gbe-white);
-	border: 1px solid rgba(255, 250, 240, 0.35);
+	background: var(--gbe-gold, #d99a2b);
+	color: var(--gbe-navy, #0d1b3d);
+	border: 1px solid rgba(255, 255, 255, 0.35);
 }
 
 .gbe-recherche-hero__actions .is-style-outline .wp-block-button__link {
@@ -100,15 +99,15 @@
 	border: none;
 	border-radius: 8px;
 	padding: 0.6rem 1rem;
-	background: var(--gbe-green);
-	color: var(--gbe-white);
+	background: var(--gbe-gold);
+	color: var(--gbe-navy, #0d1b3d);
 	font-weight: 600;
 	cursor: pointer;
 }
 
 .gbe-recherche-search__link {
 	font-size: 0.88rem;
-	color: var(--gbe-copper, #8a4a12);
+	color: var(--gbe-copper, #B87A1F);
 	font-weight: 600;
 	white-space: nowrap;
 }
@@ -137,7 +136,7 @@
 
 .gbe-recherche-featured__meta {
 	font-size: 0.9rem;
-	color: rgba(35, 21, 12, 0.7);
+	color: var(--gbe-ink, #061022);
 	margin: 0 0 0.5rem;
 }
 
@@ -154,7 +153,7 @@
 .gbe-recherche-cta {
 	margin-top: 0;
 	padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 3vw, 1.5rem);
-	background: linear-gradient(120deg, #1f5b2a 0%, #23150c 100%);
+	background: linear-gradient(120deg, #1E5A3A 0%, #0D1B3D 100%);
 	color: var(--gbe-white);
 	text-align: center;
 }

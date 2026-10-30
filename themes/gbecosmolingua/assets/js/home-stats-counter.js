@@ -54,7 +54,7 @@
 			return;
 		}
 
-		var values = section.querySelectorAll('.gbe-home-stats__value[data-gbe-stat], .gbe-home-stats__value[data-gbe-text], .gbe-xotutu-stats__value[data-gbe-stat], .gbe-paremiologie-stats__value[data-gbe-stat]');
+		var values = section.querySelectorAll('.gbe-home-stats__value[data-gbe-stat], .gbe-home-stats__value[data-gbe-text], .gbe-xotutu-stats__value[data-gbe-stat], .gbe-paremiologie-stats__value[data-gbe-stat], .gbe-linguistique-stats__value[data-gbe-stat]');
 		if (!values.length) {
 			return;
 		}
@@ -108,7 +108,7 @@
 
 	function init() {
 		var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		document.querySelectorAll('.gbe-home-stats, .gbe-xotutu-stats, .gbe-paremiologie-stats').forEach(function (section) {
+		document.querySelectorAll('.gbe-home-stats, .gbe-xotutu-stats, .gbe-paremiologie-stats, .gbe-linguistique-stats').forEach(function (section) {
 			initStatsSection(section, reduced);
 		});
 	}

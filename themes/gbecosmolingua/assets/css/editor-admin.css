@@ -3,26 +3,28 @@
 body.block-editor-page,
 body.site-editor-php,
 body.appearance_page_gutenberg-edit-site {
-	--gbe-green: #1f5b2a;
-	--gbe-green-dark: #123819;
-	--gbe-green-darker: #0d2818;
-	--gbe-gold: #b87913;
-	--gbe-gold-light: #d8ad4b;
-	--gbe-sand: #f7f1df;
-	--gbe-white: #fffaf0;
-	--wp-admin-theme-color: var(--gbe-green);
-	--wp-admin-theme-color--rgb: 31, 91, 42;
-	--wp-admin-theme-color-darker-10: var(--gbe-green-dark);
-	--wp-admin-theme-color-darker-10--rgb: 18, 56, 25;
-	--wp-admin-theme-color-darker-20: var(--gbe-green-darker);
-	--wp-admin-theme-color-darker-20--rgb: 13, 40, 24;
+	--gbe-navy: #0d1b3d;
+	--gbe-navy-dark: #081428;
+	--gbe-green: #1e5a3a;
+	--gbe-green-dark: #164a2f;
+	--gbe-green-darker: #0f3d24;
+	--gbe-gold: #d99a2b;
+	--gbe-gold-light: #e8b855;
+	--gbe-sand: #f2e9d8;
+	--gbe-white: #ffffff;
+	--wp-admin-theme-color: var(--gbe-navy);
+	--wp-admin-theme-color--rgb: 13, 27, 61;
+	--wp-admin-theme-color-darker-10: var(--gbe-navy-dark);
+	--wp-admin-theme-color-darker-10--rgb: 8, 20, 40;
+	--wp-admin-theme-color-darker-20: var(--gbe-navy-dark);
+	--wp-admin-theme-color-darker-20--rgb: 8, 20, 40;
 }
 
 /* En-tête de l'éditeur */
 .edit-post-header,
 .edit-site-header,
 .interface-interface-skeleton__header {
-	background: var(--gbe-green-dark) !important;
+	background: var(--gbe-navy) !important;
 	border-bottom: 3px solid var(--gbe-gold) !important;
 	color: var(--gbe-white);
 }
@@ -56,7 +58,7 @@ body.appearance_page_gutenberg-edit-site {
 .components-button.is-primary:hover {
 	background: var(--gbe-gold) !important;
 	border-color: var(--gbe-gold) !important;
-	color: #23150c !important;
+	color: #0D1B3D !important;
 }
 
 /* Barre latérale (réglages page, blocs) */
@@ -68,7 +70,7 @@ body.appearance_page_gutenberg-edit-site {
 }
 
 .components-panel__header {
-	background: var(--gbe-green-dark);
+	background: var(--gbe-navy);
 	border-bottom: 2px solid var(--gbe-gold);
 }
 
@@ -78,11 +80,11 @@ body.appearance_page_gutenberg-edit-site {
 }
 
 .components-panel__body > .components-panel__body-title:hover {
-	background: rgba(31, 91, 42, 0.08);
+	background: rgba(13, 27, 61, 0.08);
 }
 
 .components-panel__body > .components-panel__body-title button {
-	color: var(--gbe-green-dark);
+	color: var(--gbe-navy);
 }
 
 .components-panel__body > .components-panel__body-title.is-opened {
@@ -92,13 +94,13 @@ body.appearance_page_gutenberg-edit-site {
 /* Onglets et navigation éditeur */
 .interface-pinned-items .components-button.is-pressed,
 .interface-pinned-items .components-button[aria-pressed="true"] {
-	background: var(--gbe-green);
+	background: var(--gbe-navy);
 	color: var(--gbe-white);
 }
 
 .block-editor-tabbed-sidebar__tab.is-active {
 	box-shadow: inset 0 -3px 0 var(--gbe-gold);
-	color: var(--gbe-green);
+	color: var(--gbe-navy);
 }
 
 /* Zone centrale */
@@ -115,7 +117,7 @@ body.appearance_page_gutenberg-edit-site {
 /* Liens dans l'éditeur */
 .block-editor-page a,
 .site-editor-php a {
-	color: var(--gbe-green);
+	color: var(--gbe-navy);
 }
 
 .block-editor-page a:hover,
@@ -126,7 +128,7 @@ body.appearance_page_gutenberg-edit-site {
 /* Listes (Pages, Articles) */
 body.post-type-page .wrap h1,
 body.post-type-post .wrap h1 {
-	color: var(--gbe-green-dark);
+	color: var(--gbe-navy);
 }
 
 /* Métaboxes classiques (si visibles) */
@@ -135,7 +137,7 @@ body.post-type-post .wrap h1 {
 }
 
 .postbox .postbox-header h2 {
-	color: var(--gbe-green-dark);
+	color: var(--gbe-navy);
 }
 
 /* Notifications dans l'éditeur */

@@ -1,6 +1,6 @@
 <?php
 /**
- * Admin: images and hero text for the public Le Gbe hub (/le-gbe/).
+ * Admin: images and hero text for the public Gbe hub (/le-gbe/).
  *
  * @package GbeCosmoLingua_Core
  */
@@ -33,12 +33,11 @@ class GBE_Le_Gbe_Hub_Admin {
 	public static function main_menu_slugs() {
 		return array(
 			'le-gbe',
+			'linguistique',
 			'cultures-gbe',
 			'xotutu',
+			'onomastique',
 			'paremiologie',
-			'recherche-et-innovation',
-			'sejours-et-mobilite',
-			'partenaires',
 			'nous-soutenir',
 			'notre-philosophie',
 		);
@@ -104,7 +103,7 @@ class GBE_Le_Gbe_Hub_Admin {
 	}
 
 	/**
-	 * Page racine Le Gbe.
+	 * Page racine Gbe.
 	 *
 	 * @return WP_Post|null
 	 */
@@ -145,8 +144,8 @@ class GBE_Le_Gbe_Hub_Admin {
 
 		add_submenu_page(
 			null,
-			__( 'Composer Le Gbe', 'gbecosmolingua-core' ),
-			__( 'Composer Le Gbe', 'gbecosmolingua-core' ),
+			__( 'Composer Gbe', 'gbecosmolingua-core' ),
+			__( 'Composer Gbe', 'gbecosmolingua-core' ),
 			'edit_pages',
 			'gbecosmolingua-le-gbe-composer',
 			array( __CLASS__, 'redirect_le_gbe_composer_legacy' )
@@ -207,7 +206,7 @@ class GBE_Le_Gbe_Hub_Admin {
 	}
 
 	/**
-	 * @deprecated Redirige vers le composeur Le Gbe.
+	 * @deprecated Redirige vers le composeur Gbe.
 	 */
 	public static function redirect_le_gbe_composer_legacy() {
 		wp_safe_redirect( self::get_hub_composer_url( 'le-gbe' ) );
@@ -520,14 +519,14 @@ class GBE_Le_Gbe_Hub_Admin {
 	}
 
 	/**
-	 * Menu rapide : toutes les sous-pages Le Gbe (sans chercher dans 240 pages).
+	 * Menu rapide : toutes les sous-pages Gbe (sans chercher dans 240 pages).
 	 */
 	public static function register_admin_menu_legacy() {
 		// Conservé pour compatibilité — remplacé par register_admin_menu().
 	}
 
 	/**
-	 * Enregistrement depuis l’écran Composer Le Gbe.
+	 * Enregistrement depuis l’écran Composer Gbe.
 	 */
 	public static function handle_composer_save() {
 		if ( ! current_user_can( 'edit_pages' ) ) {
@@ -666,9 +665,9 @@ class GBE_Le_Gbe_Hub_Admin {
 	}
 
 	/**
-	 * Tables Le Gbe : bandes principales + « Voir plus » (même page /le-gbe/).
+	 * Tables Gbe : bandes principales + « Voir plus » (même page /le-gbe/).
 	 *
-	 * @param WP_Post[] $sections Enfants directs de la page Le Gbe.
+	 * @param WP_Post[] $sections Enfants directs de la page Gbe.
 	 */
 	private static function render_le_gbe_hub_sections_tables( $sections ) {
 		$by_slug = array();
@@ -697,7 +696,7 @@ class GBE_Le_Gbe_Hub_Admin {
 		$rest = array_values( $by_slug );
 
 		echo '<div class="notice notice-info inline" style="margin:1rem 0;padding:0.75rem 1rem;max-width:960px;"><p>';
-		echo esc_html__( 'Tout ce qui s’affiche sous la bannière sur /le-gbe/ se modifie ici, bande par bande — pas dans le grand champ « Contenu » de la page Le Gbe (réservé à l’intro sous la bannière).', 'gbecosmolingua-core' );
+		echo esc_html__( 'Tout ce qui s’affiche sous la bannière sur /le-gbe/ se modifie ici, bande par bande — pas dans le grand champ « Contenu » de la page Gbe (réservé à l’intro sous la bannière).', 'gbecosmolingua-core' );
 		echo '</p></div>';
 
 		echo '<p><strong>' . esc_html__( 'Grandes bandes (Bibliothèque, Carte, Corpus…)', 'gbecosmolingua-core' ) . '</strong></p>';
@@ -912,7 +911,7 @@ class GBE_Le_Gbe_Hub_Admin {
 	/**
 	 * Diapositives hero pour l’admin (repli sur champs legacy).
 	 *
-	 * @param WP_Post $post Page Le Gbe.
+	 * @param WP_Post $post Page Gbe.
 	 * @return array<int, array{bg_id: int, title: string, lead: string, overlay: string}>
 	 */
 	private static function hero_slides_for_edit( $post ) {
@@ -954,7 +953,7 @@ class GBE_Le_Gbe_Hub_Admin {
 	}
 
 	/**
-	 * Éditeur des diapositives hero Le Gbe.
+	 * Éditeur des diapositives hero Gbe.
 	 *
 	 * @param WP_Post $post           Page.
 	 * @param string  $default_overlay Overlay par défaut.
@@ -1088,7 +1087,7 @@ class GBE_Le_Gbe_Hub_Admin {
 	/**
 	 * Cartes enregistrées + valeurs par défaut.
 	 *
-	 * @param int $page_id Page Le Gbe.
+	 * @param int $page_id Page Gbe.
 	 * @return array<string, array{title: string, intro: string, image_id: int}>
 	 */
 	public static function get_le_gbe_page_bands( $page_id ) {
@@ -1151,12 +1150,14 @@ class GBE_Le_Gbe_Hub_Admin {
 				array( 'child_slug' => 'syntaxe', 'title' => 'Syntaxe', 'intro' => $intro( 'Syntaxe' ) ),
 				array( 'child_slug' => 'lexicologie', 'title' => 'Lexicologie', 'intro' => $intro( 'Lexicologie' ) ),
 				array( 'child_slug' => 'dialectologie', 'title' => 'Dialectologie', 'intro' => $intro( 'Dialectologie' ) ),
+				array( 'child_slug' => 'corpus-numeriques', 'title' => 'Corpus numériques', 'intro' => $intro( 'Corpus numériques' ) ),
+				array( 'child_slug' => 'bibliotheque', 'title' => 'Bibliothèque', 'intro' => $intro( 'Bibliothèque' ) ),
 			),
 		);
 	}
 
 	/**
-	 * @param int $page_id Page Le Gbe.
+	 * @param int $page_id Page Gbe.
 	 * @return array<string, array<int, array{child_slug: string, title: string, intro: string, image_id: int}>>
 	 */
 	public static function get_le_gbe_page_subcards( $page_id ) {
@@ -1201,7 +1202,7 @@ class GBE_Le_Gbe_Hub_Admin {
 	/**
 	 * Mise en page libre : sections ordonnées avec petites cartes optionnelles.
 	 *
-	 * @param int $page_id Page Le Gbe.
+	 * @param int $page_id Page Gbe.
 	 * @return array{bands: array<int, array<string, mixed>>}
 	 */
 	public static function get_hub_page_layout( $page_id ) {
@@ -1223,7 +1224,7 @@ class GBE_Le_Gbe_Hub_Admin {
 	}
 
 	/**
-	 * @param int $page_id Page Le Gbe.
+	 * @param int $page_id Page Gbe.
 	 * @return array{bands: array<int, array<string, mixed>>, more: array<int, array<string, mixed>>}
 	 */
 	public static function get_le_gbe_page_layout( $page_id ) {
@@ -1248,7 +1249,7 @@ class GBE_Le_Gbe_Hub_Admin {
 	/**
 	 * Reprend les images/textes enregistrés avant le composeur libre.
 	 *
-	 * @param int                  $page_id Page Le Gbe.
+	 * @param int                  $page_id Page Gbe.
 	 * @param array<string, mixed> $layout  Layout.
 	 * @return array<string, mixed>
 	 */
@@ -1674,12 +1675,12 @@ class GBE_Le_Gbe_Hub_Admin {
 	public static function render_subpage_box( $post ) {
 		$parent   = get_post( (int) $post->post_parent );
 		$hub_link = ( $parent instanceof WP_Post ) ? get_permalink( $parent ) : home_url( '/' );
-		echo '<p class="description">' . esc_html__( 'Le contenu de /le-gbe/ se compose sur la page « Le Gbe » → section « Composer la page /le-gbe/ ».', 'gbecosmolingua-core' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'Le contenu de /le-gbe/ se compose sur la page « Gbe » → section « Composer la page /le-gbe/ ».', 'gbecosmolingua-core' ) . '</p>';
 		echo '<p><a href="' . esc_url( $hub_link ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Aperçu page publique', 'gbecosmolingua-core' ) . '</a></p>';
 	}
 
 	/**
-	 * @param WP_Post $hub Le Gbe page.
+	 * @param WP_Post $hub Gbe page.
 	 */
 	private static function render_subpages_list( $hub ) {
 		$children = get_pages(

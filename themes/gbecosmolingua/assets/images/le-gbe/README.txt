@@ -1,7 +1,7 @@
-Images optionnelles pour la bannière « Le Gbe » :
+Images pour la bannière « Gbe » (/le-gbe/) :
 
-- hero-village.jpg — photo paysage / village (fond du hero, ~1920×800)
-- sculpture.jpg — sculpture ou objet d'art (colonne droite du hero, ~800×1000)
+- hero-village.jpg — fond du hero (paysage / patrimoine gbe)
+- sculpture.jpg — sculpture ou objet d'art (colonne droite du hero)
 
-Placez les fichiers ici puis rechargez /le-gbe/ (Ctrl+F5).
-Sans images, un dégradé et un placeholder s'affichent automatiquement.
+Repli automatique si aucune image n'est choisie dans l'admin WordPress.
+Pour personnaliser : éditer la page Gbe → métabox « Bannière hero ».

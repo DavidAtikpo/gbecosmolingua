@@ -1,6 +1,6 @@
 <?php
 /**
- * Title: Le Gbe — Sections thématiques
+ * Title: Gbe — Sections thématiques
  * Slug: gbecosmolingua/le-gbe-sections
  * Categories: gbecosmolingua
  * Inserter: false

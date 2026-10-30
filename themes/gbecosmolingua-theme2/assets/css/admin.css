@@ -1,0 +1,252 @@
+/* GbeCosmoLingua — personnalisation admin WordPress */
+:root {
+	--gbe-navy: #0d1b3d;
+	--gbe-navy-dark: #081428;
+	--gbe-green: #1e5a3a;
+	--gbe-green-dark: #164a2f;
+	--gbe-green-darker: #0f3d24;
+	--gbe-navy-mid: #152a52;
+	--gbe-bark-dark: #0d1b3d;
+	--gbe-gold: #d99a2b;
+	--gbe-gold-light: #e8b855;
+	--gbe-sand: #f2e9d8;
+	--gbe-white: #ffffff;
+}
+
+/* Barre d'administration */
+#wpadminbar {
+	background: var(--gbe-navy);
+}
+
+#wpadminbar .ab-item,
+#wpadminbar a.ab-item,
+#wpadminbar > #wp-toolbar span.ab-label,
+#wpadminbar > #wp-toolbar span.noticon {
+	color: var(--gbe-white);
+}
+
+#wpadminbar .ab-top-menu > li:hover > .ab-item,
+#wpadminbar .ab-top-menu > li > .ab-item:focus,
+#wpadminbar:not(.mobile) .ab-top-menu > li:hover > .ab-item,
+#wpadminbar:not(.mobile) .ab-top-menu > li > .ab-item:focus {
+	background: var(--gbe-navy-mid, #152a52);
+	color: var(--gbe-gold-light);
+}
+
+#wpadminbar .quicklinks .menupop .ab-sub-wrapper,
+#wpadminbar .shortlink-input {
+	background: var(--gbe-navy-dark);
+}
+
+#wpadminbar .ab-submenu .ab-item:hover,
+#wpadminbar .ab-submenu .ab-item:focus {
+	color: var(--gbe-gold-light);
+	background: var(--gbe-navy-mid, #152a52);
+}
+
+#wp-admin-bar-gbe-logo > .ab-item {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0 0.75rem !important;
+	height: 32px;
+	overflow: hidden;
+	line-height: 1;
+}
+
+#wp-admin-bar-gbe-logo .gbe-admin-bar-logo__icon {
+	display: inline-block;
+	flex-shrink: 0;
+	width: 28px;
+	height: 28px;
+	background: var(--gbe-white) url("../images/gbecosmolingua-logo.png") center / cover no-repeat;
+	border-radius: 50%;
+	border: 1px solid var(--gbe-gold);
+}
+
+/* Menu latéral */
+#adminmenuback,
+#adminmenuwrap,
+#adminmenu {
+	background: var(--gbe-navy);
+}
+
+#adminmenu a {
+	color: var(--gbe-white);
+}
+
+#adminmenu div.wp-menu-image::before {
+	color: var(--gbe-gold-light);
+}
+
+#adminmenu li.menu-top:hover,
+#adminmenu li.opensub > a.menu-top,
+#adminmenu li > a.menu-top:focus {
+	background: var(--gbe-navy-mid);
+	color: var(--gbe-white);
+}
+
+#adminmenu li.menu-top:hover div.wp-menu-image::before,
+#adminmenu li.opensub > a.menu-top div.wp-menu-image::before {
+	color: var(--gbe-gold-light);
+}
+
+#adminmenu .wp-submenu,
+#adminmenu .wp-has-current-submenu .wp-submenu,
+#adminmenu a.wp-has-current-submenu:focus + .wp-submenu,
+.folded #adminmenu .wp-has-current-submenu .wp-submenu {
+	background: var(--gbe-navy-dark);
+}
+
+#adminmenu .wp-submenu a {
+	color: rgba(255, 250, 240, 0.88);
+}
+
+#adminmenu .wp-submenu a:hover,
+#adminmenu .wp-submenu a:focus {
+	color: var(--gbe-gold-light);
+}
+
+#adminmenu .wp-has-current-submenu > a.menu-top,
+#adminmenu .current a.menu-top,
+#adminmenu a.wp-has-current-submenu {
+	background: var(--gbe-gold);
+	color: var(--gbe-bark-dark);
+}
+
+#adminmenu .wp-has-current-submenu > a.menu-top div.wp-menu-image::before,
+#adminmenu .current a.menu-top div.wp-menu-image::before {
+	color: var(--gbe-bark-dark);
+}
+
+#adminmenu li.wp-menu-separator {
+	background: rgba(216, 173, 75, 0.2);
+}
+
+#collapse-button {
+	color: var(--gbe-gold-light);
+}
+
+#collapse-button:hover,
+#collapse-button:focus {
+	color: var(--gbe-white);
+}
+
+/* Boutons principaux */
+.wp-core-ui .button-primary {
+	background: var(--gbe-gold);
+	border-color: var(--gbe-gold);
+	color: var(--gbe-navy);
+}
+
+.wp-core-ui .button-primary:hover,
+.wp-core-ui .button-primary:focus {
+	background: var(--gbe-navy);
+	border-color: var(--gbe-navy);
+	color: var(--gbe-white);
+}
+
+.wp-core-ui .button-primary:focus {
+	box-shadow: 0 0 0 1px var(--gbe-white), 0 0 0 3px var(--gbe-gold-light);
+}
+
+/* Liens et focus */
+a {
+	color: var(--gbe-navy);
+}
+
+a:hover,
+a:active,
+a:focus {
+	color: var(--gbe-gold);
+}
+
+.wrap .add-new-h2,
+.wrap .page-title-action {
+	border-color: var(--gbe-navy);
+	color: var(--gbe-navy);
+}
+
+.wrap .add-new-h2:hover,
+.wrap .page-title-action:hover {
+	background: var(--gbe-navy);
+	color: var(--gbe-white);
+	border-color: var(--gbe-navy-dark);
+}
+
+/* Notifications */
+.notice.notice-success,
+div.updated {
+	border-left-color: var(--gbe-green);
+}
+
+.notice-info {
+	border-left-color: var(--gbe-gold);
+}
+
+/* Pied de page admin */
+#wpfooter {
+	color: #666;
+}
+
+#wpfooter a {
+	color: var(--gbe-navy);
+}
+
+/* Page de connexion */
+body.login {
+	background:
+		radial-gradient(circle at 15% 20%, rgba(217, 154, 43, 0.2) 0, transparent 40%),
+		linear-gradient(160deg, var(--gbe-navy-dark) 0%, var(--gbe-navy) 55%, var(--gbe-navy-mid, #152a52) 100%);
+}
+
+body.login #login {
+	padding-top: 6%;
+}
+
+body.login #login h1 a {
+	background-image: url("../images/gbecosmolingua-logo.png");
+	background-size: contain;
+	background-position: center;
+	width: 120px;
+	height: 120px;
+	margin: 0 auto 1.5rem;
+	border-radius: 50%;
+	border: 3px solid var(--gbe-gold);
+	background-color: var(--gbe-white);
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+body.login form {
+	border-top: 4px solid var(--gbe-gold);
+	border-radius: 4px;
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+}
+
+body.login form .input,
+body.login input[type="text"],
+body.login input[type="password"] {
+	border-color: #ccc;
+}
+
+body.login form .input:focus,
+body.login input[type="text"]:focus,
+body.login input[type="password"]:focus {
+	border-color: var(--gbe-gold);
+	box-shadow: 0 0 0 1px var(--gbe-gold);
+}
+
+body.login #nav a,
+body.login #backtoblog a {
+	color: var(--gbe-gold-light);
+}
+
+body.login #nav a:hover,
+body.login #backtoblog a:hover {
+	color: var(--gbe-white);
+}
+
+body.login .message,
+body.login .success {
+	border-left-color: var(--gbe-green);
+}

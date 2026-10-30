@@ -21,8 +21,11 @@ class GBE_Admin {
 		add_action( 'admin_post_gbe_reset_import', array( __CLASS__, 'handle_reset' ) );
 		add_action( 'admin_post_gbe_reset_templates', array( __CLASS__, 'handle_reset_templates' ) );
 		add_action( 'admin_post_gbe_seed_demo', array( __CLASS__, 'handle_seed_demo' ) );
+		add_action( 'admin_post_gbe_sync_membres_photos', array( __CLASS__, 'handle_sync_membres_photos' ) );
+		add_action( 'admin_post_gbe_import_proverbes_ewe', array( __CLASS__, 'handle_import_proverbes_ewe' ) );
 		add_action( 'admin_post_gbe_dedupe_pages', array( __CLASS__, 'handle_dedupe_pages' ) );
 		add_action( 'admin_post_gbe_fix_permalinks', array( __CLASS__, 'handle_fix_permalinks' ) );
+		add_action( 'admin_post_gbe_force_sync', array( __CLASS__, 'handle_force_sync' ) );
 		add_filter( 'manage_gbe_soumission_posts_columns', array( __CLASS__, 'soumission_columns' ) );
 		add_action( 'manage_gbe_soumission_posts_custom_column', array( __CLASS__, 'soumission_column_content' ), 10, 2 );
 	}
@@ -70,6 +73,8 @@ class GBE_Admin {
 		<div class="wrap">
 			<h1><?php esc_html_e( 'GbeCosmoLingua — Configuration', 'gbecosmolingua-core' ); ?></h1>
 
+			<?php self::render_deploy_status(); ?>
+
 			<div class="gbe-admin-notice">
 				<p><strong><?php esc_html_e( 'Thème actif :', 'gbecosmolingua-core' ); ?></strong> <?php echo esc_html( $theme->get( 'Name' ) ); ?></p>
 				<p><strong><?php esc_html_e( 'Plugin :', 'gbecosmolingua-core' ); ?></strong> <?php echo esc_html( GBE_CORE_VERSION ); ?></p>
@@ -88,6 +93,7 @@ class GBE_Admin {
 				<li><strong><?php esc_html_e( 'Xótùtù', 'gbecosmolingua-core' ); ?></strong> — <?php esc_html_e( 'Genres oraux avec archives audio/vidéo', 'gbecosmolingua-core' ); ?></li>
 				<li><strong><?php esc_html_e( 'Partenaires', 'gbecosmolingua-core' ); ?></strong></li>
 				<li><strong><?php esc_html_e( 'Événements', 'gbecosmolingua-core' ); ?></strong></li>
+				<li><strong><?php esc_html_e( 'Membres', 'gbecosmolingua-core' ); ?></strong> — <?php esc_html_e( 'Membres fondateurs et équipe (photo via image mise en avant)', 'gbecosmolingua-core' ); ?></li>
 				<li><strong><?php esc_html_e( 'Ressources', 'gbecosmolingua-core' ); ?></strong></li>
 			</ul>
 
@@ -97,6 +103,7 @@ class GBE_Admin {
 				<li><?php esc_html_e( 'Agenda : événements à venir — [gbe_agenda]', 'gbecosmolingua-core' ); ?></li>
 				<li><?php esc_html_e( 'Événements : [gbe_evenements_list] — archive /evenements/', 'gbecosmolingua-core' ); ?></li>
 				<li><?php esc_html_e( 'Annuaire partenaires : [gbe_partenaires_list]', 'gbecosmolingua-core' ); ?></li>
+				<li><?php esc_html_e( 'Membres fondateurs : [gbe_membres_fondateurs] — CPT Membres (photo = image mise en avant)', 'gbecosmolingua-core' ); ?></li>
 			</ul>
 
 			<h2><?php esc_html_e( 'Phase 5 — Multilingue et formulaires', 'gbecosmolingua-core' ); ?></h2>
@@ -118,9 +125,18 @@ class GBE_Admin {
 			<h2><?php esc_html_e( 'Actions', 'gbecosmolingua-core' ); ?></h2>
 			<div class="gbe-admin-actions" style="display:flex; flex-direction:column; gap:0.75rem; max-width:520px; margin-bottom:1rem;">
 				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+					<?php wp_nonce_field( 'gbe_force_sync' ); ?>
+					<input type="hidden" name="action" value="gbe_force_sync">
+					<?php submit_button( __( 'Forcer la synchronisation du contenu (production)', 'gbecosmolingua-core' ), 'primary', 'submit', false ); ?>
+				</form>
+				<p class="description" style="margin:0;">
+					<?php esc_html_e( 'Écrit tous les textes des pages Gbe en base, assigne les modèles chapitre et recharge en-tête/pied de page. À utiliser après un upload FTP sur Hostinger.', 'gbecosmolingua-core' ); ?>
+				</p>
+
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 					<?php wp_nonce_field( 'gbe_run_import' ); ?>
 					<input type="hidden" name="action" value="gbe_run_import">
-					<?php submit_button( __( 'Importer / mettre à jour les pages', 'gbecosmolingua-core' ), 'primary', 'submit', false ); ?>
+					<?php submit_button( __( 'Importer / mettre à jour les pages', 'gbecosmolingua-core' ), 'secondary', 'submit', false ); ?>
 				</form>
 
 				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
@@ -137,6 +153,57 @@ class GBE_Admin {
 					<input type="hidden" name="action" value="gbe_seed_demo">
 					<?php submit_button( __( 'Créer le contenu de démo', 'gbecosmolingua-core' ), 'secondary', 'submit', false ); ?>
 				</form>
+
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+					<?php wp_nonce_field( 'gbe_sync_membres_photos' ); ?>
+					<input type="hidden" name="action" value="gbe_sync_membres_photos">
+					<?php submit_button( __( 'Synchroniser les photos des fondateurs', 'gbecosmolingua-core' ), 'secondary', 'submit', false ); ?>
+					<label style="display:block;margin:0.35rem 0 0;">
+						<input type="checkbox" name="force" value="1">
+						<?php esc_html_e( 'Forcer le remplacement des photos déjà importées depuis le thème', 'gbecosmolingua-core' ); ?>
+					</label>
+				</form>
+				<p class="description" style="margin:0;">
+					<?php esc_html_e( 'Importe les portraits depuis themes/gbecosmolingua/assets/images/membres/ vers les fiches Membres.', 'gbecosmolingua-core' ); ?>
+				</p>
+
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+					<?php wp_nonce_field( 'gbe_import_proverbes_ewe' ); ?>
+					<input type="hidden" name="action" value="gbe_import_proverbes_ewe">
+					<?php
+					$corpus_count = GBE_Proverbes_Importer::data_count();
+					$imported_at  = get_option( GBE_Proverbes_Importer::OPTION_KEY );
+					submit_button(
+						sprintf(
+							/* translators: %d: number of proverbs in JSON file */
+							__( 'Importer le corpus éwé (%d proverbes)', 'gbecosmolingua-core' ),
+							$corpus_count
+						),
+						'primary',
+						'submit',
+						false
+					);
+					?>
+					<label style="display:block;margin:0.35rem 0 0;">
+						<input type="checkbox" name="force" value="1">
+						<?php esc_html_e( 'Forcer la mise à jour des entrées déjà importées', 'gbecosmolingua-core' ); ?>
+					</label>
+				</form>
+				<p class="description" style="margin:0;">
+					<?php
+					if ( $imported_at ) {
+						echo esc_html(
+							sprintf(
+								/* translators: %s: formatted date */
+								__( 'Dernier import éwé : %s', 'gbecosmolingua-core' ),
+								wp_date( 'd/m/Y H:i', (int) $imported_at )
+							)
+						);
+					} else {
+						esc_html_e( 'Corpus Spieth (1906), Gbekɔbu (2014) et Anibri (2003) — 786 entrées.', 'gbecosmolingua-core' );
+					}
+					?>
+				</p>
 
 				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 					<?php wp_nonce_field( 'gbe_fix_permalinks' ); ?>
@@ -167,6 +234,154 @@ class GBE_Admin {
 	}
 
 	/**
+	 * État du déploiement (plugin + thème + contenu en base).
+	 *
+	 * @return array<string, mixed>
+	 */
+	public static function get_deploy_status() {
+		$theme     = wp_get_theme();
+		$stylesheet = $theme->get_stylesheet();
+		$theme_dir = get_stylesheet_directory();
+
+		$sample = get_page_by_path( 'le-gbe/les-langues', OBJECT, 'page' );
+		$sample_ok = false;
+		$sample_tpl = '';
+		if ( $sample instanceof WP_Post ) {
+			$sample_tpl = (string) get_page_template_slug( $sample->ID );
+			$sample_ok  = str_contains( $sample->post_content, 'gbe-chapter' )
+				|| 'page-le-gbe-chapter' === $sample_tpl
+				|| function_exists( 'gbe_le_gbe_chapter_runtime_content' );
+		}
+
+		$db_version = (string) get_option( 'gbe_core_version', '0' );
+
+		return array(
+			'plugin_code'    => GBE_CORE_VERSION,
+			'plugin_db'      => $db_version,
+			'plugin_synced'  => version_compare( $db_version, GBE_CORE_VERSION, '>=' ),
+			'theme_name'     => $theme->get( 'Name' ),
+			'theme_slug'     => $stylesheet,
+			'theme_ok'       => in_array( $stylesheet, array( 'gbecosmolingua', 'gbecosmolingua-theme2' ), true ),
+			'chapter_php'    => is_readable( $theme_dir . '/includes/le-gbe-chapter.php' ),
+			'chapter_tpl'    => is_readable( $theme_dir . '/templates/page-le-gbe-chapter.html' ),
+			'chapter_css'    => is_readable( $theme_dir . '/assets/css/le-gbe-chapter.css' ),
+			'runtime_fn'     => function_exists( 'gbe_le_gbe_langues_content' ),
+			'shortcode_fn'   => function_exists( 'gbecosmolingua_le_gbe_chapter_body_html' ),
+			'sample_page'    => $sample instanceof WP_Post,
+			'sample_tpl'     => $sample_tpl ?: __( '(modèle par défaut)', 'gbecosmolingua-core' ),
+			'sample_ok'      => $sample_ok,
+			'langues_hub_fn' => function_exists( 'gbe_le_gbe_langues_content' ),
+		);
+	}
+
+	/**
+	 * Affiche le diagnostic déploiement en haut de la page admin.
+	 */
+	public static function render_deploy_status() {
+		$s = self::get_deploy_status();
+		$all_ok = $s['plugin_synced'] && $s['theme_ok'] && $s['chapter_php'] && $s['chapter_tpl'] && $s['runtime_fn'] && $s['shortcode_fn'];
+
+		$box_style = $all_ok
+			? 'border-left:4px solid #00a32a;background:#edfaef;padding:1rem 1.25rem;margin:1rem 0;'
+			: 'border-left:4px solid #d63638;background:#fcf0f1;padding:1rem 1.25rem;margin:1rem 0;';
+		?>
+		<div class="gbe-deploy-status" style="<?php echo esc_attr( $box_style ); ?>">
+			<h2 style="margin-top:0;"><?php esc_html_e( 'État du déploiement', 'gbecosmolingua-core' ); ?></h2>
+			<table class="widefat striped" style="max-width:720px;background:#fff;">
+				<tbody>
+					<tr>
+						<td><strong><?php esc_html_e( 'Plugin (fichiers)', 'gbecosmolingua-core' ); ?></strong></td>
+						<td><?php echo esc_html( $s['plugin_code'] ); ?></td>
+					</tr>
+					<tr>
+						<td><strong><?php esc_html_e( 'Plugin (base de données)', 'gbecosmolingua-core' ); ?></strong></td>
+						<td><?php echo esc_html( $s['plugin_db'] ); ?><?php echo $s['plugin_synced'] ? ' ✓' : ' — ' . esc_html__( 'contenu pas encore synchronisé', 'gbecosmolingua-core' ); ?></td>
+					</tr>
+					<tr>
+						<td><strong><?php esc_html_e( 'Thème actif', 'gbecosmolingua-core' ); ?></strong></td>
+						<td><?php echo esc_html( $s['theme_name'] . ' (' . $s['theme_slug'] . ')' ); ?><?php echo $s['theme_ok'] ? ' ✓' : ' ✗'; ?></td>
+					</tr>
+					<tr>
+						<td><strong><?php esc_html_e( 'Fichier le-gbe-chapter.php', 'gbecosmolingua-core' ); ?></strong></td>
+						<td><?php echo $s['chapter_php'] ? esc_html__( 'Présent', 'gbecosmolingua-core' ) . ' ✓' : esc_html__( 'Absent — uploadez le thème actif (gbecosmolingua ou gbecosmolingua-theme2)', 'gbecosmolingua-core' ) . ' ✗'; ?></td>
+					</tr>
+					<tr>
+						<td><strong><?php esc_html_e( 'Modèle page-le-gbe-chapter.html', 'gbecosmolingua-core' ); ?></strong></td>
+						<td><?php echo $s['chapter_tpl'] ? esc_html__( 'Présent', 'gbecosmolingua-core' ) . ' ✓' : esc_html__( 'Absent', 'gbecosmolingua-core' ) . ' ✗'; ?></td>
+					</tr>
+					<tr>
+						<td><strong><?php esc_html_e( 'Page test /le-gbe/les-langues/', 'gbecosmolingua-core' ); ?></strong></td>
+						<td>
+							<?php
+							if ( ! $s['sample_page'] ) {
+								esc_html_e( 'Page introuvable', 'gbecosmolingua-core' );
+							} else {
+								echo esc_html( sprintf(
+									/* translators: 1: page template slug */
+									__( 'Modèle : %s', 'gbecosmolingua-core' ),
+									$s['sample_tpl']
+								) );
+							}
+							?>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<?php if ( ! $all_ok ) : ?>
+				<p style="margin-bottom:0;">
+					<strong><?php esc_html_e( 'Les textes n’apparaissent en ligne que si le plugin ET le thème sont à jour, puis si vous cliquez « Forcer la synchronisation du contenu » ci-dessous.', 'gbecosmolingua-core' ); ?></strong>
+				</p>
+			<?php endif; ?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Synchronisation complète après déploiement FTP (Hostinger).
+	 */
+	public static function handle_force_sync() {
+		check_admin_referer( 'gbe_force_sync' );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Accès refusé.', 'gbecosmolingua-core' ) );
+		}
+
+		global $wpdb;
+		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE 'gbecosmolingua_le_gbe_chapter_tpl5_%'" );
+
+		GBE_Page_Importer::import( true );
+		GBE_Page_Importer::patch_phase4_shortcodes();
+		GBE_Page_Importer::patch_phase5_forms();
+		GBE_Page_Importer::patch_phase7_content();
+		GBE_Page_Importer::patch_culture_subpages();
+		GBE_Page_Importer::patch_le_gbe_subpages();
+		GBE_Page_Importer::patch_linguistique_subpages();
+		GBE_Page_Importer::patch_paremiologie_subpages();
+		GBE_Page_Importer::patch_onomastique_subpages();
+		GBE_Page_Importer::patch_recherche_innovation_subpages();
+		GBE_Page_Importer::patch_site_hubs_subpages();
+		GBE_Page_Importer::patch_membres_fondateurs();
+		GBE_Page_Importer::patch_mission_statuts();
+		GBE_Page_Importer::patch_capo_auteur_page();
+		GBE_Page_Importer::patch_le_gbe_chapter_templates();
+		GBE_Page_Importer::patch_gbe_naming();
+		GBE_Page_Importer::configure_permalinks();
+		GBE_Page_Importer::restore_primary_menu();
+		GBE_Page_Importer::reset_theme_template_parts( array( 'header', 'footer' ) );
+		GBE_Home_Composer_Admin::maybe_seed_defaults();
+		update_option( 'gbe_core_version', GBE_CORE_VERSION );
+		flush_rewrite_rules();
+
+		wp_safe_redirect(
+			add_query_arg(
+				'gbe_message',
+				rawurlencode( __( 'Synchronisation terminée : pages, modèles chapitre, en-tête et pied de page mis à jour.', 'gbecosmolingua-core' ) ),
+				admin_url( 'admin.php?page=gbecosmolingua' )
+			)
+		);
+		exit;
+	}
+
+	/**
 	 * Handle import action.
 	 */
 	public static function handle_import() {
@@ -182,7 +397,9 @@ class GBE_Admin {
 		GBE_Page_Importer::patch_phase7_content();
 		GBE_Page_Importer::patch_culture_subpages();
 		GBE_Page_Importer::patch_le_gbe_subpages();
+		GBE_Page_Importer::patch_linguistique_subpages();
 		GBE_Page_Importer::patch_paremiologie_subpages();
+		GBE_Page_Importer::patch_onomastique_subpages();
 		GBE_Page_Importer::patch_recherche_innovation_subpages();
 		GBE_Page_Importer::patch_site_hubs_subpages();
 		GBE_Page_Importer::restore_primary_menu();
@@ -213,6 +430,8 @@ class GBE_Admin {
 				'page-le-gbe',
 				'page-cultures-gbe',
 				'page-xotutu',
+				'page-onomastique',
+				'page-linguistique',
 				'page-paremiologie',
 				'page-recherche-innovation',
 				'page-sejours-mobilite',
@@ -266,6 +485,30 @@ class GBE_Admin {
 	}
 
 	/**
+	 * Import Ewe proverbs corpus.
+	 */
+	public static function handle_import_proverbes_ewe() {
+		check_admin_referer( 'gbe_import_proverbes_ewe' );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Accès refusé.', 'gbecosmolingua-core' ) );
+		}
+
+		$force   = isset( $_POST['force'] ) && '1' === $_POST['force'];
+		$message = GBE_Proverbes_Importer::import( $force );
+
+		wp_safe_redirect(
+			add_query_arg(
+				array(
+					'page'        => 'gbecosmolingua',
+					'gbe_message' => rawurlencode( $message ),
+				),
+				admin_url( 'admin.php' )
+			)
+		);
+		exit;
+	}
+
+	/**
 	 * Handle demo content seeding.
 	 */
 	public static function handle_seed_demo() {
@@ -277,6 +520,42 @@ class GBE_Admin {
 		GBE_Page_Importer::patch_phase4_shortcodes();
 		GBE_Page_Importer::patch_phase5_forms();
 		$message = GBE_Demo_Content::seed( true );
+
+		wp_safe_redirect(
+			add_query_arg(
+				'gbe_message',
+				rawurlencode( $message ),
+				admin_url( 'admin.php?page=gbecosmolingua' )
+			)
+		);
+		exit;
+	}
+
+	/**
+	 * Synchronise les photos des membres fondateurs depuis le thème.
+	 */
+	public static function handle_sync_membres_photos() {
+		check_admin_referer( 'gbe_sync_membres_photos' );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Accès refusé.', 'gbecosmolingua-core' ) );
+		}
+
+		if ( class_exists( 'GBE_Demo_Content' ) ) {
+			GBE_Demo_Content::seed_membres_fondateurs();
+		}
+
+		$force   = ! empty( $_POST['force'] );
+		$count   = class_exists( 'GBE_Membres_Photos' ) ? GBE_Membres_Photos::sync_fondateurs_photos( $force ) : 0;
+		$message = sprintf(
+			/* translators: %d: number of photos synced */
+			_n(
+				'%d photo de fondateur synchronisée.',
+				'%d photos de fondateurs synchronisées.',
+				$count,
+				'gbecosmolingua-core'
+			),
+			$count
+		);
 
 		wp_safe_redirect(
 			add_query_arg(
@@ -301,7 +580,9 @@ class GBE_Admin {
 		GBE_Page_Importer::patch_phase7_content();
 		GBE_Page_Importer::patch_culture_subpages();
 		GBE_Page_Importer::patch_le_gbe_subpages();
+		GBE_Page_Importer::patch_linguistique_subpages();
 		GBE_Page_Importer::patch_paremiologie_subpages();
+		GBE_Page_Importer::patch_onomastique_subpages();
 		GBE_Page_Importer::patch_recherche_innovation_subpages();
 		GBE_Page_Importer::patch_site_hubs_subpages();
 		GBE_Page_Importer::configure_permalinks();

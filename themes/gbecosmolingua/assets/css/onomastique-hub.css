@@ -1,0 +1,156 @@
+
+/* —— Page Onomastique (hub Xótùtù) —— */
+.gbe-main--onomastique {
+	padding: 0 !important;
+	gap: 0;
+	max-width: none;
+	overflow-x: clip;
+	background: var(--gbe-sand, #F2E9D8);
+}
+
+.gbe-main--onomastique.is-layout-flow > * {
+	margin-block-start: 0;
+}
+
+.gbe-main--onomastique > .wp-block-html {
+	max-width: none;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+.gbe-main--onomastique .gbe-section.gbe-onomastique-intro {
+	max-width: 1140px;
+	margin: 0 auto;
+	padding: clamp(1rem, 3vw, 1.5rem) clamp(1rem, 3vw, 1.5rem) 0;
+	box-sizing: border-box;
+	line-height: 1.65;
+}
+
+/* Hero — dimensions : hero-header-flush.css */
+.gbe-onomastique-hero {
+	color: var(--gbe-white, #fff);
+	text-align: center;
+	background:
+		linear-gradient(180deg, rgba(13, 27, 61, 0.55) 0%, rgba(8, 20, 40, 0.72) 45%, rgba(8, 20, 40, 0.92) 100%),
+		var(--gbe-onomastique-hero-image, none) center center / cover no-repeat,
+		linear-gradient(135deg, #0d1b3d 0%, #152a52 55%, #081428 100%);
+}
+
+.gbe-onomastique-hero__kicker {
+	margin: 0 0 0.5rem;
+	font-size: 0.85rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.gbe-onomastique-hero__kicker a {
+	color: rgba(255, 250, 240, 0.85);
+	text-decoration: none;
+}
+
+.gbe-onomastique-hero__kicker a:hover {
+	color: var(--gbe-gold, #D99A2B);
+}
+
+.gbe-onomastique-hero__title {
+	font-family: Georgia, "Times New Roman", serif;
+	font-size: clamp(2.5rem, 6vw, 3.75rem);
+	font-weight: 400;
+	color: var(--gbe-white) !important;
+	margin: 0 0 0.75rem;
+}
+
+.gbe-onomastique-hero__lead {
+	max-width: 36rem;
+	margin: 0 auto 1.5rem;
+	font-size: clamp(1rem, 2.2vw, 1.12rem);
+	line-height: 1.55;
+	color: rgba(255, 250, 240, 0.95);
+}
+
+.gbe-onomastique-hero__actions .wp-block-button__link {
+	border-radius: 999px;
+	font-weight: 600;
+}
+
+.gbe-onomastique-hero__actions .is-style-fill .wp-block-button__link {
+	background: var(--gbe-gold, #D99A2B);
+	color: var(--gbe-ink, #0D1B3D);
+	border: 1px solid rgba(255, 250, 240, 0.4);
+}
+
+.gbe-onomastique-hero__actions .is-style-outline .wp-block-button__link {
+	border: 1px solid rgba(255, 250, 240, 0.7);
+	color: var(--gbe-white);
+	background: transparent;
+}
+
+/* Nav tabs */
+.gbe-onomastique-nav {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.5rem;
+	max-width: 960px;
+	margin: -2.5rem auto 1.5rem;
+	padding: 0 clamp(1rem, 3vw, 1.5rem);
+	position: relative;
+	z-index: 2;
+}
+
+.gbe-onomastique-nav__tab {
+	display: inline-block;
+	padding: 0.45rem 1rem;
+	border-radius: 999px;
+	font-size: 0.88rem;
+	font-weight: 600;
+	text-decoration: none;
+	color: var(--gbe-ink, #0D1B3D);
+	background: var(--gbe-white, #fff);
+	border: 1px solid rgba(35, 21, 12, 0.12);
+	box-shadow: 0 4px 14px rgba(35, 21, 12, 0.08);
+	transition: background 0.15s, color 0.15s;
+}
+
+.gbe-onomastique-nav__tab:hover {
+	background: var(--gbe-green, #1E5A3A);
+	color: var(--gbe-white, #fff);
+	border-color: var(--gbe-green, #1E5A3A);
+}
+
+/* CTA */
+.gbe-onomastique-cta {
+	margin-top: 0;
+	padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 3vw, 1.5rem);
+	background: linear-gradient(120deg, #152a52 0%, #1E5A3A 100%);
+	color: var(--gbe-white);
+	text-align: center;
+}
+
+.gbe-onomastique-cta__inner {
+	max-width: 640px;
+	margin: 0 auto;
+}
+
+.gbe-onomastique-cta h2 {
+	color: var(--gbe-white);
+	margin: 0 0 0.65rem;
+}
+
+.gbe-onomastique-cta .gbe-culture-rubrique__btn {
+	background: var(--gbe-gold);
+	color: var(--gbe-ink) !important;
+	margin-top: 0.75rem;
+}
+
+@media (max-width: 600px) {
+	.gbe-onomastique-nav {
+		margin-top: -1.5rem;
+	}
+
+	.gbe-onomastique-nav__tab {
+		font-size: 0.82rem;
+		padding: 0.4rem 0.75rem;
+	}
+}

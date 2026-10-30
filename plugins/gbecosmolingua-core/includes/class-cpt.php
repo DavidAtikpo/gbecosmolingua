@@ -86,6 +86,29 @@ class GBE_CPT {
 		);
 
 		register_post_type(
+			'membre_gbe',
+			array(
+				'labels'              => array(
+					'name'               => __( 'Membres', 'gbecosmolingua-core' ),
+					'singular_name'      => __( 'Membre', 'gbecosmolingua-core' ),
+					'add_new'            => __( 'Ajouter un membre', 'gbecosmolingua-core' ),
+					'add_new_item'       => __( 'Ajouter un membre', 'gbecosmolingua-core' ),
+					'edit_item'          => __( 'Modifier le membre', 'gbecosmolingua-core' ),
+					'search_items'       => __( 'Rechercher des membres', 'gbecosmolingua-core' ),
+					'not_found'          => __( 'Aucun membre trouvé', 'gbecosmolingua-core' ),
+					'menu_name'          => __( 'Membres', 'gbecosmolingua-core' ),
+				),
+				'public'              => false,
+				'publicly_queryable'  => false,
+				'show_ui'             => true,
+				'has_archive'         => false,
+				'menu_icon'           => 'dashicons-id-alt',
+				'supports'            => array( 'title', 'editor', 'thumbnail', 'page-attributes' ),
+				'show_in_rest'        => true,
+			)
+		);
+
+		register_post_type(
 			'evenement',
 			array(
 				'labels'              => array(
@@ -174,7 +197,39 @@ class GBE_CPT {
 			)
 		);
 
+		register_taxonomy(
+			'groupe_membre',
+			array( 'membre_gbe' ),
+			array(
+				'labels'            => array(
+					'name'          => __( 'Groupes de membres', 'gbecosmolingua-core' ),
+					'singular_name' => __( 'Groupe de membres', 'gbecosmolingua-core' ),
+				),
+				'public'            => false,
+				'hierarchical'      => true,
+				'show_ui'           => true,
+				'show_in_rest'      => true,
+				'show_admin_column' => true,
+			)
+		);
+
 		self::insert_default_terms();
+		self::ensure_membre_group_terms();
+	}
+
+	/**
+	 * Garantit les termes « fondateur » / « equipe » (y compris bases déjà initialisées).
+	 */
+	public static function ensure_membre_group_terms() {
+		$groupes = array(
+			'fondateur' => __( 'Membres fondateurs', 'gbecosmolingua-core' ),
+			'equipe'    => __( 'Équipe', 'gbecosmolingua-core' ),
+		);
+		foreach ( $groupes as $slug => $label ) {
+			if ( ! term_exists( $slug, 'groupe_membre' ) ) {
+				wp_insert_term( $label, 'groupe_membre', array( 'slug' => $slug ) );
+			}
+		}
 	}
 
 	/**
@@ -223,6 +278,16 @@ class GBE_CPT {
 		foreach ( $types as $type ) {
 			if ( ! term_exists( $type, 'type_partenaire' ) ) {
 				wp_insert_term( $type, 'type_partenaire' );
+			}
+		}
+
+		$groupes = array(
+			'fondateur' => __( 'Membres fondateurs', 'gbecosmolingua-core' ),
+			'equipe'    => __( 'Équipe', 'gbecosmolingua-core' ),
+		);
+		foreach ( $groupes as $slug => $label ) {
+			if ( ! term_exists( $slug, 'groupe_membre' ) ) {
+				wp_insert_term( $label, 'groupe_membre', array( 'slug' => $slug ) );
 			}
 		}
 

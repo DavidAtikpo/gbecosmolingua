@@ -14,6 +14,9 @@ if ( ! $page ) {
 }
 
 $hero_style = gbecosmolingua_public_featured_image_style( $page->ID, '--gbe-culture-hero-image' );
+if ( ! $hero_style ) {
+	$hero_style = gbecosmolingua_culture_image_style( 'hero-culture.jpg', '--gbe-culture-hero-image' );
+}
 $lead       = gbecosmolingua_public_page_excerpt_text( $page );
 ?>
 <!-- wp:group {"align":"full","className":"gbe-culture-hero","layout":{"type":"default"}} -->

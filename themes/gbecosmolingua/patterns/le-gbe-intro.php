@@ -1,6 +1,6 @@
 <?php
 /**
- * Title: Le Gbe — Introduction
+ * Title: Gbe — Introduction
  * Slug: gbecosmolingua/le-gbe-intro
  * Categories: gbecosmolingua
  * Inserter: false

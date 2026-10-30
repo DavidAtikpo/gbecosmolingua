@@ -27,6 +27,7 @@ class GBE_Demo_Content {
 			self::seed_actualites();
 			self::seed_evenements();
 			self::seed_partenaires();
+			self::seed_membres_fondateurs();
 			self::seed_proverbes_extra();
 			self::seed_xotutu_extra();
 			self::seed_ressources_extra();
@@ -153,11 +154,12 @@ class GBE_Demo_Content {
 		self::seed_actualites();
 		self::seed_evenements();
 		self::seed_partenaires();
+		self::seed_membres_fondateurs();
 		self::seed_proverbes_extra();
 		self::seed_xotutu_extra();
 		self::seed_ressources_extra();
 
-		return __( 'Contenu de démonstration créé : proverbes, archives Xótùtù, ressources, actualités, événements et partenaires.', 'gbecosmolingua-core' );
+		return __( 'Contenu de démonstration créé : proverbes, archives Xótùtù, ressources, actualités, événements, partenaires et membres fondateurs.', 'gbecosmolingua-core' );
 	}
 
 	/**
@@ -472,5 +474,70 @@ class GBE_Demo_Content {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Seed founding members of GbeCosmoLingua.
+	 */
+	public static function seed_membres_fondateurs() {
+		if ( class_exists( 'GBE_CPT' ) ) {
+			GBE_CPT::ensure_membre_group_terms();
+		}
+
+		$groupe = get_term_by( 'slug', 'fondateur', 'groupe_membre' );
+		$term   = $groupe ? array( (int) $groupe->term_id ) : array();
+		$catalog = class_exists( 'GBE_Membres_Photos' )
+			? GBE_Membres_Photos::get_fondateurs_catalog()
+			: array();
+
+		if ( empty( $catalog ) ) {
+			return;
+		}
+
+		foreach ( $catalog as $membre ) {
+			$id = class_exists( 'GBE_Membres_Photos' )
+				? GBE_Membres_Photos::find_membre_post_id( $membre['slug'], $membre['title'] )
+				: 0;
+
+			if ( $id <= 0 ) {
+				$id = wp_insert_post(
+					array(
+						'post_title'  => $membre['title'],
+						'post_name'   => $membre['slug'],
+						'post_type'   => 'membre_gbe',
+						'post_status' => 'publish',
+						'menu_order'  => (int) $membre['order'],
+					),
+					true
+				);
+
+				if ( is_wp_error( $id ) || ! $id ) {
+					continue;
+				}
+			} else {
+				wp_update_post(
+					array(
+						'ID'         => $id,
+						'post_title' => $membre['title'],
+						'post_name'  => $membre['slug'],
+						'menu_order' => (int) $membre['order'],
+					)
+				);
+			}
+
+			update_post_meta( $id, '_gbe_fonction', $membre['fonction'] );
+			update_post_meta( $id, '_gbe_photo_theme', $membre['photo'] );
+
+			if ( ! empty( $term ) ) {
+				wp_set_object_terms( $id, $term, 'groupe_membre' );
+			}
+
+			if ( class_exists( 'GBE_Membres_Photos' ) ) {
+				GBE_Membres_Photos::assign_default_language( $id );
+				GBE_Membres_Photos::attach_theme_photo( $id, $membre['photo'], $membre['title'] );
+			}
+		}
+
+		delete_transient( 'gbe_membres_fondateurs_ok' );
 	}
 }

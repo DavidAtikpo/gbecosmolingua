@@ -205,29 +205,42 @@ class GBE_Page_Importer {
 			$menu_id = $menu->term_id;
 		}
 
-		$rubrique_slugs = array(
-			'le-gbe',
-			'cultures-gbe',
-			'xotutu',
-			'paremiologie',
-			'recherche-et-innovation',
-			'sejours-et-mobilite',
-			'partenaires',
-			'nous-soutenir',
-			'notre-philosophie',
-		);
+		self::sync_primary_menu_items( $menu_id );
 
-		$position = 1;
-		foreach ( $rubrique_slugs as $slug ) {
-			$page = get_page_by_path( $slug );
-			if ( ! $page ) {
-				continue;
-			}
+		$locations            = get_theme_mod( 'nav_menu_locations', array() );
+		$locations['primary'] = $menu_id;
+		set_theme_mod( 'nav_menu_locations', $locations );
+	}
 
-			if ( ! self::menu_item_exists( $menu_id, $page->ID ) ) {
+	/**
+	 * Synchronise le menu WP avec gbe_get_primary_menu_items().
+	 *
+	 * @param int $menu_id ID du menu.
+	 */
+	public static function sync_primary_menu_items( $menu_id ) {
+		$menu_items = function_exists( 'gbe_get_primary_menu_items' )
+			? gbe_get_primary_menu_items()
+			: array();
+
+		$desired_keys = array();
+		$position     = 1;
+
+		foreach ( $menu_items as $item ) {
+			$type = $item['type'] ?? '';
+
+			if ( 'page' === $type && ! empty( $item['path'] ) ) {
+				$page = get_page_by_path( $item['path'], OBJECT, 'page' );
+				if ( ! $page ) {
+					continue;
+				}
+
+				$key = 'page:' . $item['path'];
+				$desired_keys[] = $key;
+
+				$existing_id = self::get_menu_item_id_for_page( $menu_id, (int) $page->ID );
 				wp_update_nav_menu_item(
 					$menu_id,
-					0,
+					$existing_id ? $existing_id : 0,
 					array(
 						'menu-item-title'     => $page->post_title,
 						'menu-item-object'    => 'page',
@@ -237,13 +250,102 @@ class GBE_Page_Importer {
 						'menu-item-position'  => $position,
 					)
 				);
+				++$position;
+				continue;
 			}
+
+			if ( 'url' !== $type || empty( $item['url'] ) || empty( $item['label'] ) ) {
+				continue;
+			}
+
+			$slug           = ! empty( $item['slug'] ) ? $item['slug'] : md5( (string) $item['url'] );
+			$key            = 'url:' . $slug;
+			$desired_keys[] = $key;
+			$url            = $item['url'];
+
+			$existing_id = self::get_menu_item_id_for_custom_url( $menu_id, $url );
+			wp_update_nav_menu_item(
+				$menu_id,
+				$existing_id ? $existing_id : 0,
+				array(
+					'menu-item-title'  => $item['label'],
+					'menu-item-url'    => $url,
+					'menu-item-type'   => 'custom',
+					'menu-item-status' => 'publish',
+					'menu-item-position' => $position,
+				)
+			);
 			++$position;
 		}
 
-		$locations            = get_theme_mod( 'nav_menu_locations', array() );
-		$locations['primary'] = $menu_id;
-		set_theme_mod( 'nav_menu_locations', $locations );
+		self::remove_obsolete_primary_menu_items( $menu_id, $desired_keys );
+	}
+
+	/**
+	 * Retire du menu les entrées de premier niveau qui ne sont plus souhaitées.
+	 *
+	 * @param int      $menu_id      ID menu.
+	 * @param string[] $desired_keys Clés attendues (page:path ou url:slug).
+	 */
+	private static function remove_obsolete_primary_menu_items( $menu_id, $desired_keys ) {
+		$items = wp_get_nav_menu_items( $menu_id );
+		if ( ! $items ) {
+			return;
+		}
+
+		$desired_keys = array_flip( $desired_keys );
+
+		foreach ( $items as $item ) {
+			if ( (int) $item->menu_item_parent > 0 ) {
+				continue;
+			}
+
+			$key = '';
+			if ( 'post_type' === $item->type && 'page' === $item->object ) {
+				$page = get_post( (int) $item->object_id );
+				if ( $page instanceof WP_Post ) {
+					$path = self::get_page_full_path( $page );
+					$key  = 'page:' . $path;
+				}
+			} elseif ( 'custom' === $item->type ) {
+				$key = 'url:' . md5( (string) $item->url );
+				foreach ( gbe_get_primary_menu_items() as $menu_item ) {
+					if ( 'url' !== ( $menu_item['type'] ?? '' ) || empty( $menu_item['url'] ) ) {
+						continue;
+					}
+					if ( untrailingslashit( (string) $menu_item['url'] ) === untrailingslashit( (string) $item->url ) ) {
+						$key = 'url:' . ( ! empty( $menu_item['slug'] ) ? $menu_item['slug'] : md5( (string) $menu_item['url'] ) );
+						break;
+					}
+				}
+			}
+
+			if ( '' === $key || ! isset( $desired_keys[ $key ] ) ) {
+				wp_delete_post( $item->ID, true );
+			}
+		}
+	}
+
+	/**
+	 * ID d'un item custom par URL.
+	 *
+	 * @param int    $menu_id ID menu.
+	 * @param string $url     URL.
+	 */
+	private static function get_menu_item_id_for_custom_url( $menu_id, $url ) {
+		$items = wp_get_nav_menu_items( $menu_id );
+		if ( ! $items ) {
+			return 0;
+		}
+
+		$url = untrailingslashit( $url );
+		foreach ( $items as $item ) {
+			if ( 'custom' === $item->type && untrailingslashit( (string) $item->url ) === $url ) {
+				return (int) $item->ID;
+			}
+		}
+
+		return 0;
 	}
 
 	/**
@@ -366,6 +468,7 @@ class GBE_Page_Importer {
 		self::simplify_primary_menu();
 		self::deduplicate_primary_menu();
 		self::fix_fse_navigation_posts();
+		self::refresh_fse_navigation_posts();
 		self::deduplicate_imported_pages();
 		self::remove_obsolete_pages();
 		self::configure_permalinks();
@@ -662,6 +765,81 @@ class GBE_Page_Importer {
 	}
 
 	/**
+	 * Crée ou met à jour les sous-pages Onomastique (Xótùtù).
+	 *
+	 * @return int Nombre de pages créées.
+	 */
+	public static function patch_onomastique_subpages() {
+		$parent = get_page_by_path( 'xotutu/onomastique', OBJECT, 'page' );
+		if ( ! $parent ) {
+			return 0;
+		}
+
+		wp_update_post(
+			array(
+				'ID'           => (int) $parent->ID,
+				'post_content' => gbe_xotutu_onomastique_hub_content(),
+			)
+		);
+
+		$created = 0;
+		foreach ( gbe_get_onomastique_pages() as $rubrique ) {
+			$parent_path   = 'xotutu/onomastique/' . $rubrique['slug'];
+			$rubrique_page = get_page_by_path( $parent_path, OBJECT, 'page' );
+			if ( ! $rubrique_page ) {
+				$result   = self::create_page_tree( $rubrique, (int) $parent->ID, 'xotutu/onomastique', true );
+				$created += $result['created'];
+				continue;
+			}
+
+			wp_update_post(
+				array(
+					'ID'           => (int) $rubrique_page->ID,
+					'post_content' => $rubrique['content'] ?? '',
+				)
+			);
+
+			if ( empty( $rubrique['children'] ) ) {
+				continue;
+			}
+
+			foreach ( $rubrique['children'] as $sub ) {
+				$result   = self::create_page_tree( $sub, (int) $rubrique_page->ID, $parent_path, true );
+				$created += $result['created'];
+			}
+		}
+
+		return $created;
+	}
+
+	/**
+	 * Crée ou met à jour les sous-pages Linguistique (Gbe).
+	 *
+	 * @return int Nombre de pages créées.
+	 */
+	public static function patch_linguistique_subpages() {
+		$parent = get_page_by_path( 'le-gbe/linguistique', OBJECT, 'page' );
+		if ( ! $parent ) {
+			return 0;
+		}
+
+		wp_update_post(
+			array(
+				'ID'           => (int) $parent->ID,
+				'post_content' => gbe_intro( 'Ressources linguistiques pour l\'étude scientifique des variétés gbe : alphabet, phonologie, morphologie, syntaxe, lexicologie, dialectologie, corpus et bibliothèque.' ),
+			)
+		);
+
+		$created = 0;
+		foreach ( gbe_get_linguistique_pages() as $page_def ) {
+			$result   = self::create_page_tree( $page_def, (int) $parent->ID, 'le-gbe/linguistique', true );
+			$created += $result['created'];
+		}
+
+		return $created;
+	}
+
+	/**
 	 * Crée les sous-pages Paremiologie (corpus, comparaisons, axes).
 	 *
 	 * @return int Nombre de pages créées.
@@ -701,7 +879,7 @@ class GBE_Page_Importer {
 	}
 
 	/**
-	 * Crée les sous-pages Le Gbe (thèmes du hub).
+	 * Crée les sous-pages Gbe (thèmes du hub).
 	 *
 	 * @return int Nombre de pages créées.
 	 */
@@ -710,6 +888,13 @@ class GBE_Page_Importer {
 		if ( ! $parent ) {
 			return 0;
 		}
+
+		wp_update_post(
+			array(
+				'ID'           => (int) $parent->ID,
+				'post_content' => gbe_le_gbe_hub_content(),
+			)
+		);
 
 		$created = 0;
 		foreach ( gbe_get_le_gbe_children() as $rubrique ) {
@@ -743,10 +928,48 @@ class GBE_Page_Importer {
 	 * Patch pages with phase 7 shortcodes and renamed paths.
 	 */
 	public static function patch_phase7_content() {
-		$patches = array(
-			'le-gbe/carte-interactive'                         => '<p>Explorez la répartition géographique des langues gbe, les zones culturelles, les routes migratoires historiques et les centres patrimoniaux.</p>[gbe_carte_interactive]',
+		$langue_patches = array();
+		if ( function_exists( 'gbe_le_gbe_langue_chapter_callbacks' ) ) {
+			foreach ( gbe_le_gbe_langue_chapter_callbacks() as $path => $callback ) {
+				if ( is_callable( $callback ) ) {
+					$langue_patches[ $path ] = (string) call_user_func( $callback );
+				}
+			}
+		}
+
+		$linguistique_patches = array();
+		if ( function_exists( 'gbe_le_gbe_linguistique_chapter_callbacks' ) ) {
+			foreach ( gbe_le_gbe_linguistique_chapter_callbacks() as $path => $callback ) {
+				if ( is_callable( $callback ) ) {
+					$linguistique_patches[ $path ] = (string) call_user_func( $callback );
+				}
+			}
+		}
+
+		$patches = array_merge(
+			array(
+			'le-gbe'                                             => gbe_le_gbe_hub_content(),
+			'le-gbe/presentation-generale'                       => gbe_le_gbe_presentation_generale_content(),
+			'le-gbe/peuples-du-continuum'                        => gbe_le_gbe_peuples_content(),
+			'le-gbe/le-continuum-gbe'                            => gbe_le_gbe_continuum_content(),
+			'le-gbe/le-continuum-gbe/inventaire-des-parlers'     => gbe_le_gbe_inventaire_parlers_content(),
+			'le-gbe/le-continuum-gbe/regroupement-des-parlers'   => gbe_le_gbe_regroupement_parlers_content(),
+			'le-gbe/le-continuum-gbe/langue-unique'              => gbe_le_gbe_langue_unique_content(),
+			'le-gbe/le-continuum-gbe/varietes-principales'       => gbe_le_gbe_varietes_principales_content(),
+			'le-gbe/le-continuum-gbe/pays-et-territoires'        => gbe_le_gbe_pays_territoires_content(),
+			'le-gbe/le-continuum-gbe/pays-et-territoires/ghana'  => gbe_le_gbe_pays_ghana_content(),
+			'le-gbe/le-continuum-gbe/pays-et-territoires/togo'   => gbe_le_gbe_pays_togo_content(),
+			'le-gbe/le-continuum-gbe/pays-et-territoires/benin'  => gbe_le_gbe_pays_benin_content(),
+			'le-gbe/le-continuum-gbe/pays-et-territoires/nigeria' => gbe_le_gbe_pays_nigeria_content(),
+			'le-gbe/les-langues'                                 => gbe_le_gbe_langues_content(),
+			'le-gbe/linguistique'                                => gbe_le_gbe_linguistique_hub_content(),
+			'le-gbe/carte-interactive'                           => gbe_le_gbe_carte_content(),
 			'le-gbe/bibliotheque-linguistique'                 => '<p>Bibliothèque numérique des langues et patrimoines gbe.</p>[gbe_bibliotheque]',
 			'paremiologie/banque-numerique-proverbes'          => '<p>Pour chaque proverbe : texte original, transcription, traductions, contexte, commentaire culturel et analyses.</p>[gbe_proverbes_list limit="24"]',
+			'paremiologie'                                     => gbe_le_gbe_paremiologie_hub_content(),
+			'xotutu'                                           => gbe_le_gbe_xotutu_hub_content(),
+			'xotutu/onomastique'                               => gbe_xotutu_onomastique_hub_content(),
+			'cultures-gbe'                                     => gbe_cultures_gbe_hub_content(),
 			'xotutu/archives-numeriques/bibliotheque-numerique-xotutu' => '<p>Archives audio, vidéo, témoignages, manuscrits et corpus numériques de la tradition orale gbe.</p>[gbe_xotutu_list limit="24"]',
 			'recherche-et-innovation/ressources-documentaires' => '<p>Bibliothèque numérique, corpus linguistiques et archives scientifiques.</p>[gbe_bibliotheque]',
 			'recherche-et-innovation/activites'                => '<p>Colloques, conférences, séminaires et publications de GbeCosmoLingua.</p>[gbe_evenements_list limit="24"]',
@@ -757,6 +980,9 @@ class GBE_Page_Importer {
 			'nous-soutenir/faire-un-don'                       => '[gbe_formulaire type="don"]',
 			'nous-soutenir/accueillir-un-chercheur'            => '[gbe_formulaire type="stagiaire"]',
 			'nous-soutenir/adherer'                            => '<p>Rejoignez la communauté GbeCosmoLingua en tant que membre associé.</p>[gbe_formulaire type="partenaire"]',
+			),
+			$langue_patches,
+			$linguistique_patches
 		);
 
 		foreach ( $patches as $path => $content ) {
@@ -768,6 +994,255 @@ class GBE_Page_Importer {
 						'post_content' => $content,
 					)
 				);
+			}
+		}
+
+		self::patch_le_gbe_chapter_templates();
+		self::patch_gbe_naming();
+		self::patch_home_hero();
+	}
+
+	/**
+	 * Met à jour le bandeau accueil (titre + chapô centrés sur Gbe).
+	 */
+	public static function patch_home_hero() {
+		if ( ! class_exists( 'GBE_Home_Composer_Admin' ) ) {
+			return;
+		}
+
+		$home = GBE_Home_Composer_Admin::get_home_page();
+		if ( ! $home instanceof WP_Post ) {
+			return;
+		}
+
+		$defaults = GBE_Home_Composer_Admin::default_layout();
+		$layout   = get_post_meta( $home->ID, GBE_Home_Composer_Admin::META_LAYOUT, true );
+
+		if ( ! is_array( $layout ) || empty( $layout ) ) {
+			update_post_meta( $home->ID, GBE_Home_Composer_Admin::META_LAYOUT, $defaults );
+			return;
+		}
+
+		if ( ! isset( $layout['hero'] ) || ! is_array( $layout['hero'] ) ) {
+			$layout['hero'] = $defaults['hero'];
+		} else {
+			$layout['hero']['title'] = $defaults['hero']['title'];
+			$layout['hero']['lead']  = $defaults['hero']['lead'];
+		}
+
+		update_post_meta( $home->ID, GBE_Home_Composer_Admin::META_LAYOUT, $layout );
+	}
+
+	/**
+	 * Crée ou met à jour la fiche auteur H. B. C. Capo.
+	 */
+	public static function patch_capo_auteur_page() {
+		if ( ! function_exists( 'gbe_le_gbe_capo_auteur_content' ) ) {
+			require_once GBE_CORE_PATH . 'includes/content/le-gbe-capo-auteur.php';
+		}
+
+		$parent = get_page_by_path( 'le-gbe/linguistique', OBJECT, 'page' );
+		if ( ! $parent instanceof WP_Post ) {
+			return;
+		}
+
+		$path    = 'le-gbe/linguistique/hounkpati-b-c-capo';
+		$content = gbe_le_gbe_capo_auteur_content();
+		$page    = get_page_by_path( $path, OBJECT, 'page' );
+
+		if ( $page instanceof WP_Post ) {
+			wp_update_post(
+				array(
+					'ID'           => $page->ID,
+					'post_title'   => 'Hounkpati B. Christophe Capo',
+					'post_content' => $content,
+				)
+			);
+			update_post_meta( $page->ID, '_wp_page_template', 'page-le-gbe-chapter' );
+			return;
+		}
+
+		$page_id = wp_insert_post(
+			array(
+				'post_title'   => 'Hounkpati B. Christophe Capo',
+				'post_name'    => 'hounkpati-b-c-capo',
+				'post_content' => $content,
+				'post_status'  => 'publish',
+				'post_type'    => 'page',
+				'post_parent'  => (int) $parent->ID,
+			)
+		);
+
+		if ( $page_id && ! is_wp_error( $page_id ) ) {
+			update_post_meta( (int) $page_id, '_wp_page_template', 'page-le-gbe-chapter' );
+		}
+	}
+
+	/**
+	 * Met à jour la page Notre philosophie avec l'objet et les missions statutaires.
+	 */
+	public static function patch_mission_statuts() {
+		if ( ! function_exists( 'gbe_philosophie_page_content' ) ) {
+			require_once GBE_CORE_PATH . 'includes/content/gbe-mission-statuts.php';
+		}
+
+		$page = get_page_by_path( 'notre-philosophie', OBJECT, 'page' );
+		if ( ! $page instanceof WP_Post ) {
+			return;
+		}
+
+		$content = gbe_philosophie_page_content();
+		if ( trim( wp_strip_all_tags( $page->post_content ) ) === trim( wp_strip_all_tags( $content ) ) ) {
+			return;
+		}
+
+		wp_update_post(
+			array(
+				'ID'           => $page->ID,
+				'post_content' => $content,
+			)
+		);
+
+		if ( class_exists( 'GBE_Home_Composer_Admin' ) ) {
+			$home = GBE_Home_Composer_Admin::get_home_page();
+			if ( $home instanceof WP_Post ) {
+				$layout = get_post_meta( $home->ID, GBE_Home_Composer_Admin::META_LAYOUT, true );
+				if ( is_array( $layout ) && ! empty( $layout['hero']['buttons'] ) && is_array( $layout['hero']['buttons'] ) ) {
+					$changed = false;
+					foreach ( $layout['hero']['buttons'] as $index => $button ) {
+						if ( ! is_array( $button ) ) {
+							continue;
+						}
+						$text = isset( $button['text'] ) ? (string) $button['text'] : '';
+						if ( str_contains( mb_strtolower( $text ), 'mission' ) ) {
+							$layout['hero']['buttons'][ $index ]['url'] = '/notre-philosophie/#missions';
+							$changed                                   = true;
+						}
+					}
+					if ( $changed ) {
+						update_post_meta( $home->ID, GBE_Home_Composer_Admin::META_LAYOUT, $layout );
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Seed founding members and add shortcode to Notre philosophie.
+	 */
+	public static function patch_membres_fondateurs() {
+		if ( class_exists( 'GBE_Demo_Content' ) ) {
+			GBE_Demo_Content::seed_membres_fondateurs();
+		}
+
+		if ( class_exists( 'GBE_Membres_Photos' ) ) {
+			GBE_Membres_Photos::sync_fondateurs_photos();
+		}
+
+		$page = get_page_by_path( 'notre-philosophie', OBJECT, 'page' );
+		if ( ! $page instanceof WP_Post ) {
+			return;
+		}
+
+		if ( str_contains( $page->post_content, '[gbe_membres_fondateurs' ) ) {
+			return;
+		}
+
+		$content = trim( $page->post_content ) . "\n[gbe_membres_fondateurs]";
+
+		wp_update_post(
+			array(
+				'ID'           => $page->ID,
+				'post_content' => $content,
+			)
+		);
+	}
+
+	/**
+	 * Corrige les libellés « Le Gbe » / « le Gbe » en « Gbe » dans la base.
+	 */
+	public static function patch_gbe_naming() {
+		global $wpdb;
+
+		if ( class_exists( 'GBE_Home_Composer_Admin' ) ) {
+			$home = GBE_Home_Composer_Admin::get_home_page();
+			if ( $home instanceof WP_Post ) {
+				$layout = get_post_meta( $home->ID, GBE_Home_Composer_Admin::META_LAYOUT, true );
+				if ( is_array( $layout ) && ! empty( $layout ) ) {
+					$normalized = gbe_normalize_gbe_wording_deep( $layout );
+					if ( $normalized !== $layout ) {
+						update_post_meta( $home->ID, GBE_Home_Composer_Admin::META_LAYOUT, $normalized );
+					}
+				}
+			}
+		}
+
+		$hub = get_page_by_path( 'le-gbe', OBJECT, 'page' );
+		if ( $hub instanceof WP_Post && class_exists( 'GBE_Le_Gbe_Hub_Admin' ) ) {
+			foreach ( array( GBE_Le_Gbe_Hub_Admin::META_PAGE_LAYOUT, GBE_Le_Gbe_Hub_Admin::META_PAGE_LAYOUT_LEGACY, GBE_Le_Gbe_Hub_Admin::META_HERO_LEAD, GBE_Le_Gbe_Hub_Admin::META_HERO_SLIDES, GBE_Le_Gbe_Hub_Admin::META_PAGE_BANDS, GBE_Le_Gbe_Hub_Admin::META_PAGE_SUBCARDS ) as $meta_key ) {
+				$value = get_post_meta( $hub->ID, $meta_key, true );
+				if ( empty( $value ) ) {
+					continue;
+				}
+				$normalized = gbe_normalize_gbe_wording_deep( $value );
+				if ( $normalized !== $value ) {
+					update_post_meta( $hub->ID, $meta_key, $normalized );
+				}
+			}
+		}
+
+		$page_ids = $wpdb->get_col(
+			"SELECT ID FROM {$wpdb->posts}
+			WHERE post_type IN ('page', 'nav_menu_item')
+			AND post_status != 'trash'
+			AND (
+				post_title LIKE '%Le Gbe%'
+				OR post_title LIKE '%le Gbe%'
+				OR post_content LIKE '%Le Gbe%'
+				OR post_content LIKE '%le Gbe%'
+				OR post_content LIKE '%du Gbe%'
+			)"
+		);
+
+		foreach ( $page_ids as $page_id ) {
+			$post = get_post( (int) $page_id );
+			if ( ! $post instanceof WP_Post ) {
+				continue;
+			}
+
+			$update = array( 'ID' => (int) $post->ID );
+			$dirty  = false;
+
+			$new_title = gbe_normalize_gbe_wording( $post->post_title );
+			if ( $new_title !== $post->post_title ) {
+				$update['post_title'] = $new_title;
+				$dirty                = true;
+			}
+
+			$new_content = gbe_normalize_gbe_wording( $post->post_content );
+			if ( $new_content !== $post->post_content ) {
+				$update['post_content'] = $new_content;
+				$dirty                  = true;
+			}
+
+			if ( $dirty ) {
+				wp_update_post( $update );
+			}
+		}
+	}
+
+	/**
+	 * Assigne le modèle « chapitre » aux pages linguistique enrichies.
+	 */
+	public static function patch_le_gbe_chapter_templates() {
+		if ( ! function_exists( 'gbecosmolingua_le_gbe_chapter_paths' ) ) {
+			return;
+		}
+
+		foreach ( gbecosmolingua_le_gbe_chapter_paths() as $path ) {
+			$page = get_page_by_path( $path, OBJECT, 'page' );
+			if ( $page instanceof WP_Post ) {
+				update_post_meta( $page->ID, '_wp_page_template', 'page-le-gbe-chapter' );
 			}
 		}
 	}
@@ -845,26 +1320,25 @@ class GBE_Page_Importer {
 	 * @return string
 	 */
 	public static function get_top_level_navigation_block_content() {
-		$links = array(
-			array( 'Le Gbe', '/le-gbe/' ),
-			array( 'Cultures Gbe', '/cultures-gbe/' ),
-			array( 'Xótùtù', '/xotutu/' ),
-			array( 'Paremiologie', '/paremiologie/' ),
-			array( 'Recherche et Innovation', '/recherche-et-innovation/' ),
-			array( 'Séjours et Mobilité', '/sejours-et-mobilite/' ),
-			array( 'Partenaires', '/partenaires/' ),
-			array( 'Nous Soutenir', '/nous-soutenir/' ),
-			array( 'Notre philosophie', '/notre-philosophie/' ),
-		);
+		$menu_items = function_exists( 'gbe_get_primary_menu_items' )
+			? gbe_get_primary_menu_items()
+			: array();
 
 		$blocks = array();
-		foreach ( $links as $link ) {
+		foreach ( $menu_items as $item ) {
+			$resolved = function_exists( 'gbe_resolve_primary_menu_item' )
+				? gbe_resolve_primary_menu_item( $item )
+				: null;
+			if ( ! $resolved ) {
+				continue;
+			}
+
 			$blocks[] = sprintf(
 				'<!-- wp:navigation-link %s /-->',
 				wp_json_encode(
 					array(
-						'label'          => $link[0],
-						'url'            => $link[1],
+						'label'          => $resolved['label'],
+						'url'            => $resolved['url'],
 						'kind'           => 'custom',
 						'isTopLevelLink' => true,
 					)
@@ -873,6 +1347,34 @@ class GBE_Page_Importer {
 		}
 
 		return implode( "\n", $blocks );
+	}
+
+	/**
+	 * Met à jour toutes les navigations FSE avec le menu plat courant.
+	 */
+	public static function refresh_fse_navigation_posts() {
+		$content = self::get_top_level_navigation_block_content();
+
+		$nav_posts = get_posts(
+			array(
+				'post_type'      => 'wp_navigation',
+				'posts_per_page' => -1,
+				'post_status'    => array( 'publish', 'draft' ),
+			)
+		);
+
+		foreach ( $nav_posts as $nav_post ) {
+			if ( $nav_post->post_content === $content ) {
+				continue;
+			}
+
+			wp_update_post(
+				array(
+					'ID'           => $nav_post->ID,
+					'post_content' => $content,
+				)
+			);
+		}
 	}
 
 	/**

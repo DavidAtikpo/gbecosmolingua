@@ -18,9 +18,20 @@ $carte_url   = home_url( '/le-gbe/carte-interactive/' );
 $contrib_url = home_url( '/nous-soutenir/proposer-un-projet/' );
 
 ob_start();
+
+$xotutu_page  = get_page_by_path( 'xotutu', OBJECT, 'page' );
+$xotutu_intro = $xotutu_page && function_exists( 'gbecosmolingua_public_page_intro_html' )
+	? gbecosmolingua_public_page_intro_html( $xotutu_page )
+	: '';
+$xotutu_intro = gbecosmolingua_hub_chapter_body_html( $xotutu_intro, 'xotutu' );
+if ( '' !== trim( $xotutu_intro ) ) {
+	echo $xotutu_intro; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+}
 ?>
 <div class="gbe-xotutu-hub">
-	<?php gbecosmolingua_xotutu_render_search(); ?>
+	<?php
+	gbecosmolingua_xotutu_render_search();
+	?>
 
 	<section class="gbe-xotutu-section gbe-xotutu-collections" id="gbe-xotutu-collections">
 		<div class="gbe-xotutu-section__head">

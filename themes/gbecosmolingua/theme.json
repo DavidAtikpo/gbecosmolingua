@@ -9,33 +9,33 @@
 		"color": {
 			"palette": [
 				{
-					"color": "#1f5b2a",
-					"name": "Vert baobab",
-					"slug": "gbe-green"
+					"color": "#0D1B3D",
+					"name": "Bleu nuit",
+					"slug": "gbe-navy"
 				},
 				{
-					"color": "#4a250c",
-					"name": "Brun écorce",
-					"slug": "gbe-bark"
-				},
-				{
-					"color": "#b87913",
-					"name": "Or ancien",
-					"slug": "gbe-gold"
-				},
-				{
-					"color": "#f7f1df",
-					"name": "Parchemin",
+					"color": "#F2E9D8",
+					"name": "Sable ivoire",
 					"slug": "gbe-sand"
 				},
 				{
-					"color": "#8a4a12",
-					"name": "Cuivre",
+					"color": "#D99A2B",
+					"name": "Ocre doré",
+					"slug": "gbe-gold"
+				},
+				{
+					"color": "#1E5A3A",
+					"name": "Vert forêt",
+					"slug": "gbe-green"
+				},
+				{
+					"color": "#B87A1F",
+					"name": "Ocre foncé",
 					"slug": "gbe-copper"
 				},
 				{
-					"color": "#23150c",
-					"name": "Encre brune",
+					"color": "#061022",
+					"name": "Encre",
 					"slug": "gbe-ink"
 				},
 				{
@@ -48,18 +48,18 @@
 	},
 	"styles": {
 		"color": {
-			"background": "var(--wp--preset--color--gbe-sand)",
+			"background": "var(--wp--preset--color--gbe-white)",
 			"text": "var(--wp--preset--color--gbe-ink)"
 		},
 		"elements": {
 			"link": {
 				"color": {
-					"text": "var(--wp--preset--color--gbe-copper)"
+					"text": "var(--wp--preset--color--gbe-gold)"
 				}
 			},
 			"heading": {
 				"color": {
-					"text": "var(--wp--preset--color--gbe-green)"
+					"text": "var(--wp--preset--color--gbe-navy)"
 				}
 			}
 		}
@@ -79,7 +79,17 @@
 	"customTemplates": [
 		{
 			"name": "page-le-gbe",
-			"title": "Hub Le Gbe",
+			"title": "Hub Gbe",
+			"postTypes": [ "page" ]
+		},
+		{
+			"name": "page-cultures-gbe",
+			"title": "Hub Cultures Gbe",
+			"postTypes": [ "page" ]
+		},
+		{
+			"name": "page-culture-rubrique",
+			"title": "Rubrique Cultures Gbe",
 			"postTypes": [ "page" ]
 		},
 		{
@@ -88,8 +98,23 @@
 			"postTypes": [ "page" ]
 		},
 		{
+			"name": "page-onomastique",
+			"title": "Hub Onomastique",
+			"postTypes": [ "page" ]
+		},
+		{
+			"name": "page-linguistique",
+			"title": "Hub Linguistique",
+			"postTypes": [ "page" ]
+		},
+		{
 			"name": "page-paremiologie",
 			"title": "Hub Paremiologie",
+			"postTypes": [ "page" ]
+		},
+		{
+			"name": "page-paremiologie-banque",
+			"title": "Banque numérique de proverbes",
 			"postTypes": [ "page" ]
 		},
 		{

@@ -1,6 +1,6 @@
 <?php
 /**
- * Title: Le Gbe — Bannière continuum
+ * Title: Gbe — Bannière continuum
  * Slug: gbecosmolingua/le-gbe-hero
  * Categories: gbecosmolingua
  * Inserter: false

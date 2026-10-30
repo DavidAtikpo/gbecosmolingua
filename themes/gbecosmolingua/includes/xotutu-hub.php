@@ -191,8 +191,12 @@ function gbecosmolingua_xotutu_genres_highlight() {
 function gbecosmolingua_xotutu_theme_pills() {
 	$pills = array();
 	$items = array(
+		array( __( 'Onomastique', 'gbecosmolingua' ), 'onomastique', '' ),
 		array( __( 'Anthroponymie', 'gbecosmolingua' ), 'onomastique', 'anthroponymie' ),
 		array( __( 'Toponymie', 'gbecosmolingua' ), 'onomastique', 'toponymie' ),
+		array( __( 'Hydronymie', 'gbecosmolingua' ), 'onomastique', 'hydronymie' ),
+		array( __( 'Ethnonymie', 'gbecosmolingua' ), 'onomastique', 'ethnonymie' ),
+		array( __( 'Théonymie', 'gbecosmolingua' ), 'onomastique', 'theonymie' ),
 		array( __( 'Ethnolinguistique', 'gbecosmolingua' ), 'questions-terminologiques', 'ethnolinguistique' ),
 		array( __( 'Ethnopoétique', 'gbecosmolingua' ), 'questions-terminologiques', 'ethnopoetique' ),
 		array( __( 'Littérature orale', 'gbecosmolingua' ), 'questions-terminologiques', 'litterature-orale' ),

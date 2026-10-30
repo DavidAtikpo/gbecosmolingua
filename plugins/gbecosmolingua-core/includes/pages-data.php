@@ -7,6 +7,27 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once GBE_CORE_PATH . 'includes/content/gbe-mission-statuts.php';
+require_once GBE_CORE_PATH . 'includes/content/le-gbe-capo-auteur.php';
+require_once GBE_CORE_PATH . 'includes/le-gbe-chapter-ui.php';
+require_once GBE_CORE_PATH . 'includes/content/le-gbe-inventaire-parlers.php';
+require_once GBE_CORE_PATH . 'includes/content/le-gbe-travaux-scientifiques.php';
+require_once GBE_CORE_PATH . 'includes/content/le-gbe-potentialites-lexicales.php';
+require_once GBE_CORE_PATH . 'includes/content/le-gbe-dialectologie.php';
+require_once GBE_CORE_PATH . 'includes/content/le-gbe-lexicologie.php';
+require_once GBE_CORE_PATH . 'includes/content/le-gbe-linguistique-chapter.php';
+require_once GBE_CORE_PATH . 'includes/content/le-gbe-regroupement-parlers.php';
+require_once GBE_CORE_PATH . 'includes/content/le-gbe-langue-unique.php';
+require_once GBE_CORE_PATH . 'includes/content/le-gbe-pays-territoires.php';
+require_once GBE_CORE_PATH . 'includes/content/le-gbe-varietes-principales.php';
+require_once GBE_CORE_PATH . 'includes/content/le-gbe-continuum-hub.php';
+require_once GBE_CORE_PATH . 'includes/content/le-gbe-langues-hub.php';
+require_once GBE_CORE_PATH . 'includes/content/le-gbe-peuples-continuum.php';
+require_once GBE_CORE_PATH . 'includes/content/le-gbe-aja-langue.php';
+require_once GBE_CORE_PATH . 'includes/content/le-gbe-langues-chapter.php';
+require_once GBE_CORE_PATH . 'includes/content/le-gbe-main-hubs.php';
+require_once GBE_CORE_PATH . 'includes/content/le-gbe-pages-content.php';
+require_once GBE_CORE_PATH . 'includes/content/le-gbe-fon-these-gnanguenon.php';
 require_once GBE_CORE_PATH . 'includes/pages-helpers.php';
 
 /**
@@ -19,28 +40,25 @@ function gbe_get_pages_data() {
 		array(
 			'title'      => 'Notre philosophie',
 			'slug'       => 'notre-philosophie',
-			'content'    => '<p>Face aux défis de la mondialisation et aux risques d\'uniformisation culturelle, GbeCosmoLingua défend la diversité linguistique et culturelle comme une richesse fondamentale de l\'humanité.</p>
-<p>Nous croyons que les langues, les traditions orales, les savoirs endogènes et les patrimoines culturels constituent des ressources essentielles pour construire un monde fondé sur le respect, la compréhension mutuelle et le dialogue entre les peuples.</p>
-<p><strong>GbeCosmoLingua — Observatoire international des langues, cultures et patrimoines gbe : un pont entre les langues, les cultures et les peuples.</strong></p>',
+			'content'    => gbe_philosophie_page_content(),
 			'menu_order' => 99,
 		),
 		array(
-			'title'    => 'Le Gbe',
+			'title'    => 'Gbe',
 			'slug'     => 'le-gbe',
-			'content'  => gbe_intro( 'Le continuum gbe constitue un vaste ensemble linguistique parlé principalement au Togo, au Bénin, au Ghana et au Nigeria. Selon les travaux de Hounkpati B. Capo, les variétés gbe appartiennent à une même unité linguistique présentant une forte intercompréhension et un héritage culturel commun.' ),
+			'content'  => gbe_le_gbe_hub_content(),
 			'children' => gbe_get_le_gbe_children(),
 		),
 		array(
 			'title'    => 'Cultures Gbe',
 			'slug'     => 'cultures-gbe',
-			'content'  => '<blockquote class="gbe-quote"><p>« La culture regroupe tout un ensemble de faits qui sont universels avant d\'être manifestés différemment selon les civilisations et les aires géographico-ethniques. »</p><cite>— Zouogbo (2009 : 28)</cite></blockquote>
-<p><strong>Une culture vivante</strong> — Les cultures gbe se réinventent par le dialogue, la création et la transmission intergénérationnelle.</p>',
+			'content'  => gbe_cultures_gbe_hub_content(),
 			'children' => gbe_get_cultures_gbe_children(),
 		),
 		array(
 			'title'    => 'Xótùtù',
 			'slug'     => 'xotutu',
-			'content'  => gbe_intro( 'Le Xótùtù constitue la mémoire culturelle des peuples gbe. Il rassemble toutes les formes de transmission orale des savoirs, des valeurs, des croyances et des connaissances.' ),
+			'content'  => gbe_le_gbe_xotutu_hub_content(),
 			'children' => array(
 				array(
 					'title'   => 'Tradition orale et patrimoines immatériels',
@@ -62,7 +80,7 @@ function gbe_get_pages_data() {
 				array(
 					'title'    => 'Onomastique',
 					'slug'     => 'onomastique',
-					'content'  => gbe_intro( 'Étude des noms de personnes, de lieux, de peuples et de divinités dans les cultures gbe.' ),
+					'content'  => gbe_xotutu_onomastique_hub_content(),
 					'children' => gbe_get_onomastique_pages(),
 				),
 				array(
@@ -76,13 +94,14 @@ function gbe_get_pages_data() {
 		array(
 			'title'    => 'Paremiologie',
 			'slug'     => 'paremiologie',
-			'content'  => gbe_intro( 'Axe scientifique majeur de GbeCosmoLingua : sagesse populaire, visions du monde et paremiologie comparée.' ),
+			'content'  => gbe_le_gbe_paremiologie_hub_content(),
 			'children' => gbe_get_paremiologie_children(),
 		),
 		array(
 			'title'    => 'Recherche et Innovation',
 			'slug'     => 'recherche-et-innovation',
-			'content'  => gbe_intro( 'Centre international d\'études gbe : recherche scientifique, innovation et coopération internationale.' ),
+			'content'  => gbe_intro( 'Centre international d\'études gbe : recherche linguistique, numérisation du patrimoine, reconstruction du proto-Gbe et coopération entre Ghana, Togo, Bénin et Nigeria.' ) .
+				'<p><a href="/le-gbe/linguistique/travaux-scientifiques-recents/">Travaux scientifiques →</a> · <a href="/le-gbe/linguistique/potentialites-lexicales/">Potentialités lexicales →</a></p>',
 			'children' => gbe_get_recherche_innovation_children(),
 		),
 		array(

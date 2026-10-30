@@ -34,6 +34,8 @@ class GBE_Shortcodes {
 		add_shortcode( 'gbe_partenaires', array( __CLASS__, 'partenaires' ) );
 		add_shortcode( 'gbe_evenements_list', array( __CLASS__, 'evenements_list' ) );
 		add_shortcode( 'gbe_partenaires_list', array( __CLASS__, 'partenaires_list' ) );
+		add_shortcode( 'gbe_membres_fondateurs', array( __CLASS__, 'membres_fondateurs' ) );
+		add_shortcode( 'gbe_membres', array( __CLASS__, 'membres' ) );
 		add_shortcode( 'gbe_menu_principal', array( __CLASS__, 'menu_principal' ) );
 		add_shortcode( 'gbe_site_logo', array( __CLASS__, 'site_logo' ) );
 		add_shortcode( 'gbe_header_socials', array( __CLASS__, 'header_socials' ) );
@@ -191,27 +193,19 @@ class GBE_Shortcodes {
 	}
 
 	/**
-	 * Main navigation with dropdown submenus from the page tree.
+	 * Main navigation — top-level links only (sous-rubriques sur les pages).
 	 */
 	public static function menu_principal() {
-		$rubrique_slugs = array(
-			'le-gbe',
-			'cultures-gbe',
-			'xotutu',
-			'paremiologie',
-			'recherche-et-innovation',
-			'sejours-et-mobilite',
-			'partenaires',
-			'nous-soutenir',
-			'notre-philosophie',
-		);
+		$menu_items = function_exists( 'gbe_get_primary_menu_items' )
+			? gbe_get_primary_menu_items()
+			: array();
 
 		ob_start();
 		?>
 		<nav class="gbe-main-menu" aria-label="<?php esc_attr_e( 'Menu principal', 'gbecosmolingua-core' ); ?>">
 			<ul class="gbe-main-menu__list">
-				<?php foreach ( $rubrique_slugs as $slug ) : ?>
-					<?php echo self::render_menu_item( $slug ); ?>
+				<?php foreach ( $menu_items as $item ) : ?>
+					<?php echo self::render_menu_item( $item ); ?>
 				<?php endforeach; ?>
 			</ul>
 		</nav>
@@ -220,132 +214,35 @@ class GBE_Shortcodes {
 	}
 
 	/**
-	 * Render one top-level menu item with optional horizontal mega-submenu.
+	 * Render one top-level menu item (lien direct, sans panneau déroulant).
 	 *
-	 * @param string $slug Page slug.
+	 * @param array<string, string>|string $item Entrée menu ou chemin page (legacy).
 	 */
-	private static function render_menu_item( $slug ) {
-		$page = get_page_by_path( $slug, OBJECT, 'page' );
-		if ( ! $page ) {
+	private static function render_menu_item( $item ) {
+		if ( is_string( $item ) ) {
+			$item = array(
+				'type' => 'page',
+				'path' => $item,
+			);
+		}
+
+		$resolved = function_exists( 'gbe_resolve_primary_menu_item' )
+			? gbe_resolve_primary_menu_item( $item )
+			: null;
+
+		if ( ! $resolved ) {
 			return '';
 		}
 
-		$children = get_pages(
-			array(
-				'parent'      => $page->ID,
-				'sort_column' => 'menu_order,post_title',
-				'post_status' => 'publish',
-			)
-		);
-
-		$has_children = ! empty( $children );
-		$url          = get_permalink( $page );
-		$panel_id     = 'gbe-main-menu-panel-' . (int) $page->ID;
-
 		ob_start();
 		?>
-		<li class="gbe-main-menu__item<?php echo $has_children ? ' has-children' : ''; ?>">
-			<a href="<?php echo esc_url( $url ); ?>" class="gbe-main-menu__link">
-				<?php echo esc_html( $page->post_title ); ?>
+		<li class="gbe-main-menu__item">
+			<a href="<?php echo esc_url( $resolved['url'] ); ?>" class="gbe-main-menu__link">
+				<?php echo esc_html( $resolved['label'] ); ?>
 			</a>
-			<?php if ( $has_children ) : ?>
-				<button
-					type="button"
-					class="gbe-main-menu__toggle"
-					aria-expanded="false"
-					aria-controls="<?php echo esc_attr( $panel_id ); ?>"
-					aria-label="<?php echo esc_attr( sprintf( __( 'Afficher le sous-menu %s', 'gbecosmolingua-core' ), $page->post_title ) ); ?>"
-				>
-					<span class="gbe-main-menu__toggle-icon" aria-hidden="true">▾</span>
-				</button>
-				<div id="<?php echo esc_attr( $panel_id ); ?>" class="gbe-main-menu__panel" role="region" aria-label="<?php echo esc_attr( sprintf( __( 'Sous-menu %s', 'gbecosmolingua-core' ), $page->post_title ) ); ?>">
-					<div class="gbe-main-menu__panel-inner">
-						<?php foreach ( $children as $child ) : ?>
-							<?php echo self::render_menu_column( $child ); ?>
-						<?php endforeach; ?>
-					</div>
-				</div>
-			<?php endif; ?>
 		</li>
 		<?php
 		return ob_get_clean();
-	}
-
-	/**
-	 * Render one horizontal submenu column (grand titre uniquement).
-	 *
-	 * @param WP_Post $page Child page.
-	 */
-	private static function render_menu_column( $page ) {
-		$page_url = get_permalink( $page );
-
-		ob_start();
-		?>
-		<div class="gbe-main-menu__column">
-			<p class="gbe-main-menu__column-title">
-				<a href="<?php echo esc_url( $page_url ); ?>">
-					<?php echo self::render_menu_column_title_markup( $page->post_title ); ?>
-				</a>
-			</p>
-		</div>
-		<?php
-		return ob_get_clean();
-	}
-
-	/**
-	 * Markup for a column title (two words stacked vertically).
-	 *
-	 * @param string $title Page title.
-	 */
-	private static function render_menu_column_title_markup( $title ) {
-		$title = trim( wp_strip_all_tags( $title ) );
-		$words = preg_split( '/\s+/u', $title, -1, PREG_SPLIT_NO_EMPTY );
-
-		if ( 2 !== count( $words ) ) {
-			return esc_html( $title );
-		}
-
-		return sprintf(
-			'<span class="gbe-main-menu__column-title-stack"><span class="gbe-main-menu__column-title-line">%1$s</span><span class="gbe-main-menu__column-title-line">%2$s</span></span>',
-			esc_html( $words[0] ),
-			esc_html( $words[1] )
-		);
-	}
-
-	/**
-	 * Extract section headings from page content (h3 or outline list).
-	 *
-	 * @param string $content Page HTML content.
-	 * @param string $url     Parent page URL for section links.
-	 * @return array<int, array{label: string, url: string}>
-	 */
-	private static function get_page_section_labels( $content, $url ) {
-		$sections = array();
-
-		if ( preg_match_all( '/<h3[^>]*>(.*?)<\/h3>/is', $content, $matches ) ) {
-			foreach ( $matches[1] as $heading ) {
-				$sections[] = array(
-					'label' => wp_strip_all_tags( $heading ),
-					'url'   => $url,
-				);
-			}
-		}
-
-		if ( empty( $sections ) && preg_match( '/<ul[^>]*>(.*?)<\/ul>/is', $content, $list_match ) ) {
-			if ( preg_match_all( '/<li[^>]*>(.*?)<\/li>/is', $list_match[1], $items ) ) {
-				foreach ( $items[1] as $item ) {
-					$label = wp_strip_all_tags( $item );
-					if ( '' !== $label ) {
-						$sections[] = array(
-							'label' => $label,
-							'url'   => $url,
-						);
-					}
-				}
-			}
-		}
-
-		return $sections;
 	}
 
 	/**
@@ -382,7 +279,7 @@ class GBE_Shortcodes {
 		$atts = shortcode_atts(
 			array(
 				'langue' => '',
-				'limit'  => 12,
+				'limit'  => 24,
 			),
 			$atts,
 			'gbe_proverbes_list'
@@ -390,11 +287,14 @@ class GBE_Shortcodes {
 
 		$langue_filter = isset( $_GET['langue_gbe'] ) ? sanitize_text_field( wp_unslash( $_GET['langue_gbe'] ) ) : $atts['langue'];
 		$search        = isset( $_GET['gbe_q'] ) ? sanitize_text_field( wp_unslash( $_GET['gbe_q'] ) ) : '';
+		$paged         = isset( $_GET['gbe_page'] ) ? max( 1, (int) $_GET['gbe_page'] ) : 1;
+		$per_page      = max( 6, min( 48, (int) $atts['limit'] ) );
 
 		$args = array(
 			'post_type'      => 'proverbe',
-			'posts_per_page' => (int) $atts['limit'],
+			'posts_per_page' => $per_page,
 			'post_status'    => 'publish',
+			'paged'          => $paged,
 		);
 
 		if ( $search ) {
@@ -411,30 +311,64 @@ class GBE_Shortcodes {
 			);
 		}
 
-		$query  = new WP_Query( $args );
+		$query   = new WP_Query( $args );
 		$langues = get_terms( array( 'taxonomy' => 'langue_gbe', 'hide_empty' => false ) );
+		$total   = (int) $query->found_posts;
+		$pages   = max( 1, (int) $query->max_num_pages );
+		$from    = $total ? ( ( $paged - 1 ) * $per_page ) + 1 : 0;
+		$to      = min( $total, $paged * $per_page );
 
 		ob_start();
 		?>
 		<div class="gbe-proverbes-archive">
-			<form class="gbe-filters" method="get" action="">
-				<label for="gbe_q"><?php esc_html_e( 'Rechercher', 'gbecosmolingua-core' ); ?></label>
-				<input type="search" id="gbe_q" name="gbe_q" value="<?php echo esc_attr( $search ); ?>" placeholder="<?php esc_attr_e( 'Mot-clé…', 'gbecosmolingua-core' ); ?>">
+			<div class="gbe-proverbes-archive__head">
+				<p class="gbe-proverbes-archive__summary">
+					<?php if ( $total ) : ?>
+						<?php
+						printf(
+							/* translators: 1: first result number, 2: last result number, 3: total results */
+							esc_html__( 'Affichage de %1$s–%2$s sur %3$s proverbes', 'gbecosmolingua-core' ),
+							number_format_i18n( $from ),
+							number_format_i18n( $to ),
+							number_format_i18n( $total )
+						);
+						?>
+					<?php else : ?>
+						<?php esc_html_e( 'Aucun proverbe ne correspond à votre recherche.', 'gbecosmolingua-core' ); ?>
+					<?php endif; ?>
+				</p>
+			</div>
 
-				<label for="langue_gbe"><?php esc_html_e( 'Langue', 'gbecosmolingua-core' ); ?></label>
-				<select id="langue_gbe" name="langue_gbe">
-					<option value=""><?php esc_html_e( 'Toutes les langues', 'gbecosmolingua-core' ); ?></option>
-					<?php foreach ( $langues as $term ) : ?>
-						<option value="<?php echo esc_attr( $term->slug ); ?>" <?php selected( $langue_filter, $term->slug ); ?>>
-							<?php echo esc_html( $term->name ); ?>
-						</option>
-					<?php endforeach; ?>
-				</select>
-				<button type="submit" class="gbe-btn"><?php esc_html_e( 'Filtrer', 'gbecosmolingua-core' ); ?></button>
+			<form class="gbe-filters gbe-filters--proverbes" method="get" action="">
+				<div class="gbe-filters__field gbe-filters__field--search">
+					<label for="gbe_q"><?php esc_html_e( 'Rechercher', 'gbecosmolingua-core' ); ?></label>
+					<input type="search" id="gbe_q" name="gbe_q" value="<?php echo esc_attr( $search ); ?>" placeholder="<?php esc_attr_e( 'Mot-clé, proverbe, traduction…', 'gbecosmolingua-core' ); ?>">
+				</div>
+
+				<div class="gbe-filters__field gbe-filters__field--lang">
+					<label for="langue_gbe"><?php esc_html_e( 'Langue', 'gbecosmolingua-core' ); ?></label>
+					<select id="langue_gbe" name="langue_gbe">
+						<option value=""><?php esc_html_e( 'Toutes les langues', 'gbecosmolingua-core' ); ?></option>
+						<?php foreach ( $langues as $term ) : ?>
+							<option value="<?php echo esc_attr( $term->slug ); ?>" <?php selected( $langue_filter, $term->slug ); ?>>
+								<?php echo esc_html( $term->name ); ?>
+							</option>
+						<?php endforeach; ?>
+					</select>
+				</div>
+
+				<div class="gbe-filters__actions">
+					<button type="submit" class="gbe-btn gbe-btn--primary"><?php esc_html_e( 'Filtrer', 'gbecosmolingua-core' ); ?></button>
+					<?php if ( $search || $langue_filter ) : ?>
+						<a class="gbe-filters__reset" href="<?php echo esc_url( remove_query_arg( array( 'gbe_q', 'langue_gbe', 'gbe_page' ) ) ); ?>">
+							<?php esc_html_e( 'Réinitialiser', 'gbecosmolingua-core' ); ?>
+						</a>
+					<?php endif; ?>
+				</div>
 			</form>
 
 			<?php if ( $query->have_posts() ) : ?>
-				<div class="gbe-cards-grid">
+				<div class="gbe-cards-grid gbe-cards-grid--proverbes">
 					<?php
 					while ( $query->have_posts() ) :
 						$query->the_post();
@@ -442,6 +376,40 @@ class GBE_Shortcodes {
 					endwhile;
 					?>
 				</div>
+
+				<?php if ( $pages > 1 ) : ?>
+					<?php
+					$pagination_base = array();
+					if ( $search ) {
+						$pagination_base['gbe_q'] = $search;
+					}
+					if ( $langue_filter ) {
+						$pagination_base['langue_gbe'] = $langue_filter;
+					}
+					?>
+					<nav class="gbe-proverbes-pagination" aria-label="<?php esc_attr_e( 'Pagination des proverbes', 'gbecosmolingua-core' ); ?>">
+						<?php if ( $paged > 1 ) : ?>
+							<a class="gbe-proverbes-pagination__link gbe-proverbes-pagination__link--prev" href="<?php echo esc_url( add_query_arg( array_merge( $pagination_base, array( 'gbe_page' => $paged - 1 ) ) ) ); ?>">
+								<?php esc_html_e( '← Page précédente', 'gbecosmolingua-core' ); ?>
+							</a>
+						<?php endif; ?>
+						<span class="gbe-proverbes-pagination__status">
+							<?php
+							printf(
+								/* translators: 1: current page, 2: total pages */
+								esc_html__( 'Page %1$s sur %2$s', 'gbecosmolingua-core' ),
+								number_format_i18n( $paged ),
+								number_format_i18n( $pages )
+							);
+							?>
+						</span>
+						<?php if ( $paged < $pages ) : ?>
+							<a class="gbe-proverbes-pagination__link gbe-proverbes-pagination__link--next" href="<?php echo esc_url( add_query_arg( array_merge( $pagination_base, array( 'gbe_page' => $paged + 1 ) ) ) ); ?>">
+								<?php esc_html_e( 'Page suivante →', 'gbecosmolingua-core' ); ?>
+							</a>
+						<?php endif; ?>
+					</nav>
+				<?php endif; ?>
 			<?php else : ?>
 				<p class="gbe-empty"><?php esc_html_e( 'Aucun proverbe trouvé. Ajoutez des entrées depuis l\'administration WordPress.', 'gbecosmolingua-core' ); ?></p>
 			<?php endif; ?>
@@ -533,34 +501,105 @@ class GBE_Shortcodes {
 	}
 
 	/**
+	 * Contexte d'import générique (identique sur tout un corpus) — ne pas l'afficher en carte.
+	 *
+	 * @param string $contexte Texte contexte.
+	 * @return bool
+	 */
+	private static function is_generic_proverbe_contexte( $contexte ) {
+		$contexte = trim( (string) $contexte );
+		if ( '' === $contexte ) {
+			return true;
+		}
+
+		$needles = array(
+			'Corpus éwé',
+			'Corpus ewe',
+			'Lododowo / Adoglo',
+			'Gbekɔbu',
+			'sources complémentaires',
+		);
+
+		foreach ( $needles as $needle ) {
+			if ( false !== stripos( $contexte, $needle ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Sous-titre carte proverbe (traduction ou contexte utile).
+	 *
+	 * @param int $post_id Post ID.
+	 * @return string
+	 */
+	private static function proverbe_card_subtitle( $post_id ) {
+		$trad = trim( (string) GBE_Frontend::get_meta( $post_id, 'traduction_fr' ) );
+		if ( '' !== $trad ) {
+			return wp_trim_words( $trad, 22, '…' );
+		}
+
+		$commentaire = trim( (string) GBE_Frontend::get_meta( $post_id, 'commentaire_culturel' ) );
+		if ( '' !== $commentaire ) {
+			return wp_trim_words( $commentaire, 18, '…' );
+		}
+
+		$contexte = trim( (string) GBE_Frontend::get_meta( $post_id, 'contexte' ) );
+		if ( '' !== $contexte && ! self::is_generic_proverbe_contexte( $contexte ) ) {
+			return wp_trim_words( $contexte, 18, '…' );
+		}
+
+		return '';
+	}
+
+	/**
 	 * Render a proverb card for archives.
 	 *
 	 * @param int $post_id Post ID.
 	 */
 	public static function render_proverbe_card( $post_id ) {
 		$texte = GBE_Frontend::get_meta( $post_id, 'texte_original' );
-		$trad  = GBE_Frontend::get_meta( $post_id, 'traduction_fr' );
-		$langues = get_the_terms( $post_id, 'langue_gbe' );
+		if ( ! $texte ) {
+			$texte = get_the_title( $post_id );
+		}
+		$langues  = get_the_terms( $post_id, 'langue_gbe' );
+		$url      = get_permalink( $post_id );
+		$subtitle = self::proverbe_card_subtitle( $post_id );
 
 		ob_start();
 		?>
-		<article class="gbe-card gbe-card--proverbe">
-			<?php if ( $langues && ! is_wp_error( $langues ) ) : ?>
-				<div class="gbe-card__tags">
-					<?php foreach ( $langues as $term ) : ?>
-						<span class="gbe-tag"><?php echo esc_html( $term->name ); ?></span>
-					<?php endforeach; ?>
-				</div>
-			<?php endif; ?>
-			<?php if ( $texte ) : ?>
-				<blockquote class="gbe-card__quote"><?php echo esc_html( $texte ); ?></blockquote>
-			<?php endif; ?>
-			<?php if ( $trad ) : ?>
-				<p class="gbe-card__excerpt"><?php echo esc_html( wp_trim_words( $trad, 25 ) ); ?></p>
-			<?php endif; ?>
-			<a href="<?php echo esc_url( get_permalink( $post_id ) ); ?>" class="gbe-card__link">
-				<?php esc_html_e( 'Voir le proverbe', 'gbecosmolingua-core' ); ?> →
-			</a>
+		<article class="gbe-proverbe-card">
+			<div class="gbe-proverbe-card__body">
+				<?php if ( $langues && ! is_wp_error( $langues ) ) : ?>
+					<div class="gbe-proverbe-card__tags">
+						<?php foreach ( $langues as $term ) : ?>
+							<span class="gbe-proverbe-card__tag"><?php echo esc_html( $term->name ); ?></span>
+						<?php endforeach; ?>
+					</div>
+				<?php endif; ?>
+
+				<?php if ( $texte ) : ?>
+					<blockquote class="gbe-proverbe-card__quote" cite="<?php echo esc_url( $url ); ?>">
+						<p>
+							<a class="gbe-proverbe-card__quote-link" href="<?php echo esc_url( $url ); ?>">
+								<?php echo esc_html( $texte ); ?>
+							</a>
+						</p>
+					</blockquote>
+				<?php endif; ?>
+
+				<?php if ( $subtitle ) : ?>
+					<p class="gbe-proverbe-card__excerpt"><?php echo esc_html( $subtitle ); ?></p>
+				<?php endif; ?>
+			</div>
+
+			<footer class="gbe-proverbe-card__footer">
+				<a class="gbe-proverbe-card__cta" href="<?php echo esc_url( $url ); ?>">
+					<?php esc_html_e( 'Lire la fiche', 'gbecosmolingua-core' ); ?> →
+				</a>
+			</footer>
 		</article>
 		<?php
 		return ob_get_clean();
@@ -1133,6 +1172,189 @@ class GBE_Shortcodes {
 		);
 
 		return self::partenaires( $atts );
+	}
+
+	/**
+	 * Membres fondateurs (alias du shortcode membres).
+	 *
+	 * @param array<string, string> $atts Attributes.
+	 * @return string
+	 */
+	public static function membres_fondateurs( $atts ) {
+		if ( ! is_array( $atts ) ) {
+			$atts = array();
+		}
+		$atts['groupe'] = 'fondateur';
+		if ( empty( $atts['title'] ) ) {
+			$atts['title'] = __( 'Membres fondateurs', 'gbecosmolingua-core' );
+		}
+
+		return self::membres( $atts );
+	}
+
+	/**
+	 * Grille de membres GbeCosmoLingua.
+	 *
+	 * @param array<string, string> $atts Attributes.
+	 * @return string
+	 */
+	public static function membres( $atts ) {
+		$atts = shortcode_atts(
+			array(
+				'groupe'     => 'fondateur',
+				'limit'      => 24,
+				'title'      => '',
+				'show_title' => '1',
+				'class'      => '',
+			),
+			$atts,
+			'gbe_membres'
+		);
+
+		$args = array(
+			'post_type'      => 'membre_gbe',
+			'posts_per_page' => (int) $atts['limit'],
+			'post_status'    => 'publish',
+			'orderby'        => 'menu_order',
+			'order'          => 'ASC',
+		);
+
+		$groupe = sanitize_title( (string) $atts['groupe'] );
+		if ( '' !== $groupe ) {
+			$args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+				array(
+					'taxonomy' => 'groupe_membre',
+					'field'    => 'slug',
+					'terms'    => $groupe,
+				),
+			);
+		}
+
+		$query = self::query_membres( $args, $groupe );
+
+		ob_start();
+		$section_class = trim( 'gbe-membres-section ' . (string) $atts['class'] );
+		?>
+		<section class="<?php echo esc_attr( $section_class ); ?>">
+			<?php if ( '0' !== (string) $atts['show_title'] && '' !== trim( (string) $atts['title'] ) ) : ?>
+				<h2 class="gbe-membres-section__title"><?php echo esc_html( (string) $atts['title'] ); ?></h2>
+			<?php endif; ?>
+			<?php if ( $query->have_posts() ) : ?>
+				<div class="gbe-membres-grid">
+					<?php
+					while ( $query->have_posts() ) {
+						$query->the_post();
+						echo self::render_membre_card( get_the_ID() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					}
+					wp_reset_postdata();
+					?>
+				</div>
+			<?php else : ?>
+				<p class="gbe-empty"><?php esc_html_e( 'Aucun membre publié pour le moment.', 'gbecosmolingua-core' ); ?></p>
+			<?php endif; ?>
+		</section>
+		<?php
+		return (string) ob_get_clean();
+	}
+
+	/**
+	 * Requête membres avec repli si le groupe ou Polylang filtre à vide.
+	 *
+	 * @param array<string, mixed> $args   Arguments WP_Query.
+	 * @param string               $groupe Slug groupe demandé.
+	 * @return WP_Query
+	 */
+	private static function query_membres( $args, $groupe = '' ) {
+		$query = new WP_Query( $args );
+		if ( $query->have_posts() ) {
+			return $query;
+		}
+
+		if ( '' !== $groupe && class_exists( 'GBE_Demo_Content' ) ) {
+			GBE_Demo_Content::seed_membres_fondateurs();
+			$query = new WP_Query( $args );
+			if ( $query->have_posts() ) {
+				return $query;
+			}
+		}
+
+		if ( '' !== $groupe ) {
+			unset( $args['tax_query'] );
+			$query = new WP_Query( $args );
+			if ( $query->have_posts() ) {
+				return $query;
+			}
+		}
+
+		$args['suppress_filters'] = true;
+		if ( '' !== $groupe ) {
+			$args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+				array(
+					'taxonomy' => 'groupe_membre',
+					'field'    => 'slug',
+					'terms'    => $groupe,
+				),
+			);
+		}
+
+		return new WP_Query( $args );
+	}
+
+	/**
+	 * Carte membre individuelle.
+	 *
+	 * @param int $post_id ID membre.
+	 * @return string
+	 */
+	public static function render_membre_card( $post_id ) {
+		$post_id  = (int) $post_id;
+		$name     = get_the_title( $post_id );
+		$fonction = trim( (string) get_post_meta( $post_id, '_gbe_fonction', true ) );
+		$bio      = has_excerpt( $post_id ) ? get_the_excerpt( $post_id ) : '';
+
+		$photo_url = class_exists( 'GBE_Membres_Photos' )
+			? GBE_Membres_Photos::get_membre_photo_url( $post_id )
+			: '';
+
+		ob_start();
+		?>
+		<article class="gbe-membre-card">
+			<div class="gbe-membre-card__photo" aria-hidden="true">
+				<?php if ( has_post_thumbnail( $post_id ) ) : ?>
+					<?php echo get_the_post_thumbnail( $post_id, 'medium', array( 'class' => 'gbe-membre-card__img', 'loading' => 'lazy' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				<?php elseif ( '' !== $photo_url ) : ?>
+					<img class="gbe-membre-card__img" src="<?php echo esc_url( $photo_url ); ?>" alt="" loading="lazy" width="132" height="132" />
+				<?php else : ?>
+					<span class="gbe-membre-card__placeholder"><?php echo esc_html( self::membre_initials( $name ) ); ?></span>
+				<?php endif; ?>
+			</div>
+			<h3 class="gbe-membre-card__name"><?php echo esc_html( $name ); ?></h3>
+			<?php if ( '' !== $fonction ) : ?>
+				<p class="gbe-membre-card__role"><?php echo esc_html( $fonction ); ?></p>
+			<?php endif; ?>
+			<?php if ( '' !== $bio ) : ?>
+				<p class="gbe-membre-card__bio"><?php echo esc_html( $bio ); ?></p>
+			<?php endif; ?>
+		</article>
+		<?php
+		return (string) ob_get_clean();
+	}
+
+	/**
+	 * Initiales pour avatar placeholder.
+	 *
+	 * @param string $name Nom complet.
+	 * @return string
+	 */
+	private static function membre_initials( $name ) {
+		$parts = preg_split( '/\s+/', trim( (string) $name ) ) ?: array();
+		$initials = '';
+		foreach ( array_slice( $parts, 0, 2 ) as $part ) {
+			if ( '' !== $part ) {
+				$initials .= mb_strtoupper( mb_substr( $part, 0, 1 ) );
+			}
+		}
+		return '' !== $initials ? $initials : '?';
 	}
 
 	/**

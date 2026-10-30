@@ -1,0 +1,216 @@
+
+/* —— Page Linguistique (hub Gbe) —— */
+.gbe-main--linguistique {
+	padding: 0 !important;
+	gap: 0;
+	max-width: none;
+	overflow-x: clip;
+	background: var(--gbe-sand, #F2E9D8);
+}
+
+.gbe-main--linguistique.is-layout-flow > * {
+	margin-block-start: 0;
+}
+
+.gbe-main--linguistique > .wp-block-html {
+	max-width: none;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+.gbe-main--linguistique .gbe-section.gbe-linguistique-intro {
+	max-width: 1140px;
+	margin: 0 auto;
+	padding: clamp(1rem, 3vw, 1.5rem) clamp(1rem, 3vw, 1.5rem) 0;
+	box-sizing: border-box;
+	line-height: 1.65;
+}
+
+/* Hero — dimensions : hero-header-flush.css */
+.gbe-linguistique-hero {
+	color: var(--gbe-white, #fff);
+	text-align: center;
+	background:
+		linear-gradient(180deg, rgba(13, 27, 61, 0.55) 0%, rgba(8, 20, 40, 0.65) 45%, rgba(8, 20, 40, 0.92) 100%),
+		var(--gbe-linguistique-hero-image, none) center center / cover no-repeat,
+		linear-gradient(135deg, #0d1b3d 0%, #152a52 55%, #081428 100%);
+}
+
+.gbe-linguistique-hero__kicker {
+	margin: 0 0 0.5rem;
+	font-size: 0.85rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.gbe-linguistique-hero__kicker a {
+	color: rgba(255, 250, 240, 0.85);
+	text-decoration: none;
+}
+
+.gbe-linguistique-hero__kicker a:hover {
+	color: var(--gbe-gold, #D99A2B);
+}
+
+.gbe-linguistique-hero__title {
+	font-family: Georgia, "Times New Roman", serif;
+	font-size: clamp(2.5rem, 6vw, 3.75rem);
+	font-weight: 400;
+	color: var(--gbe-white) !important;
+	margin: 0 0 0.75rem;
+}
+
+.gbe-linguistique-hero__lead {
+	max-width: 36rem;
+	margin: 0 auto 1.5rem;
+	font-size: clamp(1rem, 2.2vw, 1.12rem);
+	line-height: 1.55;
+	color: rgba(255, 250, 240, 0.95);
+}
+
+.gbe-linguistique-hero__actions .wp-block-button__link {
+	border-radius: 999px;
+	font-weight: 600;
+}
+
+.gbe-linguistique-hero__actions .is-style-fill .wp-block-button__link {
+	background: var(--gbe-gold, #D99A2B);
+	color: var(--gbe-ink, #0D1B3D);
+	border: 1px solid rgba(255, 250, 240, 0.4);
+}
+
+.gbe-linguistique-hero__actions .is-style-outline .wp-block-button__link {
+	border: 1px solid rgba(255, 250, 240, 0.7);
+	color: var(--gbe-white);
+	background: transparent;
+}
+
+/* Nav tabs */
+.gbe-linguistique-nav {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.5rem;
+	max-width: 720px;
+	margin: -2.5rem auto 1rem;
+	padding: 0 clamp(1rem, 3vw, 1.5rem);
+	position: relative;
+	z-index: 2;
+}
+
+.gbe-linguistique-nav__tab {
+	display: inline-block;
+	padding: 0.45rem 1rem;
+	border-radius: 999px;
+	font-size: 0.88rem;
+	font-weight: 600;
+	text-decoration: none;
+	color: var(--gbe-ink, #0D1B3D);
+	background: var(--gbe-white, #fff);
+	border: 1px solid rgba(35, 21, 12, 0.12);
+	box-shadow: 0 4px 14px rgba(35, 21, 12, 0.08);
+	transition: background 0.15s, color 0.15s;
+}
+
+.gbe-linguistique-nav__tab:hover {
+	background: var(--gbe-green, #1E5A3A);
+	color: var(--gbe-white, #fff);
+	border-color: var(--gbe-green, #1E5A3A);
+}
+
+/* Stats */
+.gbe-linguistique-stats {
+	max-width: 960px;
+	margin: 0 auto 1.5rem;
+	padding: 0 clamp(1rem, 3vw, 1.5rem);
+}
+
+.gbe-linguistique-stats__grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 0.75rem;
+}
+
+.gbe-linguistique-stats__item {
+	padding: 0.85rem 0.75rem;
+	border-radius: 12px;
+	background: var(--gbe-white, #fff);
+	border: 1px solid rgba(35, 21, 12, 0.08);
+	text-align: center;
+}
+
+.gbe-linguistique-stats__value {
+	margin: 0;
+	font-size: clamp(1.35rem, 3vw, 1.75rem);
+	font-weight: 700;
+	color: var(--gbe-green, #1E5A3A);
+	line-height: 1.1;
+}
+
+.gbe-linguistique-stats__label {
+	margin: 0.2rem 0 0;
+	font-size: 0.78rem;
+	color: var(--gbe-ink, #061022);
+	line-height: 1.3;
+}
+
+/* Modifiers visuels sections */
+.gbe-linguistique-rubriques .gbe-culture-rubrique__media--ecriture {
+	background-color: #2f6840;
+}
+.gbe-linguistique-rubriques .gbe-culture-rubrique__media--grammaire {
+	background-color: #152a52;
+}
+.gbe-linguistique-rubriques .gbe-culture-rubrique__media--lexique {
+	background-color: #B87A1F;
+}
+.gbe-linguistique-rubriques .gbe-culture-rubrique__media--ressources {
+	background-color: #1E5A3A;
+}
+
+/* CTA */
+.gbe-linguistique-cta {
+	margin-top: 0;
+	padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 3vw, 1.5rem);
+	background: linear-gradient(120deg, #1E5A3A 0%, #152a52 100%);
+	color: var(--gbe-white);
+	text-align: center;
+}
+
+.gbe-linguistique-cta__inner {
+	max-width: 640px;
+	margin: 0 auto;
+}
+
+.gbe-linguistique-cta h2 {
+	color: var(--gbe-white);
+	margin: 0 0 0.65rem;
+}
+
+.gbe-linguistique-cta .gbe-culture-rubrique__btn {
+	background: var(--gbe-gold);
+	color: var(--gbe-ink) !important;
+	margin-top: 0.75rem;
+}
+
+@media (max-width: 900px) {
+	.gbe-linguistique-stats__grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 600px) {
+	.gbe-linguistique-nav {
+		margin-top: -1.5rem;
+	}
+
+	.gbe-linguistique-nav__tab {
+		font-size: 0.82rem;
+		padding: 0.4rem 0.75rem;
+	}
+
+	.gbe-linguistique-stats__grid {
+		grid-template-columns: 1fr 1fr;
+	}
+}

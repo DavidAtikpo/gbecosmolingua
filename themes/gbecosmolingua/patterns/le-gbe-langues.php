@@ -1,6 +1,6 @@
 <?php
 /**
- * Title: Le Gbe — Langues du continuum
+ * Title: Gbe — Langues du continuum
  * Slug: gbecosmolingua/le-gbe-langues
  * Categories: gbecosmolingua
  * Inserter: false

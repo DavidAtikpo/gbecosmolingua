@@ -28,43 +28,360 @@ function gbe_intro( $text ) {
 }
 
 /**
- * Language pages under Le Gbe.
+ * Normalise la désignation « Gbe » (sans article défini).
+ *
+ * @param string $text Texte source.
+ * @return string
+ */
+function gbe_normalize_gbe_wording( $text ) {
+	if ( ! is_string( $text ) || '' === $text ) {
+		return $text;
+	}
+
+	return str_replace(
+		array( 'du Gbe', 'Du Gbe', 'Le Gbe', 'le Gbe' ),
+		array( 'de Gbe', 'De Gbe', 'Gbe', 'Gbe' ),
+		$text
+	);
+}
+
+/**
+ * Applique gbe_normalize_gbe_wording() récursivement sur tableaux.
+ *
+ * @param mixed $value Valeur à normaliser.
+ * @return mixed
+ */
+function gbe_normalize_gbe_wording_deep( $value ) {
+	if ( is_string( $value ) ) {
+		return gbe_normalize_gbe_wording( $value );
+	}
+
+	if ( is_array( $value ) ) {
+		foreach ( $value as $key => $item ) {
+			$value[ $key ] = gbe_normalize_gbe_wording_deep( $item );
+		}
+	}
+
+	return $value;
+}
+
+/**
+ * Entrées du menu principal (en-tête, sans sous-menus).
+ *
+ * @return array<int, array<string, string>>
+ */
+function gbe_get_primary_menu_items() {
+	return array(
+		array(
+			'type' => 'page',
+			'path' => 'le-gbe',
+		),
+		array(
+			'type' => 'page',
+			'path' => 'le-gbe/linguistique',
+		),
+		array(
+			'type' => 'page',
+			'path' => 'cultures-gbe',
+		),
+		array(
+			'type' => 'page',
+			'path' => 'xotutu',
+		),
+		array(
+			'type' => 'page',
+			'path' => 'xotutu/onomastique',
+		),
+		array(
+			'type' => 'page',
+			'path' => 'paremiologie',
+		),
+		array(
+			'type'  => 'url',
+			'slug'  => 'proverbes',
+			'label' => __( 'Proverbes', 'gbecosmolingua-core' ),
+			'url'   => home_url( '/proverbes/' ),
+		),
+		array(
+			'type' => 'page',
+			'path' => 'nous-soutenir',
+		),
+		array(
+			'type' => 'page',
+			'path' => 'notre-philosophie',
+		),
+	);
+}
+
+/**
+ * Résout une entrée de menu (titre + URL).
+ *
+ * @param array<string, string> $item Entrée menu.
+ * @return array{label: string, url: string, key: string}|null
+ */
+function gbe_resolve_primary_menu_item( $item ) {
+	$type = $item['type'] ?? '';
+
+	if ( 'page' === $type && ! empty( $item['path'] ) ) {
+		$page = get_page_by_path( $item['path'], OBJECT, 'page' );
+		if ( ! $page ) {
+			return null;
+		}
+
+		return array(
+			'label' => $page->post_title,
+			'url'   => get_permalink( $page ),
+			'key'   => 'page:' . $item['path'],
+		);
+	}
+
+	if ( 'url' === $type && ! empty( $item['url'] ) && ! empty( $item['label'] ) ) {
+		$slug = ! empty( $item['slug'] ) ? $item['slug'] : md5( (string) $item['url'] );
+
+		return array(
+			'label' => $item['label'],
+			'url'   => $item['url'],
+			'key'   => 'url:' . $slug,
+		);
+	}
+
+	return null;
+}
+
+/**
+ * Chemins des rubriques du menu principal (en-tête).
+ *
+ * @return string[]
+ */
+function gbe_get_primary_menu_paths() {
+	$paths = array();
+
+	foreach ( gbe_get_primary_menu_items() as $item ) {
+		if ( 'page' === ( $item['type'] ?? '' ) && ! empty( $item['path'] ) ) {
+			$paths[] = $item['path'];
+			continue;
+		}
+
+		if ( 'url' === ( $item['type'] ?? '' ) && ! empty( $item['slug'] ) ) {
+			$paths[] = $item['slug'];
+		}
+	}
+
+	return $paths;
+}
+
+/**
+ * Racine menu principal la plus spécifique pour une page.
+ *
+ * @param WP_Post $page Page.
+ * @return string
+ */
+function gbe_get_primary_menu_root_path( $page ) {
+	if ( ! $page instanceof WP_Post ) {
+		return '';
+	}
+
+	$uri    = get_page_uri( $page );
+	$paths  = gbe_get_primary_menu_paths();
+	$best   = '';
+
+	foreach ( $paths as $path ) {
+		if ( $uri === $path || str_starts_with( $uri, $path . '/' ) ) {
+			if ( strlen( $path ) > strlen( $best ) ) {
+				$best = $path;
+			}
+		}
+	}
+
+	return $best;
+}
+
+/**
+ * Filtre les pages enfants d'une rubrique (aligné ancien menu déroulant).
+ *
+ * @param string         $root_path Chemin racine (ex. le-gbe, xotutu).
+ * @param array<WP_Post> $children  Pages enfants.
+ * @return array<WP_Post>
+ */
+function gbe_filter_primary_menu_children( $root_path, $children ) {
+	if ( empty( $children ) ) {
+		return array();
+	}
+
+	if ( 'xotutu' === $root_path ) {
+		$children = array_values(
+			array_filter(
+				$children,
+				static function ( $child ) {
+					return 'onomastique' !== $child->post_name;
+				}
+			)
+		);
+	}
+
+	if ( 'le-gbe' === $root_path ) {
+		$children = array_values(
+			array_filter(
+				$children,
+				static function ( $child ) {
+					return 'linguistique' !== $child->post_name;
+				}
+			)
+		);
+	}
+
+	return $children;
+}
+
+/**
+ * Templates de page qui gèrent déjà la navigation interne.
+ *
+ * @return string[]
+ */
+function gbe_page_templates_with_builtin_nav() {
+	return array(
+		'page-le-gbe-chapter',
+		'page-cultures-gbe',
+		'page-culture-rubrique',
+		'page-paremiologie',
+		'page-paremiologie-banque',
+		'page-onomastique',
+		'page-linguistique',
+		'page-recherche-innovation',
+		'page-xotutu',
+		'page-le-gbe',
+	);
+}
+
+/**
+ * Liens onglets entre pages sœurs (sous-rubriques d'un même parent).
+ *
+ * @param WP_Post|null $page Page courante.
+ * @return array<int, array{url: string, label: string, current: bool}>
+ */
+function gbe_get_page_sibling_nav_links( $page = null ) {
+	if ( ! $page instanceof WP_Post ) {
+		$page = get_queried_object();
+	}
+	if ( ! $page instanceof WP_Post || 'page' !== $page->post_type ) {
+		return array();
+	}
+
+	if ( ! gbe_get_primary_menu_root_path( $page ) ) {
+		return array();
+	}
+
+	$template = get_page_template_slug( $page );
+	if ( $template && in_array( $template, gbe_page_templates_with_builtin_nav(), true ) ) {
+		return array();
+	}
+
+	if ( function_exists( 'gbecosmolingua_le_gbe_chapter_context' ) && gbecosmolingua_le_gbe_chapter_context( $page ) ) {
+		return array();
+	}
+
+	if ( class_exists( 'GBE_Le_Gbe_Hub_Admin' ) && in_array( $page->post_name, GBE_Le_Gbe_Hub_Admin::main_menu_slugs(), true ) ) {
+		return array();
+	}
+
+	$parent_id = (int) $page->post_parent;
+	if ( ! $parent_id ) {
+		return array();
+	}
+
+	$children = get_pages(
+		array(
+			'parent'      => $parent_id,
+			'sort_column' => 'menu_order,post_title',
+			'post_status' => 'publish',
+		)
+	);
+
+	$parent = get_post( $parent_id );
+	if ( $parent instanceof WP_Post ) {
+		$root_path = gbe_get_primary_menu_root_path( $parent );
+		if ( $root_path ) {
+			$children = gbe_filter_primary_menu_children( $root_path, $children );
+		}
+	}
+
+	if ( count( $children ) < 2 ) {
+		return array();
+	}
+
+	$links = array();
+	foreach ( $children as $child ) {
+		$links[] = array(
+			'url'     => get_permalink( $child ),
+			'label'   => $child->post_title,
+			'current' => (int) $child->ID === (int) $page->ID,
+		);
+	}
+
+	return $links;
+}
+
+/**
+ * HTML onglets sous-rubriques sur la page.
+ *
+ * @param WP_Post|null $page Page courante.
+ * @return string
+ */
+function gbe_render_page_sibling_nav( $page = null ) {
+	$links = gbe_get_page_sibling_nav_links( $page );
+	if ( empty( $links ) ) {
+		return '';
+	}
+
+	ob_start();
+	echo '<nav class="gbe-chapter-siblings gbe-page-siblings" aria-label="' . esc_attr__( 'Sous-rubriques', 'gbecosmolingua-core' ) . '">';
+	foreach ( $links as $link ) {
+		$class   = 'gbe-chapter-siblings__tab' . ( $link['current'] ? ' is-active' : '' );
+		$current = $link['current'] ? ' aria-current="page"' : '';
+		echo '<a class="' . esc_attr( $class ) . '" href="' . esc_url( $link['url'] ) . '"' . $current . '>';
+		echo esc_html( $link['label'] );
+		echo '</a>';
+	}
+	echo '</nav>';
+
+	return (string) ob_get_clean();
+}
+
+/**
+ * Language pages under Gbe.
  *
  * @return array<int, array<string, mixed>>
  */
 function gbe_get_langue_pages() {
 	$langues = array(
-		'Éwé'          => 'ewe',
-		'Gen (Mina)'   => 'gen-mina',
-		'Fon'          => 'fon',
-		'Aja'          => 'aja',
-		'Gun'          => 'gun',
-		'Waci'         => 'waci',
-		'Xwela'        => 'xwela',
-		'Xwla'         => 'xwla',
-		'Phla-Phera'   => 'phla-phera',
+		'Éwé'             => 'ewe',
+		'Gen (Mina)'      => 'gen-mina',
+		'Fon'             => 'fon',
+		'Aja'             => 'aja',
+		'Gun'             => 'gun',
+		'Waci'            => 'waci',
+		'Xwela'           => 'xwela',
+		'Xwla'            => 'xwla',
+		'Phla-Phera'      => 'phla-phera',
 		'Autres variétés' => 'autres-varietes',
 	);
 
 	$pages = array();
+	$langue_callbacks = function_exists( 'gbe_le_gbe_langue_chapter_callbacks' )
+		? gbe_le_gbe_langue_chapter_callbacks()
+		: array();
+
 	foreach ( $langues as $title => $slug ) {
+		$uri = 'le-gbe/les-langues/' . $slug;
+		if ( isset( $langue_callbacks[ $uri ] ) && is_callable( $langue_callbacks[ $uri ] ) ) {
+			$content = (string) call_user_func( $langue_callbacks[ $uri ] );
+		} else {
+			$content = gbe_le_gbe_langue_page_content( $slug );
+		}
 		$pages[] = array(
 			'title'   => $title,
 			'slug'    => $slug,
-			'content' => gbe_intro(
-				sprintf(
-					'Documentation linguistique et culturelle de la variété %s du continuum gbe : description, corpus, ressources et perspectives de recherche.',
-					$title
-				)
-			) . gbe_outline(
-				array(
-					'Présentation et aire géographique',
-					'Phonologie et alphabet',
-					'Morphosyntaxe',
-					'Lexique et corpus',
-					'Patrimoine oral et culturel',
-				)
-			),
+			'content' => $content,
 		);
 	}
 
@@ -77,6 +394,24 @@ function gbe_get_langue_pages() {
  * @return array<int, array<string, mixed>>
  */
 function gbe_get_linguistique_pages() {
+	$pages = array(
+		array(
+			'title'   => 'Travaux scientifiques récents',
+			'slug'    => 'travaux-scientifiques-recents',
+			'content' => gbe_le_gbe_travaux_scientifiques_content(),
+		),
+		array(
+			'title'   => 'Hounkpati B. Christophe Capo',
+			'slug'    => 'hounkpati-b-c-capo',
+			'content' => gbe_le_gbe_capo_auteur_content(),
+		),
+		array(
+			'title'   => 'Potentialités lexicales',
+			'slug'    => 'potentialites-lexicales',
+			'content' => gbe_le_gbe_potentialites_lexicales_content(),
+		),
+	);
+
 	$sections = array(
 		'Alphabet'      => array( 'alphabet', 'Orthographes et systèmes d\'écriture des variétés gbe.' ),
 		'Phonologie'    => array( 'phonologie', 'Inventaires phonologiques, tons et structures syllabiques.' ),
@@ -86,21 +421,42 @@ function gbe_get_linguistique_pages() {
 		'Dialectologie' => array( 'dialectologie', 'Variation dialectale et relations intervariétales du continuum.' ),
 	);
 
-	$pages = array();
 	foreach ( $sections as $title => $data ) {
+		$content = gbe_intro( $data[1] ) . gbe_outline(
+			array(
+				'Notions fondamentales',
+				'Ouvrages de référence',
+				'Corpus et ressources numériques',
+				'Axes de recherche GbeCosmoLingua',
+			)
+		);
+		if ( 'Dialectologie' === $title ) {
+			$content = gbe_le_gbe_dialectologie_content();
+		} elseif ( 'Lexicologie' === $title ) {
+			$content = gbe_le_gbe_lexicologie_content();
+		} elseif ( 'Phonologie' === $title ) {
+			$content = gbe_le_gbe_fon_phonologie_content();
+		} elseif ( 'Morphologie' === $title ) {
+			$content = gbe_le_gbe_fon_morphologie_content();
+		}
 		$pages[] = array(
 			'title'   => $title,
 			'slug'    => $data[0],
-			'content' => gbe_intro( $data[1] ) . gbe_outline(
-				array(
-					'Notions fondamentales',
-					'Ouvrages de référence',
-					'Corpus et ressources numériques',
-					'Axes de recherche GbeCosmoLingua',
-				)
-			),
+			'content' => $content,
 		);
 	}
+
+	$pages[] = array(
+		'title'   => 'Corpus numériques',
+		'slug'    => 'corpus-numeriques',
+		'content' => gbe_intro( 'Accédez aux corpus numériques de GbeCosmoLingua : proverbes, archives orales et ressources documentaires.' ) .
+			'<p><a href="/paremiologie/banque-numerique-proverbes/">Banque de proverbes</a> · <a href="/xotutu/bibliotheque-numerique-xotutu/">Archives Xótùtù</a> · <a href="/recherche-et-innovation/ressources-documentaires/">Bibliothèque numérique</a></p>',
+	);
+	$pages[] = array(
+		'title'   => 'Bibliothèque',
+		'slug'    => 'bibliotheque',
+		'content' => '<p>Bibliothèque numérique des langues et patrimoines gbe.</p>[gbe_bibliotheque]',
+	);
 
 	return $pages;
 }
@@ -146,7 +502,8 @@ function gbe_get_genres_folkloriques_pages() {
 		array(
 			'title'   => 'Lododowo — Proverbes',
 			'slug'    => 'lododowo-proverbes',
-			'content' => gbe_intro( 'Les lododowo condensent la sagesse populaire éwé et gbe.' ),
+			'content' => gbe_intro( 'Les lododowo condensent la sagesse populaire gbe. De nombreux proverbes sont communs à toutes les sections dialectales (Éwé, Fon, Gen, Aja).' ) .
+				'<p><a href="/paremiologie/banque-numerique-proverbes/">Banque numérique de proverbes (786 entrées éwé) →</a></p>',
 		),
 		array(
 			'title'   => 'Àdàgana — Locutions idiomatiques',
@@ -219,35 +576,63 @@ function gbe_get_onomastique_pages() {
 		array(
 			'title'    => 'Anthroponymie',
 			'slug'     => 'anthroponymie',
-			'content'  => gbe_intro( 'Étude des noms de personnes dans les cultures gbe.' ),
+			'content'  => gbe_intro( 'Étude des noms de personnes dans les cultures gbe : prénoms, noms lignagers, initiatiques et circonstanciels.' ),
 			'children' => array(
-				array( 'title' => 'Prénoms', 'slug' => 'prenoms', 'content' => gbe_intro( 'Prénoms, symbolique et choix onomastique.' ) ),
-				array( 'title' => 'Noms lignagers', 'slug' => 'noms-lignagers', 'content' => gbe_intro( 'Noms de famille et identités lignagères.' ) ),
-				array( 'title' => 'Noms initiatiques', 'slug' => 'noms-initiatiques', 'content' => gbe_intro( 'Noms reçus au cours des parcours initiatiques.' ) ),
-				array( 'title' => 'Noms circonstanciels', 'slug' => 'noms-circonstanciels', 'content' => gbe_intro( 'Noms liés aux circonstances de naissance ou d\'événements.' ) ),
+				array(
+					'title'    => 'Noms de personnes',
+					'slug'     => 'noms-de-personnes',
+					'content'  => gbe_intro( 'Les systèmes de dénomination personnelle dans les sociétés gbe.' ),
+					'children' => array(
+						array( 'title' => 'Prénoms', 'slug' => 'prenoms', 'content' => gbe_intro( 'Prénoms, symbolique et choix onomastique.' ) ),
+						array( 'title' => 'Noms lignagers', 'slug' => 'noms-lignagers', 'content' => gbe_intro( 'Noms de famille et identités lignagères.' ) ),
+						array( 'title' => 'Noms initiatiques', 'slug' => 'noms-initiatiques', 'content' => gbe_intro( 'Noms reçus au cours des parcours initiatiques.' ) ),
+						array( 'title' => 'Noms circonstanciels', 'slug' => 'noms-circonstanciels', 'content' => gbe_intro( 'Noms liés aux circonstances de naissance ou d\'événements.' ) ),
+					),
+				),
 			),
 		),
 		array(
 			'title'    => 'Toponymie',
 			'slug'     => 'toponymie',
-			'content'  => gbe_intro( 'Noms de lieux, villages, villes et espaces sacrés.' ),
+			'content'  => gbe_intro( 'Noms de lieux, villages, villes, espaces sacrés et reliefs dans l\'espace gbe.' ),
 			'children' => array(
-				array( 'title' => 'Villages', 'slug' => 'villages', 'content' => gbe_intro( 'Toponymie des villages et localités rurales.' ) ),
-				array( 'title' => 'Villes', 'slug' => 'villes', 'content' => gbe_intro( 'Noms urbains et histoire des agglomérations.' ) ),
-				array( 'title' => 'Lieux sacrés', 'slug' => 'lieux-sacres', 'content' => gbe_intro( 'Sanctuaires, bosquets sacrés et lieux de culte.' ) ),
-				array( 'title' => 'Montagnes', 'slug' => 'montagnes', 'content' => gbe_intro( 'Oroponymie et mémoire des reliefs.' ) ),
-				array( 'title' => 'Hydronymie', 'slug' => 'hydronymie', 'content' => gbe_intro( 'Noms de rivières, cours d\'eau et plans d\'eau.' ) ),
+				array(
+					'title'    => 'Noms de lieux',
+					'slug'     => 'noms-de-lieux',
+					'content'  => gbe_intro( 'Cartographie onomastique des espaces habités et sacrés.' ),
+					'children' => array(
+						array( 'title' => 'Villages', 'slug' => 'villages', 'content' => gbe_intro( 'Toponymie des villages et localités rurales.' ) ),
+						array( 'title' => 'Villes', 'slug' => 'villes', 'content' => gbe_intro( 'Noms urbains et histoire des agglomérations.' ) ),
+						array( 'title' => 'Lieux sacrés', 'slug' => 'lieux-sacres', 'content' => gbe_intro( 'Sanctuaires, bosquets sacrés et lieux de culte.' ) ),
+						array( 'title' => 'Montagnes', 'slug' => 'montagnes', 'content' => gbe_intro( 'Oroponymie et mémoire des reliefs.' ) ),
+						array( 'title' => 'Rivières', 'slug' => 'rivieres', 'content' => gbe_intro( 'Hydronymie fluviale et toponymie des cours d\'eau majeurs.' ) ),
+					),
+				),
 			),
 		),
 		array(
-			'title'   => 'Ethnonymie',
-			'slug'    => 'ethnonymie',
-			'content' => gbe_intro( 'Noms des peuples, groupes et communautés du continuum gbe.' ),
+			'title'    => 'Hydronymie',
+			'slug'     => 'hydronymie',
+			'content'  => gbe_intro( 'Étude des noms de cours d\'eau, rivières et plans d\'eau du continuum gbe.' ),
+			'children' => array(
+				array( 'title' => 'Cours d\'eau', 'slug' => 'cours-deau', 'content' => gbe_intro( 'Dénominations des rivières, affluents et étendues d\'eau.' ) ),
+			),
 		),
 		array(
-			'title'   => 'Théonymie',
-			'slug'    => 'theonymie',
-			'content' => gbe_intro( 'Noms des divinités, entités sacrées et figures du panthéon gbe.' ),
+			'title'    => 'Ethnonymie',
+			'slug'     => 'ethnonymie',
+			'content'  => gbe_intro( 'Noms des peuples, groupes et communautés du continuum gbe.' ),
+			'children' => array(
+				array( 'title' => 'Noms des peuples', 'slug' => 'noms-des-peuples', 'content' => gbe_intro( 'Ethnonymes, autodésignations et appellations des groupes gbe.' ) ),
+			),
+		),
+		array(
+			'title'    => 'Théonymie',
+			'slug'     => 'theonymie',
+			'content'  => gbe_intro( 'Noms des divinités, entités sacrées et figures du panthéon gbe.' ),
+			'children' => array(
+				array( 'title' => 'Noms des divinités', 'slug' => 'noms-des-divinites', 'content' => gbe_intro( 'Théonymes, cultes et symbolique des entités sacrées.' ) ),
+			),
 		),
 	);
 }
@@ -273,7 +658,7 @@ function gbe_get_archives_pages() {
 }
 
 /**
- * Sous-pages thématiques pour une rubrique Le Gbe.
+ * Sous-pages thématiques pour une rubrique Gbe.
  *
  * @param string[] $titles       Titres des sous-thèmes.
  * @param string   $parent_label Contexte (ex. « l'histoire des peuples gbe »).
@@ -578,27 +963,16 @@ function gbe_get_paremiologie_children() {
 }
 
 /**
- * Arborescence des pages sous Le Gbe (hub et menu principal).
+ * Arborescence des pages sous Gbe (hub et menu principal).
  *
  * @return array<int, array<string, mixed>>
  */
 function gbe_get_le_gbe_children() {
 	return array(
 		array(
-			'title'   => 'Bibliothèque',
-			'slug'    => 'bibliotheque-linguistique',
-			'content' => '<p>Bibliothèque numérique des langues et patrimoines gbe.</p>[gbe_bibliotheque]',
-		),
-		array(
 			'title'   => 'Carte interactive',
 			'slug'    => 'carte-interactive',
-			'content' => '<p>Explorez la répartition géographique des langues gbe, les zones culturelles, les routes migratoires historiques et les centres patrimoniaux.</p>[gbe_carte_interactive]',
-		),
-		array(
-			'title'   => 'Corpus numériques',
-			'slug'    => 'corpus-numeriques',
-			'content' => gbe_intro( 'Accédez aux corpus numériques de GbeCosmoLingua : proverbes, archives orales et ressources documentaires.' ) .
-				'<p><a href="/paremiologie/banque-numerique-proverbes/">Banque de proverbes</a> · <a href="/xotutu/bibliotheque-numerique-xotutu/">Archives Xótùtù</a> · <a href="/recherche-et-innovation/ressources-documentaires/">Bibliothèque numérique</a></p>',
+			'content' => gbe_le_gbe_carte_content(),
 		),
 		array(
 			'title'    => 'Histoire et migrations',
@@ -650,35 +1024,53 @@ function gbe_get_le_gbe_children() {
 		array(
 			'title'    => 'Le continuum gbe',
 			'slug'     => 'le-continuum-gbe',
-			'content'  => gbe_intro( 'Unité linguistique, variétés principales et aires géographiques du continuum gbe.' ),
+			'content'  => gbe_le_gbe_continuum_content(),
 			'children' => array(
+				array(
+					'title'   => 'Inventaire des parlers',
+					'slug'    => 'inventaire-des-parlers',
+					'content' => gbe_le_gbe_inventaire_parlers_content(),
+				),
+				array(
+					'title'   => 'Regroupement des parlers',
+					'slug'    => 'regroupement-des-parlers',
+					'content' => gbe_le_gbe_regroupement_parlers_content(),
+				),
+				array(
+					'title'   => 'Gbe, une langue unique',
+					'slug'    => 'langue-unique',
+					'content' => gbe_le_gbe_langue_unique_content(),
+				),
 				array(
 					'title'   => 'Variétés principales',
 					'slug'    => 'varietes-principales',
-					'content' => gbe_intro( 'Panorama des variétés majeures et de leur intercompréhension au sein du continuum.' ) .
-						gbe_outline(
-							array(
-								'Éwé',
-								'Gen (Mina)',
-								'Fon',
-								'Aja',
-								'Gun',
-								'Waci',
-								'Xwela',
-								'Xwla',
-								'Phla-Phera',
-								'Autres variétés du continuum',
-							)
-						) .
-						'<p><a href="/le-gbe/les-langues/">Explorer les fiches langues →</a></p>',
+					'content' => gbe_le_gbe_varietes_principales_content(),
 				),
 				array(
 					'title'    => 'Pays et territoires',
 					'slug'     => 'pays-et-territoires',
-					'content'  => gbe_intro( 'Répartition du continuum au Togo, au Bénin, au Ghana et au Nigeria.' ),
-					'children' => gbe_le_gbe_subpages(
-						array( 'Togo', 'Bénin', 'Ghana', 'Nigeria' ),
-						'les pays et territoires du continuum gbe'
+					'content'  => gbe_le_gbe_pays_territoires_content(),
+					'children' => array(
+						array(
+							'title'   => 'Ghana',
+							'slug'    => 'ghana',
+							'content' => gbe_le_gbe_pays_ghana_content(),
+						),
+						array(
+							'title'   => 'Togo',
+							'slug'    => 'togo',
+							'content' => gbe_le_gbe_pays_togo_content(),
+						),
+						array(
+							'title'   => 'Bénin',
+							'slug'    => 'benin',
+							'content' => gbe_le_gbe_pays_benin_content(),
+						),
+						array(
+							'title'   => 'Nigeria',
+							'slug'    => 'nigeria',
+							'content' => gbe_le_gbe_pays_nigeria_content(),
+						),
 					),
 				),
 			),
@@ -686,33 +1078,24 @@ function gbe_get_le_gbe_children() {
 		array(
 			'title'    => 'Les langues',
 			'slug'     => 'les-langues',
-			'content'  => gbe_intro( 'Documentation des variétés principales du continuum gbe.' ),
+			'content'  => gbe_le_gbe_langues_content(),
 			'children' => gbe_get_langue_pages(),
 		),
 		array(
 			'title'    => 'Linguistique',
 			'slug'     => 'linguistique',
-			'content'  => gbe_intro( 'Ressources linguistiques pour l\'étude scientifique des variétés gbe.' ),
+			'content'  => gbe_le_gbe_linguistique_hub_content(),
 			'children' => gbe_get_linguistique_pages(),
 		),
 		array(
 			'title'   => 'Présentation générale',
 			'slug'    => 'presentation-generale',
-			'content' => gbe_intro( 'Le gbe : une langue, plusieurs variétés. Présentation du continuum linguistique et de sa vitalité contemporaine.' ),
+			'content' => gbe_le_gbe_presentation_generale_content(),
 		),
 		array(
 			'title'   => 'Peuples du continuum',
 			'slug'    => 'peuples-du-continuum',
-			'content' => gbe_intro( 'Les peuples gbe partagent une histoire, des traditions et des systèmes de pensée communs, tout en présentant une riche diversité culturelle et linguistique.' ) .
-				gbe_outline(
-					array(
-						'Identités et ethnonymes',
-						'Organisation sociale',
-						'Chefferies et royaumes',
-						'Diaspora gbe',
-						'Vitalité culturelle contemporaine',
-					)
-				),
+			'content' => gbe_le_gbe_peuples_content(),
 		),
 	);
 }

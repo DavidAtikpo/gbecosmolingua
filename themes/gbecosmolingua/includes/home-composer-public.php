@@ -165,6 +165,83 @@ function gbecosmolingua_home_render_stats() {
 }
 
 /**
+ * Introduction — qu'est-ce que Gbe ?
+ */
+function gbecosmolingua_home_render_introduction() {
+	$layout = gbecosmolingua_home_composer_layout();
+	$intro  = $layout['introduction'] ?? ( function_exists( 'gbe_home_introduction_defaults' ) ? gbe_home_introduction_defaults() : array() );
+	$kicker = trim( (string) ( $intro['kicker'] ?? '' ) );
+	$title  = trim( (string) ( $intro['title'] ?? '' ) );
+	$paras  = isset( $intro['paragraphs'] ) && is_array( $intro['paragraphs'] ) ? $intro['paragraphs'] : array();
+	$highlights = isset( $intro['highlights'] ) && is_array( $intro['highlights'] ) ? $intro['highlights'] : array();
+	$link_text  = trim( (string) ( $intro['link_text'] ?? '' ) );
+	$link_url   = gbecosmolingua_home_composer_url( $intro['link_url'] ?? '' );
+	$link2_text = trim( (string) ( $intro['link2_text'] ?? '' ) );
+	$link2_url  = gbecosmolingua_home_composer_url( $intro['link2_url'] ?? '' );
+
+	if ( '' === $title && empty( $paras ) ) {
+		return;
+	}
+	?>
+	<div class="wp-block-group alignfull gbe-section gbe-home-intro">
+		<div class="gbe-home-intro__inner">
+			<?php if ( $kicker ) : ?>
+				<p class="gbe-home-section-kicker"><?php echo esc_html( $kicker ); ?></p>
+			<?php endif; ?>
+			<?php if ( $title ) : ?>
+				<h2 class="wp-block-heading gbe-home-intro__title"><?php echo esc_html( $title ); ?></h2>
+			<?php endif; ?>
+			<div class="gbe-home-intro__body">
+				<div class="gbe-home-intro__text">
+					<?php foreach ( $paras as $para ) : ?>
+						<?php
+						$para = trim( (string) $para );
+						if ( '' === $para ) {
+							continue;
+						}
+						?>
+						<p><?php echo esc_html( $para ); ?></p>
+					<?php endforeach; ?>
+				</div>
+				<?php if ( ! empty( $highlights ) ) : ?>
+					<ul class="gbe-home-intro__highlights">
+						<?php foreach ( $highlights as $item ) : ?>
+							<?php
+							$label = trim( (string) ( $item['label'] ?? '' ) );
+							$text  = trim( (string) ( $item['text'] ?? '' ) );
+							if ( '' === $label && '' === $text ) {
+								continue;
+							}
+							?>
+							<li>
+								<?php if ( $label ) : ?>
+									<strong><?php echo esc_html( $label ); ?></strong>
+								<?php endif; ?>
+								<?php if ( $text ) : ?>
+									<span><?php echo esc_html( $text ); ?></span>
+								<?php endif; ?>
+							</li>
+						<?php endforeach; ?>
+					</ul>
+				<?php endif; ?>
+			</div>
+			<?php if ( ( $link_text && $link_url ) || ( $link2_text && $link2_url ) ) : ?>
+				<p class="gbe-home-intro__links">
+					<?php if ( $link_text && $link_url ) : ?>
+						<a href="<?php echo esc_url( $link_url ); ?>"><?php echo esc_html( $link_text ); ?></a>
+					<?php endif; ?>
+					<?php if ( $link2_text && $link2_url ) : ?>
+						<?php if ( $link_text && $link_url ) : ?> · <?php endif; ?>
+						<a href="<?php echo esc_url( $link2_url ); ?>"><?php echo esc_html( $link2_text ); ?></a>
+					<?php endif; ?>
+				</p>
+			<?php endif; ?>
+		</div>
+	</div>
+	<?php
+}
+
+/**
  * Carte interactive.
  */
 function gbecosmolingua_home_render_map() {
@@ -663,6 +740,42 @@ function gbecosmolingua_home_render_xotutu() {
 				</div>
 			</div>
 		</div>
+	</div>
+	<?php
+}
+
+/**
+ * Membres fondateurs (CPT Membres).
+ */
+function gbecosmolingua_home_render_membres_fondateurs() {
+	$layout = gbecosmolingua_home_composer_layout();
+	$block  = $layout['membres_fondateurs'] ?? array();
+	$title  = trim( (string) ( $block['title'] ?? '' ) );
+	if ( '' === $title || ! class_exists( 'GBE_Shortcodes' ) ) {
+		return;
+	}
+
+	$link_text = trim( (string) ( $block['link_text'] ?? '' ) );
+	$link_url  = trim( (string) ( $block['link_url'] ?? '' ) );
+	?>
+	<div class="wp-block-group alignwide gbe-section gbe-home-membres-fondateurs">
+		<?php if ( ! empty( $block['kicker'] ) ) : ?>
+			<p class="gbe-home-section-kicker has-text-align-center"><?php echo esc_html( $block['kicker'] ); ?></p>
+		<?php endif; ?>
+		<?php
+		echo GBE_Shortcodes::membres_fondateurs( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			array(
+				'title'      => $title,
+				'show_title' => '1',
+				'class'      => 'gbe-home-membres-fondateurs__grid',
+			)
+		);
+		?>
+		<?php if ( '' !== $link_text && '' !== $link_url ) : ?>
+			<p class="has-text-align-center gbe-home-membres-fondateurs__more">
+				<a href="<?php echo esc_url( $link_url ); ?>"><?php echo esc_html( $link_text ); ?></a>
+			</p>
+		<?php endif; ?>
 	</div>
 	<?php
 }

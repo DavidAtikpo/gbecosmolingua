@@ -1,6 +1,6 @@
 <?php
 /**
- * Title: Le Gbe — Bibliothèque numérique
+ * Title: Gbe — Bibliothèque numérique
  * Slug: gbecosmolingua/le-gbe-bibliotheque
  * Categories: gbecosmolingua
  * Inserter: false
@@ -26,7 +26,7 @@
 			<h3 class="wp-block-heading">Livres et manuscrits</h3>
 			<!-- /wp:heading -->
 			<!-- wp:paragraph -->
-			<p><a href="/le-gbe/bibliotheque-linguistique/">Découvrir →</a></p>
+			<p><a href="/le-gbe/linguistique/bibliotheque/">Découvrir →</a></p>
 			<!-- /wp:paragraph -->
 		</div>
 		<!-- /wp:group -->
@@ -59,7 +59,7 @@
 			<h3 class="wp-block-heading">Photos et images</h3>
 			<!-- /wp:heading -->
 			<!-- wp:paragraph -->
-			<p><a href="/le-gbe/corpus-numeriques/">Découvrir →</a></p>
+			<p><a href="/le-gbe/linguistique/corpus-numeriques/">Découvrir →</a></p>
 			<!-- /wp:paragraph -->
 		</div>
 		<!-- /wp:group -->

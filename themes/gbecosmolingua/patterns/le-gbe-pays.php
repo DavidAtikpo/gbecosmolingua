@@ -1,6 +1,6 @@
 <?php
 /**
- * Title: Le Gbe — Pays du continuum
+ * Title: Gbe — Pays du continuum
  * Slug: gbecosmolingua/le-gbe-pays
  * Categories: gbecosmolingua
  * Inserter: false

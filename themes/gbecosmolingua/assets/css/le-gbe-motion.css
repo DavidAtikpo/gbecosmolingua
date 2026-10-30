@@ -1,15 +1,13 @@
 /**
- * Animations page Le Gbe — hero carousel, cartes, boutons.
+ * Animations page Gbe — hero carousel, cartes, boutons.
  */
 
 /* —— Hero carousel —— */
-.gbe-le-gbe-hero.gbe-le-gbe-hero--carousel {
+.gbe-le-gbe-hero.gbe-le-gbe-hero--carousel:has(.gbe-le-gbe-hero__slides) {
 	position: relative;
-	min-height: clamp(420px, 52vh, 560px);
-	padding: 0;
 	color: var(--gbe-white);
 	overflow: hidden;
-	background: linear-gradient(135deg, #1f5b2a 0%, #23150c 100%) !important;
+	background: linear-gradient(135deg, #0d1b3d 0%, #081428 100%) !important;
 }
 
 .gbe-le-gbe-hero--overlay-light {
@@ -73,7 +71,6 @@
 	z-index: 2;
 	max-width: 1200px;
 	margin: 0 auto;
-	padding: 3rem clamp(1rem, 3vw, 1.5rem) 3.5rem;
 	box-sizing: border-box;
 }
 
@@ -112,6 +109,10 @@
 
 .gbe-le-gbe-hero--overlay-light .gbe-le-gbe-hero__lead {
 	color: var(--gbe-bark);
+}
+
+.gbe-le-gbe-hero--overlay-light .gbe-le-gbe-hero__source {
+	color: rgba(35, 21, 12, 0.72);
 }
 
 .gbe-le-gbe-hero--overlay-light .gbe-le-gbe-hero__actions .is-style-outline .wp-block-button__link {

@@ -1,6 +1,6 @@
 <?php
 /**
- * Title: Le Gbe — Publications et événements
+ * Title: Gbe — Publications et événements
  * Slug: gbecosmolingua/le-gbe-actu
  * Categories: gbecosmolingua
  * Inserter: false

@@ -18,6 +18,7 @@ class GBE_Frontend {
 	public static function init() {
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ) );
 		add_filter( 'render_block', array( __CLASS__, 'render_shortcode_blocks' ), 9, 2 );
+		add_filter( 'the_content', array( __CLASS__, 'prepend_page_sibling_nav' ), 8 );
 		add_filter( 'the_content', array( __CLASS__, 'append_proverbe_detail' ), 20 );
 		add_filter( 'the_content', array( __CLASS__, 'append_genre_oral_detail' ), 20 );
 		add_filter( 'the_content', array( __CLASS__, 'append_evenement_detail' ), 20 );
@@ -154,12 +155,39 @@ class GBE_Frontend {
 	}
 
 	/**
+	 * Onglets sous-rubriques en tête de contenu (pages sans template chapitre/hub).
+	 *
+	 * @param string $content Post content.
+	 * @return string
+	 */
+	public static function prepend_page_sibling_nav( $content ) {
+		if ( ! is_singular( 'page' ) || ! in_the_loop() || ! is_main_query() ) {
+			return $content;
+		}
+
+		if ( ! function_exists( 'gbe_render_page_sibling_nav' ) ) {
+			return $content;
+		}
+
+		$nav = gbe_render_page_sibling_nav( get_post() );
+		if ( '' === $nav ) {
+			return $content;
+		}
+
+		return $nav . $content;
+	}
+
+	/**
 	 * Append proverb meta on single proverbe pages.
 	 *
 	 * @param string $content Post content.
 	 */
 	public static function append_proverbe_detail( $content ) {
 		if ( ! is_singular( 'proverbe' ) || ! in_the_loop() || ! is_main_query() ) {
+			return $content;
+		}
+		// Le thème gbecosmolingua affiche la fiche via [gbe_proverbe_single] (single-proverbe.html).
+		if ( function_exists( 'gbecosmolingua_proverbe_single_html' ) ) {
 			return $content;
 		}
 		return $content . GBE_Shortcodes::render_proverbe_detail( get_the_ID(), false );

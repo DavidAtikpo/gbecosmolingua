@@ -17,7 +17,7 @@
 		<!-- wp:group {"className":"gbe-rubrique-card"} -->
 		<div class="wp-block-group gbe-rubrique-card">
 			<!-- wp:heading {"level":3} -->
-			<h3 class="wp-block-heading"><a href="/le-gbe/">Le Gbe</a></h3>
+			<h3 class="wp-block-heading"><a href="/le-gbe/">Gbe</a></h3>
 			<!-- /wp:heading -->
 			<!-- wp:paragraph -->
 			<p>Langues, variétés, carte interactive et ressources linguistiques du continuum gbe.</p>

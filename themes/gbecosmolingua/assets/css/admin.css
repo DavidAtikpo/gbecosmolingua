@@ -1,18 +1,21 @@
 /* GbeCosmoLingua — personnalisation admin WordPress */
 :root {
-	--gbe-green: #1f5b2a;
-	--gbe-green-dark: #123819;
-	--gbe-green-darker: #0d2818;
-	--gbe-bark-dark: #23150c;
-	--gbe-gold: #b87913;
-	--gbe-gold-light: #d8ad4b;
-	--gbe-sand: #f7f1df;
-	--gbe-white: #fffaf0;
+	--gbe-navy: #0d1b3d;
+	--gbe-navy-dark: #081428;
+	--gbe-green: #1e5a3a;
+	--gbe-green-dark: #164a2f;
+	--gbe-green-darker: #0f3d24;
+	--gbe-navy-mid: #152a52;
+	--gbe-bark-dark: #0d1b3d;
+	--gbe-gold: #d99a2b;
+	--gbe-gold-light: #e8b855;
+	--gbe-sand: #f2e9d8;
+	--gbe-white: #ffffff;
 }
 
 /* Barre d'administration */
 #wpadminbar {
-	background: var(--gbe-green-dark);
+	background: var(--gbe-navy);
 }
 
 #wpadminbar .ab-item,
@@ -26,23 +29,19 @@
 #wpadminbar .ab-top-menu > li > .ab-item:focus,
 #wpadminbar:not(.mobile) .ab-top-menu > li:hover > .ab-item,
 #wpadminbar:not(.mobile) .ab-top-menu > li > .ab-item:focus {
-	background: var(--gbe-green);
+	background: var(--gbe-navy-mid, #152a52);
 	color: var(--gbe-gold-light);
 }
 
 #wpadminbar .quicklinks .menupop .ab-sub-wrapper,
 #wpadminbar .shortlink-input {
-	background: var(--gbe-green-darker);
-}
-
-#wpadminbar .ab-submenu .ab-item {
-	color: var(--gbe-white);
+	background: var(--gbe-navy-dark);
 }
 
 #wpadminbar .ab-submenu .ab-item:hover,
 #wpadminbar .ab-submenu .ab-item:focus {
 	color: var(--gbe-gold-light);
-	background: var(--gbe-green);
+	background: var(--gbe-navy-mid, #152a52);
 }
 
 #wp-admin-bar-gbe-logo > .ab-item {
@@ -69,7 +68,7 @@
 #adminmenuback,
 #adminmenuwrap,
 #adminmenu {
-	background: var(--gbe-green-dark);
+	background: var(--gbe-navy);
 }
 
 #adminmenu a {
@@ -83,7 +82,7 @@
 #adminmenu li.menu-top:hover,
 #adminmenu li.opensub > a.menu-top,
 #adminmenu li > a.menu-top:focus {
-	background: var(--gbe-green);
+	background: var(--gbe-navy-mid);
 	color: var(--gbe-white);
 }
 
@@ -96,7 +95,7 @@
 #adminmenu .wp-has-current-submenu .wp-submenu,
 #adminmenu a.wp-has-current-submenu:focus + .wp-submenu,
 .folded #adminmenu .wp-has-current-submenu .wp-submenu {
-	background: var(--gbe-green-darker);
+	background: var(--gbe-navy-dark);
 }
 
 #adminmenu .wp-submenu a {
@@ -135,16 +134,16 @@
 
 /* Boutons principaux */
 .wp-core-ui .button-primary {
-	background: var(--gbe-green);
-	border-color: var(--gbe-green-dark);
-	color: var(--gbe-white);
+	background: var(--gbe-gold);
+	border-color: var(--gbe-gold);
+	color: var(--gbe-navy);
 }
 
 .wp-core-ui .button-primary:hover,
 .wp-core-ui .button-primary:focus {
-	background: var(--gbe-gold);
-	border-color: var(--gbe-gold);
-	color: var(--gbe-bark-dark);
+	background: var(--gbe-navy);
+	border-color: var(--gbe-navy);
+	color: var(--gbe-white);
 }
 
 .wp-core-ui .button-primary:focus {
@@ -153,7 +152,7 @@
 
 /* Liens et focus */
 a {
-	color: var(--gbe-green);
+	color: var(--gbe-navy);
 }
 
 a:hover,
@@ -164,15 +163,15 @@ a:focus {
 
 .wrap .add-new-h2,
 .wrap .page-title-action {
-	border-color: var(--gbe-green);
-	color: var(--gbe-green);
+	border-color: var(--gbe-navy);
+	color: var(--gbe-navy);
 }
 
 .wrap .add-new-h2:hover,
 .wrap .page-title-action:hover {
-	background: var(--gbe-green);
+	background: var(--gbe-navy);
 	color: var(--gbe-white);
-	border-color: var(--gbe-green-dark);
+	border-color: var(--gbe-navy-dark);
 }
 
 /* Notifications */
@@ -191,14 +190,14 @@ div.updated {
 }
 
 #wpfooter a {
-	color: var(--gbe-green);
+	color: var(--gbe-navy);
 }
 
 /* Page de connexion */
 body.login {
 	background:
-		radial-gradient(circle at 15% 20%, rgba(216, 173, 75, 0.2) 0, transparent 40%),
-		linear-gradient(160deg, var(--gbe-bark-dark) 0%, var(--gbe-green-dark) 45%, var(--gbe-green) 100%);
+		radial-gradient(circle at 15% 20%, rgba(217, 154, 43, 0.2) 0, transparent 40%),
+		linear-gradient(160deg, var(--gbe-navy-dark) 0%, var(--gbe-navy) 55%, var(--gbe-navy-mid, #152a52) 100%);
 }
 
 body.login #login {

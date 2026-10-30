@@ -1,6 +1,6 @@
 <?php
 /**
- * Title: Le Gbe — Patrimoine culturel
+ * Title: Gbe — Patrimoine culturel
  * Slug: gbecosmolingua/le-gbe-culture
  * Categories: gbecosmolingua
  * Inserter: false

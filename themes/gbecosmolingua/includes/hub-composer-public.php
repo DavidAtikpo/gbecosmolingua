@@ -135,6 +135,112 @@ function gbecosmolingua_hub_section_font_class( $font_slug ) {
 }
 
 /**
+ * URL de fond d'une diapositive hero hub.
+ *
+ * @param string         $slug  Slug hub.
+ * @param WP_Post|null   $page  Page hub.
+ * @param int            $bg_id ID attachment enregistré.
+ * @return string
+ */
+function gbecosmolingua_hub_hero_slide_bg_url( $slug, $page, $bg_id = 0 ) {
+	if ( 'le-gbe' === $slug && function_exists( 'gbecosmolingua_le_gbe_hub_hero_bg_url' ) ) {
+		return gbecosmolingua_le_gbe_hub_hero_bg_url( $page, $bg_id );
+	}
+
+	$bg_id = (int) $bg_id;
+	if ( $bg_id ) {
+		$url = wp_get_attachment_image_url( $bg_id, 'full' );
+		if ( $url ) {
+			return $url;
+		}
+	}
+
+	if ( $page instanceof WP_Post && has_post_thumbnail( $page ) ) {
+		$url = wp_get_attachment_image_url( get_post_thumbnail_id( $page ), 'full' );
+		if ( $url ) {
+			return $url;
+		}
+	}
+
+	return '';
+}
+
+/**
+ * Chapô hero hub (meta admin → défaut thème, jamais le corps chapitre).
+ *
+ * @param string       $slug   Slug hub.
+ * @param WP_Post|null $page   Page hub.
+ * @param string       $lead   Chapô enregistré.
+ * @return string
+ */
+function gbecosmolingua_hub_hero_lead_text( $slug, $page, $lead = '' ) {
+	$lead = trim( (string) $lead );
+	if ( '' !== $lead ) {
+		return $lead;
+	}
+
+	if ( 'le-gbe' === $slug && function_exists( 'gbecosmolingua_le_gbe_hub_default_hero_lead' ) ) {
+		return gbecosmolingua_le_gbe_hub_default_hero_lead();
+	}
+
+	if ( $page instanceof WP_Post && function_exists( 'gbecosmolingua_public_page_excerpt_text' ) ) {
+		$raw = trim( (string) $page->post_content );
+		if ( '' !== $raw && ! str_contains( $raw, 'gbe-chapter' ) ) {
+			$excerpt = gbecosmolingua_public_page_excerpt_text( $page );
+			if ( '' !== trim( $excerpt ) ) {
+				return $excerpt;
+			}
+		}
+	}
+
+	return '';
+}
+
+/**
+ * Source / auteur du chapô hero (affichage sous le texte d'intro).
+ *
+ * @param string $slug Slug hub.
+ * @return string
+ */
+function gbecosmolingua_hub_hero_lead_source_text( $slug ) {
+	if ( function_exists( 'gbe_le_gbe_hero_lead_source_text' ) ) {
+		$source = gbe_le_gbe_hero_lead_source_text( $slug );
+		if ( '' !== $source ) {
+			return $source;
+		}
+	}
+
+	if ( 'le-gbe' === $slug && function_exists( 'gbecosmolingua_le_gbe_hub_default_hero_lead_source' ) ) {
+		return gbecosmolingua_le_gbe_hub_default_hero_lead_source();
+	}
+
+	return '';
+}
+
+/**
+ * Affiche la source du chapô hero si disponible.
+ *
+ * @param string $slug Slug hub.
+ */
+function gbecosmolingua_hub_render_hero_lead_source( $slug ) {
+	$source = gbecosmolingua_hub_hero_lead_source_text( $slug );
+	if ( '' === $source ) {
+		return;
+	}
+	?>
+	<p class="gbe-le-gbe-hero__source">
+		<cite><?php
+		if ( function_exists( 'gbe_le_gbe_linkify_capo_references' ) && function_exists( 'gbe_le_gbe_capo_author_kses' ) ) {
+			echo wp_kses( gbe_le_gbe_linkify_capo_references( $source ), gbe_le_gbe_capo_author_kses() );
+		} else {
+			echo esc_html( $source );
+		}
+		?></cite>
+	</p>
+	<?php
+}
+
+/**
  * Affiche la bannière hub.
  *
  * @param string $slug Slug hub.
@@ -152,8 +258,20 @@ function gbecosmolingua_hub_render_public_hero( $slug = '' ) {
 		$figure = (int) get_post_meta( $page->ID, GBE_Le_Gbe_Hub_Admin::META_HERO_FIGURE, true );
 	}
 
+	if ( ! empty( $slides ) ) {
+		$slides[0]['lead'] = gbecosmolingua_hub_hero_lead_text(
+			$slug,
+			$page,
+			(string) ( $slides[0]['lead'] ?? '' )
+		);
+	}
+
 	$page_title = $page ? $page->post_title : '';
-	$figure_url = $figure ? wp_get_attachment_image_url( $figure, 'large' ) : '';
+	if ( 'le-gbe' === $slug && function_exists( 'gbecosmolingua_le_gbe_hub_hero_figure_url' ) ) {
+		$figure_url = gbecosmolingua_le_gbe_hub_hero_figure_url( $figure );
+	} else {
+		$figure_url = $figure ? wp_get_attachment_image_url( $figure, 'large' ) : '';
+	}
 
 	if ( empty( $slides ) && ! $figure_url && '' === $page_title ) {
 		return;
@@ -163,16 +281,11 @@ function gbecosmolingua_hub_render_public_hero( $slug = '' ) {
 	$hero_class  = 'wp-block-group alignfull gbe-le-gbe-hero gbe-hub-hero gbe-hub-hero--' . sanitize_html_class( $slug );
 	if ( $is_carousel ) {
 		$hero_class .= ' gbe-le-gbe-hero--carousel';
-	} elseif ( ! empty( $slides ) ) {
-		$url = wp_get_attachment_image_url( (int) $slides[0]['bg_id'], 'full' );
-		if ( $url ) {
-			$hero_class .= ' gbe-le-gbe-hero--carousel';
-		}
 	}
 
 	$inline_style = '';
-	if ( ! $is_carousel && ! empty( $slides[0]['bg_id'] ) ) {
-		$url = wp_get_attachment_image_url( (int) $slides[0]['bg_id'], 'full' );
+	if ( ! $is_carousel && ! empty( $slides ) ) {
+		$url = gbecosmolingua_hub_hero_slide_bg_url( $slug, $page, (int) $slides[0]['bg_id'] );
 		if ( $url ) {
 			$inline_style = '--gbe-le-gbe-hero-image:url(' . esc_url( $url ) . ');';
 		}
@@ -183,7 +296,7 @@ function gbecosmolingua_hub_render_public_hero( $slug = '' ) {
 			<div class="gbe-le-gbe-hero__slides" aria-hidden="true">
 				<?php foreach ( $slides as $i => $slide ) : ?>
 					<?php
-					$bg_url = wp_get_attachment_image_url( (int) $slide['bg_id'], 'full' );
+					$bg_url = gbecosmolingua_hub_hero_slide_bg_url( $slug, $page, (int) $slide['bg_id'] );
 					if ( ! $bg_url ) {
 						continue;
 					}
@@ -217,6 +330,9 @@ function gbecosmolingua_hub_render_public_hero( $slug = '' ) {
 									<?php endif; ?>
 									<?php if ( ! empty( $slide['lead'] ) ) : ?>
 										<p class="gbe-le-gbe-hero__lead"><?php echo esc_html( $slide['lead'] ); ?></p>
+										<?php if ( 0 === $i ) : ?>
+											<?php gbecosmolingua_hub_render_hero_lead_source( $slug ); ?>
+										<?php endif; ?>
 									<?php endif; ?>
 								</div>
 							<?php endforeach; ?>
@@ -234,6 +350,7 @@ function gbecosmolingua_hub_render_public_hero( $slug = '' ) {
 						<?php endif; ?>
 						<?php if ( ! empty( $slides[0]['lead'] ) ) : ?>
 							<p class="gbe-le-gbe-hero__lead"><?php echo esc_html( $slides[0]['lead'] ); ?></p>
+							<?php gbecosmolingua_hub_render_hero_lead_source( $slug ); ?>
 						<?php endif; ?>
 					<?php endif; ?>
 				</div>
@@ -264,6 +381,11 @@ function gbecosmolingua_hub_render_public_intro( $slug = '' ) {
 		return;
 	}
 	$slug = $slug ?: gbecosmolingua_hub_composer_current_slug();
+	$wrapped = gbecosmolingua_hub_chapter_body_html( $html, $slug );
+	if ( $wrapped !== $html ) {
+		echo $wrapped; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		return;
+	}
 	?>
 	<div class="wp-block-group alignwide gbe-section gbe-hub-intro gbe-hub-intro--<?php echo esc_attr( sanitize_html_class( $slug ) ); ?>">
 		<?php echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>

@@ -1,0 +1,693 @@
+/**
+ * Hero collé sous l'en-tête fixe (accueil, hubs, chapitres, proverbes).
+ * Le fond du hero remonte sous le header ; le contenu est décalé via padding-top.
+ */
+
+:root {
+	--gbe-admin-bar-height: 0px;
+	/* Référence : hero accueil (.gbe-home-hero) */
+	--gbe-hero-band-height: clamp(360px, 52vh, 560px);
+	--gbe-hero-min-height: calc(var(--gbe-header-height) + var(--gbe-hero-band-height));
+	--gbe-hero-extra: 2.5rem;
+	--gbe-hero-top: calc(var(--gbe-header-height) + var(--gbe-hero-extra));
+	--gbe-hero-padding-x: clamp(1rem, 3vw, 1.5rem);
+	--gbe-hero-padding-bottom: 2.5rem;
+}
+
+/* Desktop : header deux rangées (logo + menu) — fallback plus proche de la hauteur réelle avant mesure JS */
+@media (min-width: 782px) {
+	:root {
+		--gbe-header-height: 9.75rem;
+		--gbe-hero-extra: 1.35rem;
+	}
+}
+
+html {
+	scroll-padding-top: calc(var(--gbe-header-height) + 0.5rem);
+}
+
+body.admin-bar {
+	--gbe-admin-bar-height: 32px;
+}
+
+@media (max-width: 782px) {
+	body.admin-bar {
+		--gbe-admin-bar-height: 46px;
+	}
+}
+
+/* WordPress ajoute margin-top sur html pour la barre admin : double offset avec le hero flush */
+html:has(body.home),
+html:has(body.gbe-hub-page),
+html:has(main[class*="gbe-main--"]),
+html:has(.gbe-proverbes-archive),
+html:has(.gbe-proverbes-page-hero),
+html:has(.gbe-proverbe-single) {
+	margin-top: 0 !important;
+}
+
+@media (max-width: 781px) {
+	:root {
+		--gbe-hero-extra: 1.15rem;
+		--gbe-hero-padding-bottom: 1.35rem;
+	}
+
+	/*
+	 * Mobile : hauteur naturelle (contenu), pas le bandeau fixe desktop.
+	 * Le fond remonte sous le header ; le texte est décalé via --gbe-hero-top.
+	 */
+	.gbe-home-hero,
+	.gbe-chapter-hero,
+	.gbe-le-gbe-hero,
+	.gbe-hub-hero,
+	.gbe-culture-hero,
+	.gbe-culture-rubrique-hero,
+	.gbe-paremiologie-hero,
+	.gbe-onomastique-hero,
+	.gbe-linguistique-hero,
+	.gbe-recherche-hero,
+	.gbe-xotutu-hero,
+	.gbe-proverbes-page-hero,
+	.gbe-proverbe-single__hero,
+	main[class*="gbe-main--"] :is(
+		.gbe-home-hero,
+		.gbe-chapter-hero,
+		.gbe-le-gbe-hero,
+		.gbe-hub-hero,
+		.gbe-culture-hero,
+		.gbe-culture-rubrique-hero,
+		.gbe-paremiologie-hero,
+		.gbe-onomastique-hero,
+		.gbe-linguistique-hero,
+		.gbe-recherche-hero,
+		.gbe-xotutu-hero,
+		.gbe-proverbes-page-hero,
+		.gbe-proverbe-single__hero
+	),
+	main[class*="gbe-main--"] > :is(
+		.gbe-home-hero,
+		.gbe-chapter-hero,
+		.gbe-le-gbe-hero,
+		.gbe-hub-hero,
+		.gbe-culture-hero,
+		.gbe-culture-rubrique-hero,
+		.gbe-paremiologie-hero,
+		.gbe-onomastique-hero,
+		.gbe-linguistique-hero,
+		.gbe-recherche-hero,
+		.gbe-xotutu-hero
+	) {
+		height: auto !important;
+		min-height: 0 !important;
+		max-height: none !important;
+		overflow: visible !important;
+		justify-content: flex-start !important;
+	}
+
+	/* Accueil slider : bandeau mobile plus court que desktop, mais stable pour les slides */
+	.gbe-home-hero {
+		min-height: calc(var(--gbe-header-height) + clamp(200px, 38vh, 320px)) !important;
+		overflow: hidden !important;
+	}
+
+	.gbe-le-gbe-hero,
+	.gbe-le-gbe-hero.gbe-le-gbe-hero--carousel,
+	body.gbe-hub-page .gbe-le-gbe-hero,
+	body.gbe-hub-page .gbe-le-gbe-hero.gbe-le-gbe-hero--carousel {
+		padding: 0 !important;
+	}
+
+	.gbe-le-gbe-hero.gbe-le-gbe-hero--carousel {
+		min-height: calc(var(--gbe-header-height) + 14rem) !important;
+		overflow: hidden !important;
+	}
+
+	.gbe-home-hero__inner,
+	.gbe-chapter-hero__inner,
+	.gbe-le-gbe-hero__inner,
+	.gbe-le-gbe-hero.gbe-le-gbe-hero--carousel .gbe-le-gbe-hero__inner,
+	body.gbe-hub-page .gbe-le-gbe-hero:not(.gbe-le-gbe-hero--carousel) .gbe-le-gbe-hero__inner,
+	.gbe-xotutu-hero > .wp-block-group,
+	.gbe-linguistique-hero > .wp-block-group,
+	.gbe-paremiologie-hero > .wp-block-group,
+	.gbe-onomastique-hero > .wp-block-group,
+	.gbe-recherche-hero > .wp-block-group,
+	.gbe-culture-hero > .wp-block-group,
+	.gbe-culture-rubrique-hero > .wp-block-group,
+	.gbe-hub-hero > .wp-block-group,
+	.gbe-proverbe-single__hero-inner,
+	.gbe-proverbes-page-hero__content {
+		height: auto !important;
+		flex: 0 1 auto !important;
+		justify-content: flex-start !important;
+		padding: var(--gbe-hero-top) var(--gbe-hero-padding-x) var(--gbe-hero-padding-bottom) !important;
+	}
+
+	.gbe-le-gbe-hero__figure-wrap {
+		margin-top: 0.75rem;
+	}
+
+	.gbe-le-gbe-hero__figure img {
+		max-height: min(44vw, 210px);
+		width: 100%;
+		object-fit: cover;
+	}
+
+	main.gbe-main:has(.gbe-proverbes-archive) .wp-block-post-title,
+	.gbe-proverbes-page-hero {
+		height: auto !important;
+		min-height: 0 !important;
+		max-height: none !important;
+		overflow: visible !important;
+		justify-content: flex-start !important;
+	}
+}
+
+@media (max-width: 782px) {
+	body.admin-bar {
+		--gbe-header-height: calc(9rem + 46px);
+	}
+}
+
+/* Hero sous le header fixe : pas de padding body (évite le double offset admin-bar + scroll) */
+body.home,
+body:has(main[class*="gbe-main--"]),
+body:has(.gbe-proverbes-archive),
+body:has(.gbe-proverbes-page-hero),
+body:has(.gbe-proverbe-single) {
+	padding-top: 0 !important;
+}
+
+main[class*="gbe-main--"],
+main.gbe-main:has(.gbe-proverbes-archive),
+main.gbe-main--proverbes {
+	padding-top: 0 !important;
+	margin-top: 0 !important;
+}
+
+main[class*="gbe-main--"].is-layout-flow > *,
+main.gbe-main--proverbes.is-layout-flow > * {
+	margin-block-start: 0 !important;
+}
+
+main[class*="gbe-main--"] > .wp-block-html,
+main[class*="gbe-main--"] > .wp-block-shortcode {
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+/* Ne pas annuler le padding des heroes (souvent .wp-block-group:first-child) */
+main[class*="gbe-main--"] > .wp-block-group:first-child:not(
+	:is(
+		.gbe-home-hero,
+		.gbe-chapter-hero,
+		.gbe-le-gbe-hero,
+		.gbe-hub-hero,
+		.gbe-culture-hero,
+		.gbe-culture-rubrique-hero,
+		.gbe-paremiologie-hero,
+		.gbe-onomastique-hero,
+		.gbe-linguistique-hero,
+		.gbe-recherche-hero,
+		.gbe-xotutu-hero,
+		.gbe-proverbes-page-hero,
+		.gbe-proverbe-single__hero
+	)
+) {
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+main.gbe-main--proverbes > .wp-block-shortcode,
+main.gbe-main--proverbe-single > .wp-block-shortcode {
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+/* Aucune marge négative (hub-composer, anciennes règles) */
+body.gbe-hub-page .gbe-le-gbe-hero,
+body.gbe-hub-page .gbe-le-gbe-hero.gbe-le-gbe-hero--carousel,
+body.gbe-hub-page .gbe-hub-hero,
+body.gbe-hub-page .gbe-culture-hero,
+main[class*="gbe-main--"] :is(
+	.gbe-home-hero,
+	.gbe-chapter-hero,
+	.gbe-le-gbe-hero,
+	.gbe-hub-hero,
+	.gbe-culture-hero,
+	.gbe-culture-rubrique-hero,
+	.gbe-paremiologie-hero,
+	.gbe-onomastique-hero,
+	.gbe-linguistique-hero,
+	.gbe-recherche-hero,
+	.gbe-xotutu-hero,
+	.gbe-proverbes-page-hero,
+	.gbe-proverbe-single__hero
+) {
+	margin-top: 0 !important;
+}
+
+/* —— Hauteur FIXE identique desktop (référence = hero accueil) —— */
+@media (min-width: 782px) {
+.gbe-home-hero,
+.gbe-chapter-hero,
+.gbe-le-gbe-hero,
+.gbe-hub-hero,
+.gbe-culture-hero,
+.gbe-culture-rubrique-hero,
+.gbe-paremiologie-hero,
+.gbe-onomastique-hero,
+.gbe-linguistique-hero,
+.gbe-recherche-hero,
+.gbe-xotutu-hero,
+.gbe-proverbes-page-hero,
+.gbe-proverbe-single__hero,
+main[class*="gbe-main--"] :is(
+	.gbe-home-hero,
+	.gbe-chapter-hero,
+	.gbe-le-gbe-hero,
+	.gbe-hub-hero,
+	.gbe-culture-hero,
+	.gbe-culture-rubrique-hero,
+	.gbe-paremiologie-hero,
+	.gbe-onomastique-hero,
+	.gbe-linguistique-hero,
+	.gbe-recherche-hero,
+	.gbe-xotutu-hero,
+	.gbe-proverbes-page-hero,
+	.gbe-proverbe-single__hero
+),
+main[class*="gbe-main--"] > :is(
+	.gbe-home-hero,
+	.gbe-chapter-hero,
+	.gbe-le-gbe-hero,
+	.gbe-hub-hero,
+	.gbe-culture-hero,
+	.gbe-culture-rubrique-hero,
+	.gbe-paremiologie-hero,
+	.gbe-onomastique-hero,
+	.gbe-linguistique-hero,
+	.gbe-recherche-hero,
+	.gbe-xotutu-hero
+) {
+	box-sizing: border-box !important;
+	height: var(--gbe-hero-min-height) !important;
+	min-height: var(--gbe-hero-min-height) !important;
+	max-height: var(--gbe-hero-min-height) !important;
+	padding: var(--gbe-hero-top) var(--gbe-hero-padding-x) var(--gbe-hero-padding-bottom) !important;
+	overflow: hidden !important;
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: center !important;
+	justify-content: flex-start !important;
+}
+
+} /* min-width: 782px — hauteur fixe desktop */
+
+.gbe-home-hero__inner,
+.gbe-chapter-hero__inner,
+.gbe-le-gbe-hero__inner,
+.gbe-xotutu-hero > .wp-block-group,
+.gbe-linguistique-hero > .wp-block-group,
+.gbe-paremiologie-hero > .wp-block-group,
+.gbe-onomastique-hero > .wp-block-group,
+.gbe-recherche-hero > .wp-block-group,
+.gbe-culture-hero > .wp-block-group,
+.gbe-culture-rubrique-hero > .wp-block-group,
+.gbe-hub-hero > .wp-block-group,
+.gbe-le-gbe-hero > .wp-block-columns,
+.gbe-le-gbe-hero > .wp-block-group:not(.gbe-le-gbe-hero__slides),
+.gbe-proverbe-single__hero-inner {
+	position: relative;
+	z-index: 2;
+	width: 100%;
+	max-width: 1140px;
+	margin: 0 auto;
+	flex: 0 1 auto;
+}
+
+.gbe-home-hero__nav {
+	position: absolute !important;
+	bottom: clamp(0.85rem, 2vw, 1.25rem) !important;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 4;
+}
+
+/* Le Gbe hero : padding sur __inner uniquement (desktop) — évite le contenu sous le header */
+@media (min-width: 782px) {
+	.gbe-le-gbe-hero,
+	.gbe-le-gbe-hero.gbe-le-gbe-hero--carousel,
+	body.gbe-hub-page .gbe-le-gbe-hero:not(.gbe-le-gbe-hero--carousel) {
+		padding: 0 !important;
+		justify-content: flex-start !important;
+	}
+
+	.gbe-le-gbe-hero__inner {
+		flex: 1 1 auto;
+		width: 100%;
+		max-width: 1140px;
+		height: 100%;
+		box-sizing: border-box;
+		display: flex !important;
+		flex-direction: column !important;
+		justify-content: flex-start !important;
+		padding: var(--gbe-hero-top) var(--gbe-hero-padding-x) var(--gbe-hero-padding-bottom) !important;
+	}
+
+	.gbe-chapter-hero__inner,
+	.gbe-home-hero__inner {
+		box-sizing: border-box;
+		width: 100%;
+		display: flex !important;
+		flex-direction: column !important;
+		justify-content: flex-start !important;
+		align-items: center;
+		min-height: 0;
+		flex: 1 1 auto;
+	}
+}
+
+/* —— Page banque de proverbes —— */
+main.gbe-main:has(.gbe-proverbes-archive),
+main.gbe-main--proverbes,
+main.gbe-main--proverbe-single {
+	padding: 0 !important;
+	background: var(--gbe-sand, #f2e9d8);
+}
+
+main.gbe-main:has(.gbe-proverbes-archive) .gbe-page-content {
+	max-width: none;
+	width: 100%;
+	padding: 0;
+	margin: 0;
+}
+
+main.gbe-main:has(.gbe-proverbes-archive) .wp-block-post-title {
+	margin: 0;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: var(--gbe-hero-top) var(--gbe-hero-padding-x) 0.75rem;
+	background:
+		linear-gradient(180deg, rgba(13, 27, 61, 0.45) 0%, rgba(217, 154, 43, 0.35) 40%, rgba(8, 20, 40, 0.9) 100%),
+		linear-gradient(135deg, #0d1b3d 0%, #d99a2b 42%, #152a52 100%);
+	color: var(--gbe-white) !important;
+	text-align: center;
+	font-family: Georgia, "Times New Roman", serif;
+	font-size: clamp(2rem, 5vw, 3rem);
+	font-weight: 400;
+	line-height: 1.15;
+}
+
+@media (min-width: 782px) {
+	main.gbe-main:has(.gbe-proverbes-archive) .wp-block-post-title {
+		height: var(--gbe-hero-min-height);
+		min-height: var(--gbe-hero-min-height);
+		max-height: var(--gbe-hero-min-height);
+	}
+}
+
+main.gbe-main:has(.gbe-proverbes-archive) .gbe-page-content > p {
+	margin: 0 auto;
+	max-width: 40rem;
+	padding: 0 clamp(1rem, 3vw, 1.5rem) clamp(2rem, 5vw, 2.75rem);
+	text-align: center;
+	color: rgba(255, 250, 240, 0.94);
+	line-height: 1.55;
+	background:
+		linear-gradient(180deg, rgba(8, 20, 40, 0.9) 0%, rgba(13, 27, 61, 0.95) 100%),
+		linear-gradient(135deg, #152a52 0%, #0d1b3d 100%);
+}
+
+.gbe-proverbes-page-hero {
+	padding: var(--gbe-hero-top) var(--gbe-hero-padding-x) var(--gbe-hero-padding-bottom) !important;
+	box-sizing: border-box !important;
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: center !important;
+	justify-content: flex-start !important;
+	color: var(--gbe-white);
+	text-align: center;
+	background:
+		linear-gradient(180deg, rgba(13, 27, 61, 0.45) 0%, rgba(217, 154, 43, 0.35) 40%, rgba(8, 20, 40, 0.9) 100%),
+		var(--gbe-proverbes-page-hero-image, none) center center / cover no-repeat,
+		linear-gradient(135deg, #0d1b3d 0%, #d99a2b 42%, #152a52 100%);
+}
+
+@media (min-width: 782px) {
+	.gbe-proverbes-page-hero {
+		height: var(--gbe-hero-min-height) !important;
+		min-height: var(--gbe-hero-min-height) !important;
+		max-height: var(--gbe-hero-min-height) !important;
+		overflow: hidden !important;
+		justify-content: flex-start !important;
+	}
+}
+
+.gbe-proverbes-page-hero--banque {
+	justify-content: space-between !important;
+	padding-bottom: 0 !important;
+}
+
+.gbe-proverbe-single__hero {
+	color: var(--gbe-white);
+	text-align: center;
+	background:
+		linear-gradient(180deg, rgba(13, 27, 61, 0.52) 0%, rgba(217, 154, 43, 0.38) 45%, rgba(8, 20, 40, 0.92) 100%),
+		var(--gbe-proverbe-single-hero-image, none) center center / cover no-repeat,
+		linear-gradient(135deg, #0d1b3d 0%, #1e5a3a 38%, #152a52 100%);
+}
+
+.gbe-proverbes-page-hero__content,
+.gbe-proverbe-single__hero-inner {
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	max-width: 920px;
+	padding: 0 clamp(1rem, 3vw, 1.5rem);
+}
+
+.gbe-proverbes-page-hero__kicker {
+	margin: 0 0 0.65rem;
+	font-size: 0.82rem;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: rgba(255, 250, 240, 0.82);
+}
+
+.gbe-proverbes-page-hero__kicker a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.gbe-proverbes-page-hero__kicker a:hover,
+.gbe-proverbes-page-hero__kicker a:focus-visible {
+	color: var(--gbe-gold, #D99A2B);
+}
+
+.gbe-proverbes-page-hero__title {
+	margin: 0 0 0.65rem;
+	color: var(--gbe-white) !important;
+	font-family: Georgia, "Times New Roman", serif;
+	font-size: clamp(2rem, 5vw, 3rem);
+	font-weight: 400;
+}
+
+.gbe-proverbes-page-hero__lead {
+	margin: 0 auto;
+	max-width: 40rem;
+	color: rgba(255, 250, 240, 0.94);
+	line-height: 1.55;
+}
+
+.gbe-proverbes-archive {
+	max-width: 1140px;
+	margin: 0 auto;
+	padding: clamp(1.25rem, 3vw, 2rem) clamp(1rem, 3vw, 1.5rem) clamp(2.5rem, 5vw, 3.5rem);
+}
+
+/* Bandeau défilant de proverbes (hero banque) */
+.gbe-proverbes-hero-ticker {
+	position: relative;
+	width: 100%;
+	flex-shrink: 0;
+	border-top: 1px solid rgba(255, 250, 240, 0.14);
+	background: rgba(6, 16, 34, 0.72);
+	backdrop-filter: blur(6px);
+}
+
+.gbe-proverbes-hero-ticker__viewport {
+	overflow: hidden;
+	width: 100%;
+	padding: 0.85rem 0;
+}
+
+.gbe-proverbes-hero-ticker__track {
+	display: flex;
+	width: max-content;
+	animation: gbe-proverbes-ticker-scroll 90s linear infinite;
+}
+
+.gbe-proverbes-hero-ticker__group {
+	display: flex;
+	align-items: stretch;
+	gap: 0;
+}
+
+.gbe-proverbes-hero-ticker__item {
+	display: inline-flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 0.2rem;
+	min-width: min(28rem, 72vw);
+	max-width: 32rem;
+	padding: 0.35rem 1.75rem;
+	border-right: 1px solid rgba(255, 250, 240, 0.1);
+	color: rgba(255, 250, 240, 0.95);
+	text-decoration: none;
+	text-align: left;
+	transition: background 0.2s ease, color 0.2s ease;
+}
+
+.gbe-proverbes-hero-ticker__item:hover,
+.gbe-proverbes-hero-ticker__item:focus-visible {
+	background: rgba(217, 154, 43, 0.14);
+	color: var(--gbe-white, #fff);
+	outline: none;
+}
+
+.gbe-proverbes-hero-ticker__quote {
+	font-family: Georgia, "Times New Roman", serif;
+	font-size: clamp(0.95rem, 1.8vw, 1.05rem);
+	line-height: 1.45;
+	font-style: italic;
+}
+
+.gbe-proverbes-hero-ticker__meta {
+	font-size: 0.78rem;
+	line-height: 1.35;
+	color: rgba(255, 250, 240, 0.72);
+}
+
+.gbe-proverbes-hero-ticker__fade {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: clamp(2rem, 8vw, 5rem);
+	z-index: 1;
+	pointer-events: none;
+}
+
+.gbe-proverbes-hero-ticker__fade--left {
+	left: 0;
+	background: linear-gradient(90deg, rgba(6, 16, 34, 0.95) 0%, rgba(6, 16, 34, 0) 100%);
+}
+
+.gbe-proverbes-hero-ticker__fade--right {
+	right: 0;
+	background: linear-gradient(270deg, rgba(6, 16, 34, 0.95) 0%, rgba(6, 16, 34, 0) 100%);
+}
+
+.gbe-proverbes-banque-body {
+	max-width: 1140px;
+	margin: 0 auto;
+	padding: 0 clamp(1rem, 3vw, 1.5rem);
+}
+
+.gbe-proverbes-banque-body > .gbe-proverbes-archive:first-child {
+	padding-top: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+@keyframes gbe-proverbes-ticker-scroll {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(-50%);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.gbe-proverbes-hero-ticker__track {
+		animation: none;
+		flex-wrap: wrap;
+		width: 100%;
+		justify-content: center;
+	}
+
+	.gbe-proverbes-hero-ticker__group[aria-hidden="true"] {
+		display: none;
+	}
+
+	.gbe-proverbes-hero-ticker__viewport {
+		overflow-x: auto;
+	}
+}
+
+.gbe-proverbes-archive .gbe-filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem 1rem;
+	align-items: flex-end;
+	margin-bottom: 1.75rem;
+	padding: 1rem 1.15rem;
+	border-radius: 12px;
+	background: var(--gbe-white);
+	border: 1px solid rgba(13, 27, 61, 0.08);
+	box-shadow: 0 4px 16px rgba(13, 27, 61, 0.06);
+}
+
+.gbe-proverbes-archive .gbe-filters label {
+	display: block;
+	font-size: 0.82rem;
+	font-weight: 600;
+	margin-bottom: 0.25rem;
+	color: var(--gbe-navy);
+}
+
+.gbe-proverbes-archive .gbe-filters input,
+.gbe-proverbes-archive .gbe-filters select {
+	min-width: min(100%, 14rem);
+	padding: 0.45rem 0.65rem;
+	border: 1px solid rgba(13, 27, 61, 0.15);
+	border-radius: 8px;
+}
+
+.gbe-proverbes-archive .gbe-cards-grid:not(.gbe-cards-grid--proverbes) {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+	gap: 1rem;
+}
+
+.gbe-proverbes-archive .gbe-card:not(.gbe-card--proverbe) {
+	background: var(--gbe-white);
+	border: 1px solid rgba(13, 27, 61, 0.08);
+	border-radius: 12px;
+	padding: 1.1rem 1.15rem;
+	box-shadow: 0 4px 14px rgba(13, 27, 61, 0.05);
+}
+
+.gbe-proverbes-archive .gbe-card h3 {
+	margin: 0 0 0.5rem;
+	color: var(--gbe-navy);
+	font-size: 1.05rem;
+}
+
+.gbe-proverbes-archive .gbe-card:not(.gbe-card--proverbe) p {
+	margin: 0 0 0.35rem;
+	color: var(--gbe-ink);
+	line-height: 1.55;
+}
+
+.gbe-proverbes-archive .gbe-empty {
+	padding: 2rem 1rem;
+	text-align: center;
+	color: var(--gbe-ink);
+}

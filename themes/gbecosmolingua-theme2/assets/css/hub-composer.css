@@ -1,0 +1,71 @@
+/**
+ * Pages hub — polices sections, espace header / hero.
+ */
+
+body.gbe-hub-page main[class*="gbe-main--"] {
+	padding-top: 0 !important;
+	margin-top: 0 !important;
+}
+
+body.gbe-hub-page main[class*="gbe-main--"].is-layout-flow > * {
+	margin-block-start: 0 !important;
+}
+
+body.gbe-hub-page main[class*="gbe-main--"] > .wp-block-html,
+body.gbe-hub-page main[class*="gbe-main--"] > .wp-block-shortcode {
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+/* Espacement header / hero : hero-header-flush.css (chargé en dernier) */
+
+/* —— Polices des sections —— */
+.gbe-hub-font--serif .gbe-culture-rubrique__content,
+.gbe-hub-font--serif .gbe-culture-subtopic__body,
+.gbe-culture-band.gbe-hub-font--serif .gbe-culture-rubrique__content,
+.gbe-culture-band.gbe-hub-font--serif .gbe-culture-subtopic__body {
+	font-family: Georgia, "Times New Roman", Times, serif;
+}
+
+.gbe-hub-font--serif .gbe-culture-rubrique__content h2,
+.gbe-hub-font--serif .gbe-culture-subtopic__body h3,
+.gbe-culture-band.gbe-hub-font--serif .gbe-culture-rubrique__content h2,
+.gbe-culture-band.gbe-hub-font--serif .gbe-culture-subtopic__body h3 {
+	font-family: Georgia, "Times New Roman", Times, serif;
+}
+
+.gbe-hub-font--sans .gbe-culture-rubrique__content,
+.gbe-hub-font--sans .gbe-culture-subtopic__body,
+.gbe-culture-band.gbe-hub-font--sans .gbe-culture-rubrique__content,
+.gbe-culture-band.gbe-hub-font--sans .gbe-culture-subtopic__body {
+	font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.gbe-hub-font--sans .gbe-culture-rubrique__content h2,
+.gbe-hub-font--sans .gbe-culture-subtopic__body h3,
+.gbe-culture-band.gbe-hub-font--sans .gbe-culture-rubrique__content h2,
+.gbe-culture-band.gbe-hub-font--sans .gbe-culture-subtopic__body h3 {
+	font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+	font-weight: 700;
+}
+
+.gbe-hub-font--display .gbe-culture-rubrique__content,
+.gbe-hub-font--display .gbe-culture-subtopic__body,
+.gbe-culture-band.gbe-hub-font--display .gbe-culture-rubrique__content,
+.gbe-culture-band.gbe-hub-font--display .gbe-culture-subtopic__body {
+	font-family: "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+}
+
+.gbe-hub-font--display .gbe-culture-rubrique__content h2,
+.gbe-hub-font--display .gbe-culture-subtopic__body h3,
+.gbe-culture-band.gbe-hub-font--display .gbe-culture-rubrique__content h2,
+.gbe-culture-band.gbe-hub-font--display .gbe-culture-subtopic__body h3 {
+	font-family: "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+	font-weight: 700;
+	letter-spacing: 0.01em;
+}
+
+.gbe-le-gbe-voir-plus.gbe-hub-font--serif .gbe-le-gbe-voir-plus__title,
+.gbe-hub-rubriques.gbe-hub-font--serif .gbe-le-gbe-voir-plus__title {
+	font-family: Georgia, "Times New Roman", Times, serif;
+}

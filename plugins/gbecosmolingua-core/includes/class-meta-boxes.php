@@ -19,6 +19,9 @@ class GBE_Meta_Boxes {
 		add_action( 'add_meta_boxes', array( __CLASS__, 'add_meta_boxes' ) );
 		add_action( 'save_post', array( __CLASS__, 'save_meta' ), 10, 2 );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_styles' ) );
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_scripts' ) );
+		add_filter( 'manage_membre_gbe_posts_columns', array( __CLASS__, 'membre_columns' ) );
+		add_action( 'manage_membre_gbe_posts_custom_column', array( __CLASS__, 'membre_column_content' ), 10, 2 );
 	}
 
 	/**
@@ -33,6 +36,31 @@ class GBE_Meta_Boxes {
 			GBE_CORE_URL . 'assets/css/admin.css',
 			array(),
 			GBE_CORE_VERSION
+		);
+	}
+
+	/**
+	 * Scripts admin (médiathèque pour les photos membres).
+	 *
+	 * @param string $hook Current admin page.
+	 */
+	public static function enqueue_admin_scripts( $hook ) {
+		if ( ! in_array( $hook, array( 'post.php', 'post-new.php' ), true ) ) {
+			return;
+		}
+
+		$screen = get_current_screen();
+		if ( ! $screen || 'membre_gbe' !== $screen->post_type ) {
+			return;
+		}
+
+		wp_enqueue_media();
+		wp_enqueue_script(
+			'gbe-membre-photo-admin',
+			GBE_CORE_URL . 'assets/js/membre-photo-admin.js',
+			array( 'jquery' ),
+			GBE_CORE_VERSION,
+			true
 		);
 	}
 
@@ -64,6 +92,24 @@ class GBE_Meta_Boxes {
 			array( __CLASS__, 'render_partenaire_box' ),
 			'partenaire',
 			'normal',
+			'high'
+		);
+
+		add_meta_box(
+			'gbe_membre_details',
+			__( 'Informations du membre', 'gbecosmolingua-core' ),
+			array( __CLASS__, 'render_membre_box' ),
+			'membre_gbe',
+			'normal',
+			'high'
+		);
+
+		add_meta_box(
+			'gbe_membre_photo_help',
+			__( 'Photo du membre', 'gbecosmolingua-core' ),
+			array( __CLASS__, 'render_membre_photo_help_box' ),
+			'membre_gbe',
+			'side',
 			'high'
 		);
 
@@ -159,6 +205,110 @@ class GBE_Meta_Boxes {
 			<?php self::render_field( 'contact', __( 'Contact', 'gbecosmolingua-core' ), $contact ); ?>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Render membre meta box.
+	 *
+	 * @param WP_Post $post Current post.
+	 */
+	public static function render_membre_box( $post ) {
+		wp_nonce_field( 'gbe_save_meta', 'gbe_meta_nonce' );
+
+		$fonction = get_post_meta( $post->ID, '_gbe_fonction', true );
+
+		?>
+		<div class="gbe-meta-fields">
+			<?php self::render_field( 'fonction', __( 'Fonction / rôle', 'gbecosmolingua-core' ), $fonction ); ?>
+			<p class="description">
+				<?php esc_html_e( 'Exemple : Président-Fondateur, Vice-Président — Membre Fondateur…', 'gbecosmolingua-core' ); ?>
+			</p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Photo du membre — sélecteur médiathèque WordPress.
+	 *
+	 * @param WP_Post $post Current post.
+	 */
+	public static function render_membre_photo_help_box( $post ) {
+		wp_nonce_field( 'gbe_save_meta', 'gbe_meta_nonce' );
+
+		$thumb_id   = (int) get_post_thumbnail_id( $post );
+		$theme_path = (string) get_post_meta( $post->ID, '_gbe_photo_theme', true );
+		$preview    = $thumb_id
+			? wp_get_attachment_image( $thumb_id, 'medium', false, array( 'style' => 'max-width:100%;height:auto;border-radius:12px;' ) )
+			: '';
+		?>
+		<div class="gbe-membre-photo-admin">
+			<input type="hidden" id="gbe_membre_thumbnail_id" name="gbe_membre_thumbnail_id" value="<?php echo esc_attr( (string) $thumb_id ); ?>">
+			<div class="gbe-membre-photo-admin__preview" id="gbe_membre_photo_preview">
+				<?php
+				if ( $preview ) {
+					echo $preview; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				} elseif ( '' !== $theme_path && class_exists( 'GBE_Membres_Photos' ) ) {
+					$theme_url = GBE_Membres_Photos::resolve_theme_url( $theme_path );
+					if ( '' !== $theme_url ) {
+						printf(
+							'<img src="%s" alt="" style="max-width:100%%;height:auto;border-radius:12px;" />',
+							esc_url( $theme_url )
+						);
+						echo '<p class="description">' . esc_html__( 'Photo par défaut du thème (non enregistrée en médiathèque).', 'gbecosmolingua-core' ) . '</p>';
+					}
+				} else {
+					echo '<p class="gbe-membre-photo-admin__empty"><em>' . esc_html__( 'Aucune photo.', 'gbecosmolingua-core' ) . '</em></p>';
+				}
+				?>
+			</div>
+			<p class="gbe-membre-photo-admin__actions">
+				<button type="button" class="button button-primary gbe-membre-photo-select"><?php esc_html_e( 'Choisir / téléverser une photo', 'gbecosmolingua-core' ); ?></button>
+				<button type="button" class="button gbe-membre-photo-remove" <?php disabled( $thumb_id <= 0 ); ?>><?php esc_html_e( 'Supprimer', 'gbecosmolingua-core' ); ?></button>
+			</p>
+			<p class="description"><?php esc_html_e( 'Portrait carré ou 3:4, min. 400×400 px. La photo choisie ici remplace celle du thème sur le site.', 'gbecosmolingua-core' ); ?></p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Colonnes admin liste des membres.
+	 *
+	 * @param array<string, string> $columns Colonnes.
+	 * @return array<string, string>
+	 */
+	public static function membre_columns( $columns ) {
+		$new = array();
+		foreach ( $columns as $key => $label ) {
+			if ( 'title' === $key ) {
+				$new['gbe_membre_photo'] = __( 'Photo', 'gbecosmolingua-core' );
+			}
+			$new[ $key ] = $label;
+			if ( 'title' === $key ) {
+				$new['gbe_membre_fonction'] = __( 'Fonction', 'gbecosmolingua-core' );
+			}
+		}
+		return $new;
+	}
+
+	/**
+	 * Contenu colonnes admin membres.
+	 *
+	 * @param string $column  Colonne.
+	 * @param int    $post_id ID post.
+	 */
+	public static function membre_column_content( $column, $post_id ) {
+		if ( 'gbe_membre_photo' === $column ) {
+			if ( has_post_thumbnail( $post_id ) ) {
+				echo get_the_post_thumbnail( $post_id, array( 48, 48 ), array( 'style' => 'border-radius:50%;object-fit:cover;' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			} else {
+				echo '—';
+			}
+			return;
+		}
+
+		if ( 'gbe_membre_fonction' === $column ) {
+			echo esc_html( (string) get_post_meta( $post_id, '_gbe_fonction', true ) );
+		}
 	}
 
 	/**
@@ -294,7 +444,7 @@ class GBE_Meta_Boxes {
 			return;
 		}
 
-		$allowed_types = array( 'proverbe', 'genre_oral', 'partenaire', 'evenement', 'ressource' );
+		$allowed_types = array( 'proverbe', 'genre_oral', 'partenaire', 'membre_gbe', 'evenement', 'ressource' );
 		if ( ! in_array( $post->post_type, $allowed_types, true ) ) {
 			return;
 		}
@@ -303,7 +453,7 @@ class GBE_Meta_Boxes {
 			'texte_original', 'transcription', 'traduction_fr', 'traduction_en',
 			'traduction_es', 'traduction_ru', 'contexte', 'commentaire_culturel',
 			'analyse_linguistique', 'analyse_pragmatique', 'analyse_ethnographique',
-			'source', 'transcription_orale', 'url', 'pays', 'contact',
+			'source', 'transcription_orale', 'url', 'pays', 'contact', 'fonction',
 			'date', 'lieu', 'type_evenement', 'type_document', 'auteur',
 		);
 
@@ -321,6 +471,34 @@ class GBE_Meta_Boxes {
 				update_post_meta( $post_id, '_gbe_' . $field, absint( $_POST[ $key ] ) );
 			}
 		}
+
+		if ( 'membre_gbe' === $post->post_type && isset( $_POST['gbe_membre_thumbnail_id'] ) ) {
+			self::save_membre_thumbnail( $post_id, absint( wp_unslash( $_POST['gbe_membre_thumbnail_id'] ) ) );
+		}
+	}
+
+	/**
+	 * Enregistre la photo d’un membre (image mise en avant).
+	 *
+	 * @param int $post_id   ID membre.
+	 * @param int $thumb_id  ID attachment ou 0 pour retirer.
+	 */
+	private static function save_membre_thumbnail( $post_id, $thumb_id ) {
+		$post_id  = (int) $post_id;
+		$thumb_id = (int) $thumb_id;
+
+		if ( $post_id <= 0 ) {
+			return;
+		}
+
+		if ( $thumb_id > 0 ) {
+			set_post_thumbnail( $post_id, $thumb_id );
+			delete_post_meta( $post_id, '_gbe_photo_theme' );
+			delete_post_meta( $post_id, '_gbe_photo_theme_mtime' );
+			return;
+		}
+
+		delete_post_thumbnail( $post_id );
 	}
 }
 

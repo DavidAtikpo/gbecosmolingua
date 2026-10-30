@@ -22,6 +22,7 @@ class GBE_Polylang {
 		'proverbe',
 		'genre_oral',
 		'partenaire',
+		'membre_gbe',
 		'evenement',
 		'ressource',
 	);
@@ -35,6 +36,7 @@ class GBE_Polylang {
 		'langue_gbe',
 		'genre_xotutu',
 		'type_partenaire',
+		'groupe_membre',
 	);
 
 	/**
@@ -92,9 +94,9 @@ class GBE_Polylang {
 		}
 
 		$strings = array(
-			'hero_tagline'    => 'Observatoire international',
-			'hero_title'      => 'Bienvenue à GbeCosmoLingua',
-			'hero_subtitle'   => 'Un pont entre les langues, les cultures et les peuples du continuum gbe.',
+			'hero_tagline'    => 'Continuum Gbe',
+			'hero_title'      => 'Préserver, transmettre et faire rayonner le patrimoine Gbe.',
+			'hero_subtitle'   => 'Gbe est une langue unique parlée par environ quatre millions de personnes au Ghana, au Togo, au Bénin et au Nigeria. GbeCosmoLingua en documente les parlers, les cultures et le patrimoine oral.',
 			'site_tagline'    => 'Observatoire international des langues, cultures et patrimoines gbe',
 			'form_submit'     => 'Envoyer',
 			'form_success'    => 'Votre message a bien été envoyé. Merci pour votre soutien !',

@@ -1,0 +1,218 @@
+
+/* —— Page Paremiologie (hub) —— */
+.gbe-main--paremiologie {
+	padding: 0 !important;
+	gap: 0;
+	max-width: none;
+	overflow-x: clip;
+	background: var(--gbe-sand, #F2E9D8);
+}
+
+.gbe-main--paremiologie.is-layout-flow > * {
+	margin-block-start: 0;
+}
+
+.gbe-main--paremiologie > .wp-block-html {
+	max-width: none;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+.gbe-main--paremiologie .gbe-section.gbe-paremiologie-intro {
+	max-width: 1140px;
+	margin: 0 auto;
+	padding: clamp(1rem, 3vw, 1.5rem) clamp(1rem, 3vw, 1.5rem) 0;
+	box-sizing: border-box;
+	line-height: 1.65;
+}
+
+/* Hero — dimensions : hero-header-flush.css */
+.gbe-paremiologie-hero {
+	color: var(--gbe-white, #fff);
+	text-align: center;
+	background:
+		linear-gradient(180deg, rgba(13, 27, 61, 0.45) 0%, rgba(217, 154, 43, 0.35) 40%, rgba(8, 20, 40, 0.9) 100%),
+		var(--gbe-paremiologie-hero-image, none) center center / cover no-repeat,
+		linear-gradient(135deg, #0d1b3d 0%, #d99a2b 42%, #152a52 100%);
+}
+
+.gbe-paremiologie-hero__title {
+	font-family: Georgia, "Times New Roman", serif;
+	font-size: clamp(2.5rem, 6vw, 3.75rem);
+	font-weight: 400;
+	color: var(--gbe-white) !important;
+	margin: 0 0 0.75rem;
+}
+
+.gbe-paremiologie-hero__lead {
+	max-width: 34rem;
+	margin: 0 auto 1.5rem;
+	font-size: clamp(1rem, 2.2vw, 1.12rem);
+	line-height: 1.55;
+	color: rgba(255, 250, 240, 0.95);
+}
+
+.gbe-paremiologie-hero__actions .wp-block-button__link {
+	border-radius: 999px;
+	font-weight: 600;
+}
+
+.gbe-paremiologie-hero__actions .is-style-fill .wp-block-button__link {
+	background: var(--gbe-gold, #D99A2B);
+	color: var(--gbe-ink, #0D1B3D);
+	border: 1px solid rgba(255, 250, 240, 0.4);
+}
+
+.gbe-paremiologie-hero__actions .is-style-outline .wp-block-button__link {
+	border: 1px solid rgba(255, 250, 240, 0.7);
+	color: var(--gbe-white);
+	background: transparent;
+}
+
+/* Search */
+.gbe-paremiologie-search-wrap {
+	position: relative;
+	max-width: 720px;
+	margin: -3rem auto 1.5rem;
+	padding: 0 clamp(1rem, 3vw, 1.5rem);
+	z-index: 2;
+}
+
+.gbe-paremiologie-search {
+	display: flex;
+	gap: 0.5rem;
+	padding: 0.75rem;
+	background: var(--gbe-white);
+	border-radius: 12px;
+	box-shadow: 0 10px 36px rgba(35, 21, 12, 0.12);
+}
+
+.gbe-paremiologie-search__input {
+	flex: 1;
+	min-width: 0;
+	border: 1px solid rgba(35, 21, 12, 0.12);
+	border-radius: 8px;
+	padding: 0.6rem 0.85rem;
+}
+
+.gbe-paremiologie-search__submit {
+	border: none;
+	border-radius: 8px;
+	padding: 0.6rem 1rem;
+	background: var(--gbe-gold);
+	color: var(--gbe-navy, #0d1b3d);
+	font-weight: 600;
+	cursor: pointer;
+}
+
+/* Featured proverb */
+.gbe-paremiologie-featured {
+	max-width: 1140px;
+	margin: 0 auto 2rem;
+	padding: 0 clamp(1rem, 3vw, 1.5rem);
+}
+
+.gbe-paremiologie-featured__inner {
+	background: var(--gbe-white);
+	border-radius: 14px;
+	padding: 1.35rem 1.5rem;
+	border-left: 4px solid var(--gbe-gold, #D99A2B);
+	box-shadow: 0 4px 18px rgba(35, 21, 12, 0.06);
+}
+
+.gbe-paremiologie-featured__kicker {
+	text-transform: uppercase;
+	font-size: 0.72rem;
+	letter-spacing: 0.08em;
+	color: var(--gbe-copper);
+	margin: 0 0 0.35rem;
+}
+
+.gbe-paremiologie-featured__meta {
+	font-size: 0.9rem;
+	color: var(--gbe-ink, #061022);
+	margin: 0 0 0.5rem;
+}
+
+.gbe-paremiologie-featured h2 {
+	margin: 0 0 0.35rem;
+	color: var(--gbe-green);
+	font-size: 1.35rem;
+}
+
+.gbe-paremiologie-stats {
+	max-width: 1140px;
+	margin: 0 auto 1.75rem;
+	padding: 0 clamp(1rem, 3vw, 1.5rem);
+}
+
+.gbe-paremiologie-stats__grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 0.75rem;
+	background: var(--gbe-white);
+	border-radius: 12px;
+	padding: 1rem;
+	box-shadow: 0 8px 28px rgba(35, 21, 12, 0.08);
+}
+
+.gbe-paremiologie-stats__value {
+	margin: 0;
+	font-size: clamp(1.25rem, 2.5vw, 1.65rem);
+	font-weight: 700;
+	color: var(--gbe-green);
+	line-height: 1.1;
+}
+
+.gbe-paremiologie-stats__label {
+	margin: 0.2rem 0 0;
+	font-size: 0.78rem;
+	color: var(--gbe-ink, #061022);
+	line-height: 1.3;
+}
+
+.gbe-paremiologie-rubriques .gbe-culture-rubrique--feature .gbe-culture-subtopics {
+	display: none;
+}
+
+/* CTA */
+.gbe-paremiologie-cta {
+	margin-top: 0;
+	padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 3vw, 1.5rem);
+	background: linear-gradient(120deg, #1E5A3A 0%, #152a52 100%);
+	color: var(--gbe-white);
+	text-align: center;
+}
+
+.gbe-paremiologie-cta__inner {
+	max-width: 640px;
+	margin: 0 auto;
+}
+
+.gbe-paremiologie-cta h2 {
+	color: var(--gbe-white);
+	margin: 0 0 0.65rem;
+}
+
+.gbe-paremiologie-cta .gbe-culture-rubrique__btn {
+	background: var(--gbe-gold);
+	color: var(--gbe-ink) !important;
+	margin-top: 0.75rem;
+}
+
+@media (max-width: 900px) {
+	.gbe-paremiologie-stats__grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 600px) {
+	.gbe-paremiologie-search {
+		flex-direction: column;
+	}
+
+	.gbe-paremiologie-stats__grid {
+		grid-template-columns: 1fr 1fr;
+	}
+}

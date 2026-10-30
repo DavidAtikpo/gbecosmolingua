@@ -496,6 +496,324 @@ function gbecosmolingua_paremiologie_render_search() {
 }
 
 /**
+ * Page « Banque numérique de proverbes » (résolution robuste pour les shortcodes FSE).
+ *
+ * @param WP_Post|null $page Page explicite.
+ * @return WP_Post|null
+ */
+function gbecosmolingua_paremiologie_banque_resolve_page( $page = null ) {
+	if ( $page instanceof WP_Post && 'banque-numerique-proverbes' === $page->post_name ) {
+		return $page;
+	}
+
+	$queried = get_queried_object();
+	if ( $queried instanceof WP_Post && 'banque-numerique-proverbes' === $queried->post_name ) {
+		return $queried;
+	}
+
+	global $post;
+	if ( $post instanceof WP_Post && 'banque-numerique-proverbes' === $post->post_name ) {
+		return $post;
+	}
+
+	$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
+	if ( $request_uri && false !== strpos( $request_uri, 'banque-numerique-proverbes' ) ) {
+		$by_path = get_page_by_path( 'paremiologie/banque-numerique-proverbes' );
+		if ( $by_path instanceof WP_Post ) {
+			return $by_path;
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Page « Banque numérique de proverbes » ?
+ *
+ * @param WP_Post|null $page Page.
+ * @return bool
+ */
+function gbecosmolingua_paremiologie_banque_is_page( $page = null ) {
+	$page = gbecosmolingua_paremiologie_banque_resolve_page( $page );
+	return $page instanceof WP_Post;
+}
+
+/**
+ * Proverbes pour le bandeau défilant du hero banque.
+ *
+ * @param int $limit Nombre d'entrées.
+ * @return array<int, array{text: string, meta: string, url: string}>
+ */
+function gbecosmolingua_paremiologie_banque_ticker_items( $limit = 24 ) {
+	$limit = max( 6, min( 40, (int) $limit ) );
+	$query = new WP_Query(
+		array(
+			'post_type'              => 'proverbe',
+			'posts_per_page'         => $limit,
+			'post_status'            => 'publish',
+			'orderby'                => 'rand',
+			'no_found_rows'          => true,
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
+		)
+	);
+
+	$items = array();
+	if ( $query->have_posts() ) {
+		while ( $query->have_posts() ) {
+			$query->the_post();
+			$post_id = get_the_ID();
+			$texte   = class_exists( 'GBE_Frontend' ) ? GBE_Frontend::get_meta( $post_id, 'texte_original' ) : '';
+			if ( ! $texte ) {
+				$texte = get_the_title();
+			}
+			$trad = class_exists( 'GBE_Frontend' ) ? GBE_Frontend::get_meta( $post_id, 'traduction_fr' ) : '';
+			$meta = $trad ? wp_trim_words( $trad, 14, '…' ) : '';
+			if ( ! $meta ) {
+				$langues = get_the_terms( $post_id, 'langue_gbe' );
+				if ( $langues && ! is_wp_error( $langues ) ) {
+					$meta = $langues[0]->name;
+				}
+			}
+			$items[] = array(
+				'text' => wp_strip_all_tags( (string) $texte ),
+				'meta' => wp_strip_all_tags( (string) $meta ),
+				'url'  => get_permalink( $post_id ),
+			);
+		}
+		wp_reset_postdata();
+	}
+
+	if ( empty( $items ) ) {
+		$items[] = array(
+			'text' => __( '« Celui qui écoute les anciens ne se perd pas en chemin. »', 'gbecosmolingua' ),
+			'meta' => __( 'Sagesse populaire gbe', 'gbecosmolingua' ),
+			'url'  => gbecosmolingua_paremiologie_page_url( 'banque-numerique-proverbes' ),
+		);
+	}
+
+	return $items;
+}
+
+/**
+ * HTML du bandeau défilant de proverbes.
+ *
+ * @param array<int, array{text: string, meta: string, url: string}> $items Proverbes.
+ * @return string
+ */
+function gbecosmolingua_paremiologie_banque_render_ticker( $items ) {
+	if ( empty( $items ) ) {
+		return '';
+	}
+
+	$render_group = static function ( $rows, $hidden = false ) {
+		ob_start();
+		echo '<div class="gbe-proverbes-hero-ticker__group"' . ( $hidden ? ' aria-hidden="true"' : '' ) . '>';
+		foreach ( $rows as $item ) {
+			echo '<a class="gbe-proverbes-hero-ticker__item" href="' . esc_url( $item['url'] ) . '">';
+			echo '<span class="gbe-proverbes-hero-ticker__quote">' . esc_html( $item['text'] ) . '</span>';
+			if ( ! empty( $item['meta'] ) ) {
+				echo '<span class="gbe-proverbes-hero-ticker__meta">' . esc_html( $item['meta'] ) . '</span>';
+			}
+			echo '</a>';
+		}
+		echo '</div>';
+		return (string) ob_get_clean();
+	};
+
+	ob_start();
+	?>
+	<div class="gbe-proverbes-hero-ticker" aria-label="<?php esc_attr_e( 'Proverbes du continuum gbe', 'gbecosmolingua' ); ?>">
+		<div class="gbe-proverbes-hero-ticker__fade gbe-proverbes-hero-ticker__fade--left" aria-hidden="true"></div>
+		<div class="gbe-proverbes-hero-ticker__fade gbe-proverbes-hero-ticker__fade--right" aria-hidden="true"></div>
+		<div class="gbe-proverbes-hero-ticker__viewport">
+			<div class="gbe-proverbes-hero-ticker__track">
+				<?php echo $render_group( $items ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				<?php echo $render_group( $items, true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			</div>
+		</div>
+	</div>
+	<?php
+	return (string) ob_get_clean();
+}
+
+/**
+ * HTML hero de la banque numérique de proverbes.
+ *
+ * @param WP_Post|null $page Page.
+ * @return string
+ */
+function gbecosmolingua_paremiologie_banque_hero_html( $page = null ) {
+	$page = gbecosmolingua_paremiologie_banque_resolve_page( $page );
+	if ( ! $page instanceof WP_Post ) {
+		return '';
+	}
+
+	$hero_style = '';
+	if ( has_post_thumbnail( $page->ID ) ) {
+		$hero_style = gbecosmolingua_public_featured_image_style( $page->ID, '--gbe-proverbes-page-hero-image' );
+	}
+	if ( ! $hero_style ) {
+		$hero_style = gbecosmolingua_paremiologie_image_style( 'hero-proverbes.jpg', '--gbe-proverbes-page-hero-image' );
+	}
+
+	$lead   = gbecosmolingua_public_page_excerpt_text( $page );
+	$parent = get_post( (int) $page->post_parent );
+	$hub_url = $parent ? get_permalink( $parent ) : gbecosmolingua_paremiologie_page_url();
+	$kicker  = $parent ? $parent->post_title : __( 'Paremiologie', 'gbecosmolingua' );
+	$ticker  = gbecosmolingua_paremiologie_banque_render_ticker( gbecosmolingua_paremiologie_banque_ticker_items() );
+
+	ob_start();
+	?>
+	<div class="wp-block-group alignfull gbe-proverbes-page-hero gbe-proverbes-page-hero--banque"<?php echo $hero_style ? ' style="' . esc_attr( $hero_style ) . '"' : ''; ?>>
+		<div class="gbe-proverbes-page-hero__content">
+			<p class="gbe-proverbes-page-hero__kicker"><a href="<?php echo esc_url( $hub_url ); ?>"><?php echo esc_html( $kicker ); ?></a></p>
+			<h1 class="gbe-proverbes-page-hero__title"><?php echo esc_html( $page->post_title ); ?></h1>
+			<?php if ( $lead ) : ?>
+				<p class="gbe-proverbes-page-hero__lead"><?php echo esc_html( $lead ); ?></p>
+			<?php endif; ?>
+		</div>
+		<?php echo $ticker; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+	</div>
+	<?php
+	return (string) ob_get_clean();
+}
+
+/**
+ * HTML corps de la banque numérique de proverbes.
+ *
+ * @param WP_Post|null $page Page.
+ * @return string
+ */
+function gbecosmolingua_paremiologie_banque_body_html( $page = null ) {
+	$page = gbecosmolingua_paremiologie_banque_resolve_page( $page );
+	if ( ! $page instanceof WP_Post ) {
+		return '';
+	}
+
+	$shortcode = '[gbe_proverbes_list limit="24"]';
+	if ( preg_match( '/\[gbe_proverbes_list[^\]]*\]/', $page->post_content, $matches ) ) {
+		$shortcode = $matches[0];
+	}
+
+	ob_start();
+	?>
+	<div class="gbe-proverbes-banque-body">
+		<?php echo gbecosmolingua_paremiologie_banque_stats_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+		<?php echo do_shortcode( $shortcode ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+	</div>
+	<?php
+	return (string) ob_get_clean();
+}
+
+/**
+ * Bandeau statistiques banque de proverbes (données réelles).
+ *
+ * @return string
+ */
+function gbecosmolingua_paremiologie_banque_stats_html() {
+	$count   = wp_count_posts( 'proverbe' );
+	$pub     = isset( $count->publish ) ? (int) $count->publish : 0;
+	$langues = get_terms(
+		array(
+			'taxonomy'   => 'langue_gbe',
+			'hide_empty' => true,
+		)
+	);
+	$lang_count = ( is_array( $langues ) && ! is_wp_error( $langues ) ) ? count( $langues ) : 0;
+
+	$stats = array(
+		array(
+			'value' => number_format_i18n( $pub ),
+			'label' => __( 'Proverbes publiés', 'gbecosmolingua' ),
+		),
+		array(
+			'value' => (string) max( 1, $lang_count ),
+			'label' => __( 'Langues gbe', 'gbecosmolingua' ),
+		),
+		array(
+			'value' => '4',
+			'label' => __( 'Traductions cibles', 'gbecosmolingua' ),
+		),
+		array(
+			'value' => '3',
+			'label' => __( 'Axes d\'analyse', 'gbecosmolingua' ),
+		),
+	);
+
+	ob_start();
+	?>
+	<div class="gbe-proverbes-banque-stats" aria-label="<?php esc_attr_e( 'Statistiques de la banque', 'gbecosmolingua' ); ?>">
+		<div class="gbe-proverbes-banque-stats__grid">
+			<?php foreach ( $stats as $stat ) : ?>
+				<div class="gbe-proverbes-banque-stats__item">
+					<p class="gbe-proverbes-banque-stats__value"><?php echo esc_html( $stat['value'] ); ?></p>
+					<p class="gbe-proverbes-banque-stats__label"><?php echo esc_html( $stat['label'] ); ?></p>
+				</div>
+			<?php endforeach; ?>
+		</div>
+	</div>
+	<?php
+	return (string) ob_get_clean();
+}
+
+/**
+ * Évite wpautop() du bloc core/shortcode sur la banque de proverbes.
+ *
+ * @param string|null $pre_render Sortie anticipée.
+ * @param array       $block      Bloc Gutenberg.
+ * @return string|null
+ */
+function gbecosmolingua_pre_render_paremiologie_banque_shortcode_block( $pre_render, $block ) {
+	if ( ( $block['blockName'] ?? '' ) !== 'core/shortcode' ) {
+		return $pre_render;
+	}
+
+	$inner = '';
+	if ( ! empty( $block['innerContent'] ) && is_array( $block['innerContent'] ) ) {
+		$inner = implode( '', $block['innerContent'] );
+	}
+	if ( '' === trim( $inner ) && ! empty( $block['innerHTML'] ) ) {
+		$inner = (string) $block['innerHTML'];
+	}
+
+	$inner = trim( $inner );
+
+	if ( '[gbe_paremiologie_banque_hero]' === $inner ) {
+		return gbecosmolingua_paremiologie_banque_hero_html( gbecosmolingua_paremiologie_banque_resolve_page() );
+	}
+
+	if ( '[gbe_paremiologie_banque_body]' === $inner ) {
+		return gbecosmolingua_paremiologie_banque_body_html( gbecosmolingua_paremiologie_banque_resolve_page() );
+	}
+
+	if ( str_contains( $inner, 'gbe-proverbes-page-hero' ) || str_contains( $inner, 'gbe-proverbes-banque-body' ) ) {
+		return $inner;
+	}
+
+	return $pre_render;
+}
+add_filter( 'pre_render_block', 'gbecosmolingua_pre_render_paremiologie_banque_shortcode_block', 10, 2 );
+
+/**
+ * Shortcode : hero banque de proverbes.
+ *
+ * @return string
+ */
+function gbecosmolingua_shortcode_paremiologie_banque_hero() {
+	return gbecosmolingua_paremiologie_banque_hero_html();
+}
+
+/**
+ * Shortcode : contenu banque de proverbes.
+ *
+ * @return string
+ */
+function gbecosmolingua_shortcode_paremiologie_banque_body() {
+	return gbecosmolingua_paremiologie_banque_body_html();
+}
+
+/**
  * Grille sous-thèmes.
  *
  * @param array<string, mixed> $section Section hub.

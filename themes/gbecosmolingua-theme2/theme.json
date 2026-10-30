@@ -1,0 +1,141 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.7/theme.json",
+	"version": 3,
+	"settings": {
+		"layout": {
+			"contentSize": "1100px",
+			"wideSize": "1400px"
+		},
+		"color": {
+			"palette": [
+				{
+					"color": "#0D1B3D",
+					"name": "Bleu nuit",
+					"slug": "gbe-navy"
+				},
+				{
+					"color": "#F2E9D8",
+					"name": "Sable ivoire",
+					"slug": "gbe-sand"
+				},
+				{
+					"color": "#D99A2B",
+					"name": "Ocre doré",
+					"slug": "gbe-gold"
+				},
+				{
+					"color": "#1E5A3A",
+					"name": "Vert forêt",
+					"slug": "gbe-green"
+				},
+				{
+					"color": "#B87A1F",
+					"name": "Ocre foncé",
+					"slug": "gbe-copper"
+				},
+				{
+					"color": "#061022",
+					"name": "Encre",
+					"slug": "gbe-ink"
+				},
+				{
+					"color": "#ffffff",
+					"name": "Blanc",
+					"slug": "gbe-white"
+				}
+			]
+		}
+	},
+	"styles": {
+		"color": {
+			"background": "var(--wp--preset--color--gbe-white)",
+			"text": "var(--wp--preset--color--gbe-ink)"
+		},
+		"elements": {
+			"link": {
+				"color": {
+					"text": "var(--wp--preset--color--gbe-gold)"
+				}
+			},
+			"heading": {
+				"color": {
+					"text": "var(--wp--preset--color--gbe-navy)"
+				}
+			}
+		}
+	},
+	"templateParts": [
+		{
+			"area": "header",
+			"name": "header",
+			"title": "En-tête GbeCosmoLingua"
+		},
+		{
+			"area": "footer",
+			"name": "footer",
+			"title": "Pied de page GbeCosmoLingua"
+		}
+	],
+	"customTemplates": [
+		{
+			"name": "page-le-gbe",
+			"title": "Hub Gbe",
+			"postTypes": [ "page" ]
+		},
+		{
+			"name": "page-cultures-gbe",
+			"title": "Hub Cultures Gbe",
+			"postTypes": [ "page" ]
+		},
+		{
+			"name": "page-culture-rubrique",
+			"title": "Rubrique Cultures Gbe",
+			"postTypes": [ "page" ]
+		},
+		{
+			"name": "page-xotutu",
+			"title": "Hub Xótùtù",
+			"postTypes": [ "page" ]
+		},
+		{
+			"name": "page-onomastique",
+			"title": "Hub Onomastique",
+			"postTypes": [ "page" ]
+		},
+		{
+			"name": "page-linguistique",
+			"title": "Hub Linguistique",
+			"postTypes": [ "page" ]
+		},
+		{
+			"name": "page-paremiologie",
+			"title": "Hub Paremiologie",
+			"postTypes": [ "page" ]
+		},
+		{
+			"name": "page-recherche-innovation",
+			"title": "Hub Recherche et Innovation",
+			"postTypes": [ "page" ]
+		},
+		{
+			"name": "page-sejours-mobilite",
+			"title": "Hub Séjours et Mobilité",
+			"postTypes": [ "page" ]
+		},
+		{
+			"name": "page-partenaires",
+			"title": "Hub Partenaires",
+			"postTypes": [ "page" ]
+		},
+		{
+			"name": "page-nous-soutenir",
+			"title": "Hub Nous Soutenir",
+			"postTypes": [ "page" ]
+		},
+		{
+			"name": "page-philosophie",
+			"title": "Hub Notre philosophie",
+			"postTypes": [ "page" ]
+		}
+	]
+}

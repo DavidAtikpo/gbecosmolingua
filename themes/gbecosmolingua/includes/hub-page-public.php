@@ -84,9 +84,48 @@ function gbecosmolingua_public_page_excerpt_text( $page ) {
 	if ( has_excerpt( $page ) ) {
 		return get_the_excerpt( $page );
 	}
-	$content = trim( wp_strip_all_tags( $page->post_content ) );
+	$content = trim( wp_strip_all_tags( strip_shortcodes( $page->post_content ) ) );
 	if ( '' === $content ) {
 		return '';
 	}
 	return wp_trim_words( $content, 35, '…' );
+}
+
+/**
+ * Indique si le HTML provient d'un bloc chapitre (.gbe-chapter).
+ *
+ * @param string $html Contenu HTML.
+ * @return bool
+ */
+function gbecosmolingua_is_hub_chapter_html( $html ) {
+	return str_contains( (string) $html, 'gbe-chapter' );
+}
+
+/**
+ * Gabarit pleine largeur identique aux pages chapitre (page-le-gbe-chapter).
+ *
+ * @param string $html Contenu filtré.
+ * @param string $slug Slug hub (classe CSS optionnelle).
+ * @return string
+ */
+function gbecosmolingua_hub_chapter_body_html( $html, $slug = '' ) {
+	$html = trim( (string) $html );
+	if ( '' === $html ) {
+		return '';
+	}
+
+	if ( ! gbecosmolingua_is_hub_chapter_html( $html ) ) {
+		return $html;
+	}
+
+	$wrap_class = 'gbe-chapter-wrap gbe-chapter-wrap--hub';
+	if ( '' !== $slug ) {
+		$wrap_class .= ' gbe-chapter-wrap--' . sanitize_html_class( $slug );
+	}
+
+	if ( function_exists( 'gbe_le_gbe_enrich_chapter_html' ) ) {
+		$html = gbe_le_gbe_enrich_chapter_html( $html, $slug );
+	}
+
+	return '<div class="' . esc_attr( $wrap_class ) . '"><article class="gbe-chapter-article alignwide">' . $html . '</article></div>';
 }

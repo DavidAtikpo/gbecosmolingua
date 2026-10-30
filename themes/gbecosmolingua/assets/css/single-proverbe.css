@@ -1,0 +1,312 @@
+
+/* —— Fiche proverbe (single) —— */
+.gbe-main--proverbe-single {
+	padding: 0 !important;
+	gap: 0;
+	max-width: none;
+	overflow-x: clip;
+	background: var(--gbe-sand, #f2e9d8);
+}
+
+.gbe-main--proverbe-single.is-layout-flow > * {
+	margin-block-start: 0;
+}
+
+.gbe-proverbe-single {
+	color: var(--gbe-ink, #061022);
+}
+
+/* Hero — dimensions et fond : hero-header-flush.css */
+.gbe-proverbe-single__hero {
+	position: relative;
+	color: var(--gbe-white, #fff);
+	text-align: center;
+}
+
+.gbe-proverbe-single__hero-inner {
+	max-width: 820px;
+	margin: 0 auto;
+}
+
+.gbe-proverbe-single__breadcrumb {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 0.35rem 0.5rem;
+	margin: 0 0 1.25rem;
+	font-size: 0.82rem;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: rgba(255, 250, 240, 0.78);
+}
+
+.gbe-proverbe-single__breadcrumb a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.gbe-proverbe-single__breadcrumb a:hover,
+.gbe-proverbe-single__breadcrumb a:focus-visible {
+	color: var(--gbe-gold, #d99a2b);
+}
+
+.gbe-proverbe-single__kicker {
+	margin: 0 0 1rem;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.5rem;
+}
+
+.gbe-proverbe-single__lang {
+	display: inline-block;
+	padding: 0.28rem 0.85rem;
+	border-radius: 999px;
+	background: rgba(255, 250, 240, 0.14);
+	border: 1px solid rgba(255, 250, 240, 0.28);
+	font-size: 0.78rem;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+.gbe-proverbe-single__quote {
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+
+.gbe-proverbe-single__quote p {
+	margin: 0;
+	font-family: Georgia, "Times New Roman", serif;
+	font-size: clamp(1.35rem, 3.2vw, 2rem);
+	line-height: 1.55;
+	font-style: italic;
+	color: var(--gbe-white, #fff);
+	text-wrap: pretty;
+}
+
+.gbe-proverbe-single__meta {
+	margin: 1.1rem 0 0;
+	font-size: 0.88rem;
+	color: rgba(255, 250, 240, 0.78);
+}
+
+/* Corps */
+.gbe-proverbe-single__body {
+	max-width: 960px;
+	margin: 0 auto;
+	padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 3vw, 1.5rem) clamp(2rem, 5vw, 3rem);
+}
+
+.gbe-proverbe-single__section {
+	margin-bottom: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+.gbe-proverbe-single__section-title {
+	margin: 0 0 1rem;
+	font-family: Georgia, "Times New Roman", serif;
+	font-size: clamp(1.35rem, 2.5vw, 1.65rem);
+	font-weight: 400;
+	color: var(--gbe-navy, #0d1b3d);
+}
+
+.gbe-proverbe-single__section-title--panels {
+	margin-bottom: 1.15rem;
+}
+
+/* Traductions */
+.gbe-proverbe-single__translations {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+	gap: 1rem;
+}
+
+.gbe-proverbe-single__translation {
+	padding: 1.15rem 1.25rem;
+	border-radius: 14px;
+	background: var(--gbe-white, #fff);
+	border: 1px solid rgba(13, 27, 61, 0.08);
+	box-shadow: 0 8px 24px rgba(13, 27, 61, 0.06);
+}
+
+.gbe-proverbe-single__translation--fr {
+	border-top: 3px solid var(--gbe-gold, #d99a2b);
+}
+
+.gbe-proverbe-single__translation-label {
+	margin: 0 0 0.55rem;
+	font-size: 0.75rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--gbe-green, #1e5a3a);
+}
+
+.gbe-proverbe-single__translation-text {
+	margin: 0;
+	line-height: 1.6;
+	color: var(--gbe-ink, #061022);
+}
+
+/* Panneaux */
+.gbe-proverbe-single__panels {
+	display: grid;
+	gap: 1rem;
+	margin-bottom: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+.gbe-proverbe-single__panel {
+	padding: 1.25rem 1.35rem;
+	border-radius: 14px;
+	background: var(--gbe-white, #fff);
+	border: 1px solid rgba(13, 27, 61, 0.08);
+	box-shadow: 0 6px 20px rgba(13, 27, 61, 0.05);
+}
+
+.gbe-proverbe-single__panel--accent {
+	border-left: 4px solid var(--gbe-gold, #d99a2b);
+	background: linear-gradient(135deg, #fff 0%, #faf6ee 100%);
+}
+
+.gbe-proverbe-single__panel-title {
+	margin: 0 0 0.65rem;
+	font-size: 0.95rem;
+	font-weight: 700;
+	color: var(--gbe-navy, #0d1b3d);
+}
+
+.gbe-proverbe-single__panel-body {
+	margin: 0;
+	line-height: 1.65;
+	color: #2a3348;
+}
+
+/* Analyses */
+.gbe-proverbe-single__analyses {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+	gap: 1rem;
+}
+
+.gbe-proverbe-single__analysis {
+	padding: 1.15rem 1.25rem;
+	border-radius: 12px;
+	background: rgba(13, 27, 61, 0.04);
+	border: 1px solid rgba(13, 27, 61, 0.08);
+}
+
+.gbe-proverbe-single__analysis-title {
+	margin: 0 0 0.5rem;
+	font-size: 0.88rem;
+	font-weight: 700;
+	color: var(--gbe-green, #1e5a3a);
+}
+
+.gbe-proverbe-single__analysis-body {
+	margin: 0;
+	font-size: 0.95rem;
+	line-height: 1.6;
+	color: #2a3348;
+}
+
+.gbe-proverbe-single__empty {
+	margin: 0;
+	padding: 1.25rem 1.35rem;
+	border-radius: 12px;
+	background: rgba(255, 255, 255, 0.72);
+	border: 1px dashed rgba(13, 27, 61, 0.16);
+	color: #4a5568;
+	text-align: center;
+	line-height: 1.55;
+}
+
+/* Pied de fiche */
+.gbe-proverbe-single__footer {
+	max-width: 960px;
+	margin: 0 auto;
+	padding: 0 clamp(1rem, 3vw, 1.5rem) clamp(2.5rem, 5vw, 3.5rem);
+}
+
+.gbe-proverbe-single__back {
+	display: inline-flex;
+	align-items: center;
+	margin-bottom: 1.25rem;
+	padding: 0.65rem 1.1rem;
+	border-radius: 999px;
+	background: var(--gbe-white, #fff);
+	border: 1px solid rgba(13, 27, 61, 0.12);
+	color: var(--gbe-navy, #0d1b3d) !important;
+	font-weight: 600;
+	font-size: 0.92rem;
+	text-decoration: none !important;
+	box-shadow: 0 4px 14px rgba(13, 27, 61, 0.06);
+	transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.gbe-proverbe-single__back:hover,
+.gbe-proverbe-single__back:focus-visible {
+	background: var(--gbe-gold, #d99a2b);
+	border-color: var(--gbe-gold, #d99a2b);
+	color: var(--gbe-ink, #061022) !important;
+	outline: none;
+}
+
+.gbe-proverbe-single__pager {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1rem;
+}
+
+.gbe-proverbe-single__pager-link {
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+	padding: 1rem 1.15rem;
+	border-radius: 14px;
+	background: var(--gbe-white, #fff);
+	border: 1px solid rgba(13, 27, 61, 0.1);
+	color: inherit !important;
+	text-decoration: none !important;
+	box-shadow: 0 6px 18px rgba(13, 27, 61, 0.05);
+	transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.gbe-proverbe-single__pager-link:hover,
+.gbe-proverbe-single__pager-link:focus-visible {
+	border-color: var(--gbe-gold, #d99a2b);
+	transform: translateY(-2px);
+	outline: none;
+}
+
+.gbe-proverbe-single__pager-link--next {
+	text-align: right;
+}
+
+.gbe-proverbe-single__pager-kicker {
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--gbe-green, #1e5a3a);
+}
+
+.gbe-proverbe-single__pager-title {
+	font-family: Georgia, "Times New Roman", serif;
+	font-size: 0.95rem;
+	line-height: 1.45;
+	font-style: italic;
+	color: var(--gbe-navy, #0d1b3d);
+}
+
+@media (max-width: 640px) {
+	.gbe-proverbe-single__pager {
+		grid-template-columns: 1fr;
+	}
+
+	.gbe-proverbe-single__pager-link--next {
+		text-align: left;
+	}
+}

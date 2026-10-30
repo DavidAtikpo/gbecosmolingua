@@ -7,15 +7,20 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'GBECOSMOLINGUA_VERSION', '1.14.5' );
+define( 'GBECOSMOLINGUA_VERSION', '1.20.7' );
 
 require_once get_stylesheet_directory() . '/includes/hub-page-public.php';
 require_once get_stylesheet_directory() . '/includes/hub-composer-public.php';
 require_once get_stylesheet_directory() . '/includes/home-assets.php';
 require_once get_stylesheet_directory() . '/includes/home-composer-public.php';
+require_once get_stylesheet_directory() . '/includes/culture-rubrique-public.php';
 require_once get_stylesheet_directory() . '/includes/le-gbe-public.php';
 require_once get_stylesheet_directory() . '/includes/xotutu-hub.php';
+require_once get_stylesheet_directory() . '/includes/onomastique-hub.php';
+require_once get_stylesheet_directory() . '/includes/linguistique-hub.php';
+require_once get_stylesheet_directory() . '/includes/le-gbe-chapter.php';
 require_once get_stylesheet_directory() . '/includes/paremiologie-hub.php';
+require_once get_stylesheet_directory() . '/includes/proverbe-single-public.php';
 require_once get_stylesheet_directory() . '/includes/recherche-innovation-hub.php';
 require_once get_stylesheet_directory() . '/includes/hub-registry.php';
 
@@ -45,6 +50,13 @@ function gbecosmolingua_enqueue_styles() {
 	);
 
 	wp_enqueue_style(
+		'gbecosmolingua-chrome-navy',
+		get_stylesheet_directory_uri() . '/assets/css/theme-chrome-navy.css',
+		array( 'gbecosmolingua-custom' ),
+		GBECOSMOLINGUA_VERSION
+	);
+
+	wp_enqueue_style(
 		'gbecosmolingua-culture-gbe',
 		get_stylesheet_directory_uri() . '/assets/css/culture-gbe.css',
 		array( 'gbecosmolingua-custom' ),
@@ -62,6 +74,45 @@ function gbecosmolingua_enqueue_styles() {
 		'gbecosmolingua-paremiologie-hub',
 		get_stylesheet_directory_uri() . '/assets/css/paremiologie-hub.css',
 		array( 'gbecosmolingua-custom', 'gbecosmolingua-culture-gbe' ),
+		GBECOSMOLINGUA_VERSION
+	);
+
+	if ( is_singular( 'proverbe' ) ) {
+		wp_enqueue_style(
+			'gbecosmolingua-single-proverbe',
+			get_stylesheet_directory_uri() . '/assets/css/single-proverbe.css',
+			array( 'gbecosmolingua-paremiologie-hub', 'gbecosmolingua-hero-header-flush' ),
+			GBECOSMOLINGUA_VERSION
+		);
+	}
+
+	if ( gbecosmolingua_should_load_banque_proverbes_assets() ) {
+		wp_enqueue_style(
+			'gbecosmolingua-banque-proverbes',
+			get_stylesheet_directory_uri() . '/assets/css/banque-proverbes.css',
+			array( 'gbecosmolingua-paremiologie-hub', 'gbecosmolingua-hero-header-flush', 'gbe-frontend' ),
+			GBECOSMOLINGUA_VERSION
+		);
+	}
+
+	wp_enqueue_style(
+		'gbecosmolingua-onomastique-hub',
+		get_stylesheet_directory_uri() . '/assets/css/onomastique-hub.css',
+		array( 'gbecosmolingua-custom', 'gbecosmolingua-culture-gbe' ),
+		GBECOSMOLINGUA_VERSION
+	);
+
+	wp_enqueue_style(
+		'gbecosmolingua-linguistique-hub',
+		get_stylesheet_directory_uri() . '/assets/css/linguistique-hub.css',
+		array( 'gbecosmolingua-custom', 'gbecosmolingua-culture-gbe' ),
+		GBECOSMOLINGUA_VERSION
+	);
+
+	wp_enqueue_style(
+		'gbecosmolingua-le-gbe-chapter',
+		get_stylesheet_directory_uri() . '/assets/css/le-gbe-chapter.css',
+		array( 'gbecosmolingua-custom', 'gbecosmolingua-linguistique-hub' ),
 		GBECOSMOLINGUA_VERSION
 	);
 
@@ -88,6 +139,25 @@ function gbecosmolingua_enqueue_styles() {
 			GBECOSMOLINGUA_VERSION
 		);
 	}
+
+	wp_enqueue_style(
+		'gbecosmolingua-hero-header-flush',
+		get_stylesheet_directory_uri() . '/assets/css/hero-header-flush.css',
+		array(
+			'gbecosmolingua-custom',
+			'gbecosmolingua-chrome-navy',
+			'gbecosmolingua-culture-gbe',
+			'gbecosmolingua-xotutu-hub',
+			'gbecosmolingua-paremiologie-hub',
+			'gbecosmolingua-onomastique-hub',
+			'gbecosmolingua-linguistique-hub',
+			'gbecosmolingua-le-gbe-chapter',
+			'gbecosmolingua-recherche-hub',
+			'gbecosmolingua-site-hubs',
+			'gbecosmolingua-hub-composer',
+		),
+		GBECOSMOLINGUA_VERSION
+	);
 }
 add_action( 'wp_enqueue_scripts', 'gbecosmolingua_enqueue_styles' );
 
@@ -100,7 +170,7 @@ function gbecosmolingua_enqueue_header_offset_script() {
 		get_stylesheet_directory_uri() . '/assets/js/header-offset.js',
 		array(),
 		GBECOSMOLINGUA_VERSION,
-		true
+		false
 	);
 
 	wp_enqueue_script(
@@ -193,7 +263,7 @@ function gbecosmolingua_enqueue_header_offset_script() {
 add_action( 'wp_enqueue_scripts', 'gbecosmolingua_enqueue_header_offset_script' );
 
 /**
- * Assigne le modèle « Hub Le Gbe » à la page le-gbe après mise à jour du thème.
+ * Assigne le modèle « Hub Gbe » à la page le-gbe après mise à jour du thème.
  */
 function gbecosmolingua_assign_le_gbe_page_template() {
 	$flag = 'gbecosmolingua_le_gbe_template_' . GBECOSMOLINGUA_VERSION;
@@ -247,6 +317,216 @@ function gbecosmolingua_assign_paremiologie_page_template() {
 add_action( 'init', 'gbecosmolingua_assign_paremiologie_page_template', 25 );
 
 /**
+ * Assigne le modèle banque de proverbes à la page paremiologie/banque-numerique-proverbes.
+ */
+function gbecosmolingua_assign_paremiologie_banque_page_template() {
+	$flag = 'gbecosmolingua_paremiologie_banque_tpl_v1';
+	if ( get_option( $flag ) ) {
+		return;
+	}
+
+	$page = get_page_by_path( 'paremiologie/banque-numerique-proverbes' );
+	if ( $page ) {
+		update_post_meta( $page->ID, '_wp_page_template', 'page-paremiologie-banque' );
+	}
+
+	update_option( $flag, 1 );
+}
+add_action( 'init', 'gbecosmolingua_assign_paremiologie_banque_page_template', 25 );
+
+/**
+ * Shortcodes page banque numérique de proverbes.
+ */
+function gbecosmolingua_register_paremiologie_banque_shortcodes() {
+	add_shortcode( 'gbe_paremiologie_banque_hero', 'gbecosmolingua_shortcode_paremiologie_banque_hero' );
+	add_shortcode( 'gbe_paremiologie_banque_body', 'gbecosmolingua_shortcode_paremiologie_banque_body' );
+}
+add_action( 'init', 'gbecosmolingua_register_paremiologie_banque_shortcodes' );
+
+/**
+ * Rendu fiable des shortcodes banque dans les modèles FSE (avant la requête principale).
+ *
+ * @param string $content HTML du bloc.
+ * @param array  $block   Bloc Gutenberg.
+ * @return string
+ */
+function gbecosmolingua_render_paremiologie_banque_blocks( $content, $block ) {
+	if ( ( $block['blockName'] ?? '' ) !== 'core/shortcode' ) {
+		return $content;
+	}
+
+	$raw  = ( $block['attrs']['text'] ?? '' ) ?: ( $block['innerHTML'] ?? '' );
+	$text = trim( wp_strip_all_tags( (string) $raw ) );
+
+	if ( '[gbe_paremiologie_banque_hero]' === $text ) {
+		return gbecosmolingua_paremiologie_banque_hero_html( gbecosmolingua_paremiologie_banque_resolve_page() );
+	}
+
+	if ( '[gbe_paremiologie_banque_body]' === $text ) {
+		return gbecosmolingua_paremiologie_banque_body_html( gbecosmolingua_paremiologie_banque_resolve_page() );
+	}
+
+	return $content;
+}
+add_filter( 'render_block', 'gbecosmolingua_render_paremiologie_banque_blocks', 9, 2 );
+
+/**
+ * Shortcode fiche proverbe (single).
+ */
+function gbecosmolingua_register_proverbe_single_shortcode() {
+	add_shortcode( 'gbe_proverbe_single', 'gbecosmolingua_shortcode_proverbe_single' );
+}
+add_action( 'init', 'gbecosmolingua_register_proverbe_single_shortcode' );
+
+/**
+ * Rendu fiable du shortcode fiche proverbe dans les modèles FSE.
+ *
+ * @param string $content HTML du bloc.
+ * @param array  $block   Bloc Gutenberg.
+ * @return string
+ */
+function gbecosmolingua_render_proverbe_single_block( $content, $block ) {
+	if ( ( $block['blockName'] ?? '' ) !== 'core/shortcode' ) {
+		return $content;
+	}
+
+	$raw  = ( $block['attrs']['text'] ?? '' ) ?: ( $block['innerHTML'] ?? '' );
+	$text = trim( wp_strip_all_tags( (string) $raw ) );
+
+	if ( '[gbe_proverbe_single]' === $text ) {
+		return gbecosmolingua_proverbe_single_html();
+	}
+
+	return $content;
+}
+add_filter( 'render_block', 'gbecosmolingua_render_proverbe_single_block', 9, 2 );
+
+/**
+ * Texte brut d'un bloc core/shortcode.
+ *
+ * @param array $block Bloc Gutenberg.
+ * @return string
+ */
+function gbecosmolingua_shortcode_block_inner_text( $block ) {
+	$inner = '';
+	if ( ! empty( $block['innerContent'] ) && is_array( $block['innerContent'] ) ) {
+		$inner = implode( '', $block['innerContent'] );
+	}
+	if ( '' === trim( $inner ) && ! empty( $block['innerHTML'] ) ) {
+		$inner = (string) $block['innerHTML'];
+	}
+	return trim( $inner );
+}
+
+/**
+ * Évite wpautop() sur les shortcodes de l'en-tête (menu, logo, etc.).
+ *
+ * @param string|null $pre_render Sortie anticipée.
+ * @param array       $block      Bloc Gutenberg.
+ * @return string|null
+ */
+function gbecosmolingua_pre_render_header_shortcode_block( $pre_render, $block ) {
+	if ( ( $block['blockName'] ?? '' ) !== 'core/shortcode' ) {
+		return $pre_render;
+	}
+
+	$inner = gbecosmolingua_shortcode_block_inner_text( $block );
+	if ( '' === $inner ) {
+		return $pre_render;
+	}
+
+	if ( '[gbe_menu_principal]' === $inner && class_exists( 'GBE_Shortcodes' ) ) {
+		return GBE_Shortcodes::menu_principal();
+	}
+
+	if ( str_contains( $inner, 'gbe-main-menu' ) ) {
+		return $inner;
+	}
+
+	return $pre_render;
+}
+add_filter( 'pre_render_block', 'gbecosmolingua_pre_render_header_shortcode_block', 10, 2 );
+
+/**
+ * Charger les assets banque de proverbes (détection robuste avant/après la requête).
+ *
+ * @return bool
+ */
+function gbecosmolingua_should_load_banque_proverbes_assets() {
+	if ( function_exists( 'gbecosmolingua_paremiologie_banque_resolve_page' ) ) {
+		$page = gbecosmolingua_paremiologie_banque_resolve_page();
+		if ( $page instanceof WP_Post ) {
+			return true;
+		}
+	}
+
+	if ( is_page( 'banque-numerique-proverbes' ) ) {
+		return true;
+	}
+
+	$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
+	if ( $request_uri && false !== strpos( $request_uri, 'banque-numerique-proverbes' ) ) {
+		return true;
+	}
+
+	return is_post_type_archive( 'proverbe' );
+}
+
+/**
+ * Invalide le cache de patterns après ajout des modèles banque de proverbes.
+ */
+function gbecosmolingua_flush_paremiologie_banque_pattern_cache() {
+	$flag = 'gbecosmolingua_banque_pattern_cache_v2';
+	if ( get_option( $flag ) ) {
+		return;
+	}
+
+	$theme = wp_get_theme();
+	if ( method_exists( $theme, 'delete_pattern_cache' ) ) {
+		$theme->delete_pattern_cache();
+	}
+
+	update_option( $flag, 1 );
+}
+add_action( 'after_setup_theme', 'gbecosmolingua_flush_paremiologie_banque_pattern_cache', 100 );
+
+/**
+ * Assigne le modèle hub à la page onomastique (Xótùtù).
+ */
+function gbecosmolingua_assign_onomastique_page_template() {
+	$flag = 'gbecosmolingua_onomastique_template_' . GBECOSMOLINGUA_VERSION;
+	if ( get_option( $flag ) ) {
+		return;
+	}
+
+	$page = get_page_by_path( 'xotutu/onomastique' );
+	if ( $page ) {
+		update_post_meta( $page->ID, '_wp_page_template', 'page-onomastique' );
+	}
+
+	update_option( $flag, 1 );
+}
+add_action( 'init', 'gbecosmolingua_assign_onomastique_page_template', 25 );
+
+/**
+ * Assigne le modèle hub à la page linguistique (Gbe).
+ */
+function gbecosmolingua_assign_linguistique_page_template() {
+	$flag = 'gbecosmolingua_linguistique_template_' . GBECOSMOLINGUA_VERSION;
+	if ( get_option( $flag ) ) {
+		return;
+	}
+
+	$page = get_page_by_path( 'le-gbe/linguistique' );
+	if ( $page ) {
+		update_post_meta( $page->ID, '_wp_page_template', 'page-linguistique' );
+	}
+
+	update_option( $flag, 1 );
+}
+add_action( 'init', 'gbecosmolingua_assign_linguistique_page_template', 25 );
+
+/**
  * Assigne le modèle hub à la page recherche-et-innovation.
  */
 function gbecosmolingua_assign_recherche_page_template() {
@@ -294,11 +574,26 @@ add_action( 'init', 'gbecosmolingua_assign_site_hub_page_templates', 25 );
  */
 function gbecosmolingua_culture_image( $filename ) {
 	$filename = ltrim( (string) $filename, '/' );
-	$path     = get_stylesheet_directory() . '/assets/images/culture-gbe/' . $filename;
-	if ( ! file_exists( $path ) ) {
-		return '';
+	$dirs     = array( 'culture-gbe', 'artisanat' );
+	$names    = array( $filename );
+
+	// Accepter aussi .jfif / .jpeg si on demande un .jpg.
+	if ( preg_match( '/\.jpg$/i', $filename ) ) {
+		$base = preg_replace( '/\.jpg$/i', '', $filename );
+		$names[] = $base . '.jfif';
+		$names[] = $base . '.jpeg';
 	}
-	return get_stylesheet_directory_uri() . '/assets/images/culture-gbe/' . $filename;
+
+	foreach ( $dirs as $dir ) {
+		foreach ( array_unique( $names ) as $name ) {
+			$path = get_stylesheet_directory() . '/assets/images/' . $dir . '/' . $name;
+			if ( file_exists( $path ) ) {
+				return get_stylesheet_directory_uri() . '/assets/images/' . $dir . '/' . $name;
+			}
+		}
+	}
+
+	return '';
 }
 
 /**
@@ -698,12 +993,14 @@ function gbecosmolingua_culture_hub_sections() {
 			$mod = 'savoirs';
 		}
 
+		$thumbs = gbecosmolingua_culture_hub_thumb_map();
+
 		$by_slug[ $slug ] = array(
 			'id'      => 'gbe-culture-' . sanitize_title( $slug ),
 			'page_id' => (int) $child->ID,
 			'title'   => $child->post_title,
 			'slug'    => $slug,
-			'thumb'   => '',
+			'thumb'   => isset( $thumbs[ $slug ] ) ? $thumbs[ $slug ] : 'arts-sculpture.jpg',
 			'mod'     => $mod,
 			'layout'  => 'danse' === $slug ? 'banner' : 'split',
 			'intro'   => $intro,
@@ -742,6 +1039,9 @@ function gbecosmolingua_culture_hub_more_links() {
  */
 function gbecosmolingua_culture_subtopic_thumb( $label, $parent_slug ) {
 	$by_label = array(
+		'Techniques artisanales'          => 'artisanat-techniques.jpg',
+		'Savoir-faire traditionnels'      => 'artisanat-savoir-faire.jpg',
+		'Transmission intergénérationnelle' => 'artisanat-transmission.jpg',
 		'Architecture vernaculaire'     => 'architecture.jpg',
 		'Habitat traditionnel'          => 'architecture.jpg',
 		'Espaces sacrés'                => 'croyances-shrine.jpg',
@@ -847,6 +1147,44 @@ function gbecosmolingua_assign_cultures_gbe_page_template() {
 	update_option( $flag, 1 );
 }
 add_action( 'init', 'gbecosmolingua_assign_cultures_gbe_page_template', 25 );
+
+/**
+ * Assigne le modèle rubrique aux pages sous Cultures Gbe.
+ */
+function gbecosmolingua_assign_culture_rubrique_page_templates() {
+	$flag = 'gbecosmolingua_culture_rubrique_tpl_' . GBECOSMOLINGUA_VERSION;
+	if ( get_option( $flag ) ) {
+		return;
+	}
+
+	$parent = get_page_by_path( 'cultures-gbe' );
+	if ( ! $parent ) {
+		return;
+	}
+
+	$children = get_pages(
+		array(
+			'child_of'    => (int) $parent->ID,
+			'post_status' => 'publish',
+		)
+	);
+
+	foreach ( $children as $page ) {
+		update_post_meta( $page->ID, '_wp_page_template', 'page-culture-rubrique' );
+	}
+
+	update_option( $flag, 1 );
+}
+add_action( 'init', 'gbecosmolingua_assign_culture_rubrique_page_templates', 25 );
+
+/**
+ * Shortcodes dynamiques pour les pages rubrique Cultures Gbe.
+ */
+function gbecosmolingua_register_culture_rubrique_shortcodes() {
+	add_shortcode( 'gbe_culture_rubrique_hero', 'gbecosmolingua_shortcode_culture_rubrique_hero' );
+	add_shortcode( 'gbe_culture_rubrique_body', 'gbecosmolingua_shortcode_culture_rubrique_body' );
+}
+add_action( 'init', 'gbecosmolingua_register_culture_rubrique_shortcodes' );
 
 /**
  * Register block pattern category.
@@ -1004,7 +1342,7 @@ function gbecosmolingua_admin_footer_text() {
 add_filter( 'admin_footer_text', 'gbecosmolingua_admin_footer_text' );
 
 /**
- * Scripts/styles page Le Gbe (hero carousel + animations cartes).
+ * Scripts/styles page Gbe (hero carousel + animations cartes).
  */
 function gbecosmolingua_enqueue_le_gbe_public_assets() {
 	if ( ! gbecosmolingua_is_main_menu_hub_page() ) {

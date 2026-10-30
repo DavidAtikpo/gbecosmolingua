@@ -1,0 +1,520 @@
+
+/* —— Banque numérique de proverbes —— */
+.gbe-proverbes-banque-body {
+	display: flex;
+	flex-direction: column;
+	gap: clamp(1.75rem, 4vw, 2.5rem);
+	max-width: 1140px;
+	margin: 0 auto;
+	padding: clamp(1.5rem, 3vw, 2rem) clamp(1rem, 3vw, 1.5rem) clamp(3rem, 6vw, 4rem);
+}
+
+/* Stats */
+.gbe-proverbes-banque-stats {
+	margin: -2.5rem 0 0;
+	position: relative;
+	z-index: 3;
+}
+
+.gbe-proverbes-banque-stats__grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 1rem;
+	padding: 1.25rem 1.35rem;
+	border-radius: 16px;
+	background: var(--gbe-white, #fff);
+	border: 1px solid rgba(13, 27, 61, 0.08);
+	box-shadow: 0 14px 40px rgba(13, 27, 61, 0.1);
+}
+
+.gbe-proverbes-banque-stats__item {
+	text-align: center;
+	padding: 0.5rem 0.65rem;
+}
+
+.gbe-proverbes-banque-stats__value {
+	margin: 0 0 0.35rem;
+	font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+	font-weight: 700;
+	line-height: 1.1;
+	color: var(--gbe-green, #1e5a3a);
+}
+
+.gbe-proverbes-banque-stats__label {
+	margin: 0;
+	font-size: 0.8rem;
+	line-height: 1.4;
+	color: var(--gbe-ink, #061022);
+}
+
+/* Archive */
+.gbe-proverbes-archive {
+	display: flex;
+	flex-direction: column;
+	gap: clamp(1.35rem, 3vw, 2rem);
+}
+
+.gbe-proverbes-banque-body .gbe-proverbes-archive {
+	max-width: none;
+	margin: 0;
+	padding: 0;
+}
+
+.gbe-proverbes-archive__head {
+	margin: 0;
+}
+
+.gbe-proverbes-archive__summary {
+	margin: 0;
+	font-size: 0.95rem;
+	font-weight: 600;
+	color: var(--gbe-navy, #0d1b3d);
+}
+
+/* Filtres */
+.gbe-proverbes-archive .gbe-filters--proverbes {
+	display: grid !important;
+	grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) auto;
+	gap: 1rem 1.25rem;
+	align-items: end;
+	margin: 0 !important;
+	padding: 1.25rem 1.35rem;
+	border-radius: 16px;
+	background: var(--gbe-white, #fff);
+	border: 1px solid rgba(13, 27, 61, 0.08);
+	box-shadow: 0 10px 32px rgba(13, 27, 61, 0.08);
+}
+
+.gbe-proverbes-archive .gbe-filters__field label {
+	display: block;
+	margin-bottom: 0.45rem;
+	font-size: 0.78rem;
+	font-weight: 700;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: var(--gbe-green, #1e5a3a);
+}
+
+.gbe-proverbes-archive .gbe-filters__field input,
+.gbe-proverbes-archive .gbe-filters__field select {
+	width: 100%;
+	min-width: 0;
+	padding: 0.72rem 0.9rem;
+	border: 1px solid rgba(13, 27, 61, 0.14);
+	border-radius: 10px;
+	background: #fff;
+	color: var(--gbe-ink, #061022);
+	font-size: 0.95rem;
+}
+
+.gbe-proverbes-archive .gbe-filters__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.gbe-proverbes-archive .gbe-btn--primary {
+	border: none;
+	border-radius: 10px;
+	padding: 0.72rem 1.25rem;
+	background: var(--gbe-gold, #d99a2b);
+	color: var(--gbe-navy, #0d1b3d);
+	font-weight: 700;
+	cursor: pointer;
+	transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.gbe-proverbes-archive .gbe-btn--primary:hover,
+.gbe-proverbes-archive .gbe-btn--primary:focus-visible {
+	background: #e8ad42;
+	transform: translateY(-1px);
+	outline: none;
+}
+
+.gbe-proverbes-archive .gbe-filters__reset {
+	font-size: 0.88rem;
+	font-weight: 600;
+	color: var(--gbe-navy, #0d1b3d);
+	text-decoration: none;
+}
+
+.gbe-proverbes-archive .gbe-filters__reset:hover,
+.gbe-proverbes-archive .gbe-filters__reset:focus-visible {
+	color: var(--gbe-gold, #d99a2b);
+}
+
+/* Grille — cartes à hauteur naturelle (pas de vide interne) */
+.gbe-proverbes-archive .gbe-cards-grid--proverbes {
+	display: grid !important;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)) !important;
+	grid-auto-rows: auto;
+	gap: 1.5rem !important;
+	align-items: start;
+}
+
+.gbe-proverbes-archive .gbe-card--proverbe,
+.gbe-proverbes-archive .gbe-proverbe-card {
+	display: flex !important;
+	flex-direction: column;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: none !important;
+	border-left: none !important;
+	background: transparent !important;
+	box-shadow: none !important;
+	border-radius: 0;
+	height: auto;
+	min-height: 0;
+}
+
+.gbe-proverbes-archive .gbe-proverbe-card {
+	padding: 1.25rem 1.3rem 1.2rem !important;
+	border-radius: 14px !important;
+	background: var(--gbe-white, #fff) !important;
+	border: 1px solid rgba(13, 27, 61, 0.1) !important;
+	border-left: 4px solid var(--gbe-gold, #d99a2b) !important;
+	box-shadow: 0 6px 20px rgba(13, 27, 61, 0.06);
+	transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gbe-proverbes-archive .gbe-proverbe-card:hover,
+.gbe-proverbes-archive .gbe-proverbe-card:focus-within {
+	border-color: rgba(13, 27, 61, 0.14) !important;
+	border-left-color: var(--gbe-gold, #d99a2b) !important;
+	transform: translateY(-3px);
+	box-shadow: 0 14px 32px rgba(13, 27, 61, 0.1);
+}
+
+.gbe-proverbes-archive .gbe-proverbe-card__body {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
+	min-height: 0;
+}
+
+.gbe-proverbes-archive .gbe-proverbe-card__tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+	margin: 0 0 0.75rem;
+}
+
+.gbe-proverbes-archive .gbe-proverbe-card__tag {
+	display: inline-block;
+	padding: 0.24rem 0.65rem;
+	border-radius: 999px;
+	background: rgba(30, 90, 58, 0.1);
+	border: 1px solid rgba(30, 90, 58, 0.16);
+	font-size: 0.68rem;
+	font-weight: 700;
+	letter-spacing: 0.07em;
+	text-transform: uppercase;
+	color: var(--gbe-green, #1e5a3a) !important;
+}
+
+.gbe-proverbes-archive .gbe-proverbe-card__quote {
+	position: relative;
+	margin: 0 0 0.85rem !important;
+	padding: 0 0 0 0.15rem !important;
+	border: none !important;
+	overflow: hidden;
+}
+
+.gbe-proverbes-archive .gbe-proverbe-card__quote::before {
+	content: "\201C";
+	position: absolute;
+	top: -0.15rem;
+	left: -0.05rem;
+	font-family: Georgia, "Times New Roman", serif;
+	font-size: 2rem;
+	line-height: 1;
+	font-style: normal;
+	color: rgba(217, 154, 43, 0.45);
+	pointer-events: none;
+}
+
+.gbe-proverbes-archive .gbe-proverbe-card__quote p {
+	margin: 0 !important;
+	padding: 0 0 0 1.1rem;
+}
+
+.gbe-proverbes-archive .gbe-proverbe-card__quote-link {
+	display: block;
+	font-family: Georgia, "Times New Roman", serif;
+	font-size: 1.02rem;
+	line-height: 1.58;
+	font-style: italic;
+	color: var(--gbe-navy, #0d1b3d) !important;
+	text-decoration: none !important;
+	max-height: 9.6em;
+	overflow: hidden;
+}
+
+.gbe-proverbes-archive .gbe-proverbe-card__quote-link:hover,
+.gbe-proverbes-archive .gbe-proverbe-card__quote-link:focus-visible {
+	color: var(--gbe-green-dark, #1a4a2e) !important;
+	text-decoration: underline !important;
+	text-underline-offset: 0.12em;
+}
+
+.gbe-proverbes-archive .gbe-proverbe-card__excerpt {
+	margin: 0 0 0.85rem !important;
+	padding-top: 0.75rem;
+	border-top: 1px solid rgba(13, 27, 61, 0.08);
+	font-size: 0.88rem;
+	line-height: 1.55;
+	color: #5a6478 !important;
+}
+
+.gbe-proverbes-archive .gbe-proverbe-card__footer {
+	margin-top: auto;
+	padding-top: 0.85rem;
+	border-top: 1px solid rgba(13, 27, 61, 0.08);
+	flex-shrink: 0;
+}
+
+.gbe-proverbes-archive .gbe-proverbe-card__cta {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.25rem;
+	padding: 0.5rem 0.95rem;
+	border-radius: 999px;
+	background: rgba(30, 90, 58, 0.1);
+	border: 1px solid rgba(30, 90, 58, 0.18);
+	font-size: 0.82rem;
+	font-weight: 700;
+	line-height: 1.35;
+	color: var(--gbe-green, #1e5a3a) !important;
+	text-decoration: none !important;
+	transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.gbe-proverbes-archive .gbe-proverbe-card__cta:hover,
+.gbe-proverbes-archive .gbe-proverbe-card__cta:focus-visible {
+	background: var(--gbe-gold, #d99a2b);
+	border-color: var(--gbe-gold, #d99a2b);
+	color: var(--gbe-navy, #0d1b3d) !important;
+	outline: none;
+}
+
+/* Legacy markup (anciennes cartes) — compatibilité */
+.gbe-proverbes-archive .gbe-card__surface {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+	height: auto;
+	min-height: 0;
+	padding: 1.25rem 1.3rem 1.2rem;
+	border-radius: 14px;
+	background: var(--gbe-white, #fff);
+	border: 1px solid rgba(13, 27, 61, 0.1);
+	border-left: 4px solid var(--gbe-gold, #d99a2b);
+	box-shadow: 0 6px 20px rgba(13, 27, 61, 0.06);
+	color: var(--gbe-navy, #0d1b3d);
+	text-decoration: none;
+	overflow: visible;
+	transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gbe-proverbes-archive .gbe-card__surface:hover,
+.gbe-proverbes-archive .gbe-card__surface:focus-visible {
+	border-color: rgba(13, 27, 61, 0.14);
+	border-left-color: var(--gbe-gold, #d99a2b);
+	transform: translateY(-3px);
+	box-shadow: 0 14px 32px rgba(13, 27, 61, 0.1);
+	outline: none;
+}
+
+.gbe-proverbes-archive .gbe-card__head {
+	margin: 0 0 0.75rem;
+	padding: 0;
+}
+
+.gbe-proverbes-archive .gbe-card__tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+}
+
+.gbe-proverbes-archive .gbe-tag {
+	display: inline-block;
+	padding: 0.24rem 0.65rem;
+	border-radius: 999px;
+	background: rgba(30, 90, 58, 0.1);
+	border: 1px solid rgba(30, 90, 58, 0.16);
+	font-size: 0.68rem;
+	font-weight: 700;
+	letter-spacing: 0.07em;
+	text-transform: uppercase;
+	color: var(--gbe-green, #1e5a3a);
+}
+
+.gbe-proverbes-archive .gbe-card__quote {
+	position: relative;
+	margin: 0 0 0.85rem !important;
+	padding: 0 0 0 0.15rem !important;
+	border: none !important;
+	flex: 0 0 auto;
+	overflow: hidden;
+}
+
+.gbe-proverbes-archive .gbe-card__quote::before {
+	content: "\201C";
+	position: absolute;
+	top: -0.15rem;
+	left: -0.05rem;
+	font-family: Georgia, "Times New Roman", serif;
+	font-size: 2rem;
+	line-height: 1;
+	font-style: normal;
+	color: rgba(217, 154, 43, 0.45);
+	pointer-events: none;
+}
+
+.gbe-proverbes-archive .gbe-card__quote p {
+	margin: 0 !important;
+	padding: 0 0 0 1.1rem;
+	font-family: Georgia, "Times New Roman", serif;
+	font-size: 1.02rem;
+	line-height: 1.58;
+	font-style: italic;
+	color: var(--gbe-navy, #0d1b3d) !important;
+	display: block;
+	max-height: 9.6em;
+	overflow: hidden;
+}
+
+.gbe-proverbes-archive .gbe-card__excerpt {
+	margin: 0 0 0.85rem !important;
+	padding-top: 0.75rem;
+	border-top: 1px solid rgba(13, 27, 61, 0.08);
+	font-size: 0.88rem;
+	line-height: 1.55;
+	color: #5a6478;
+	flex: 0 0 auto;
+}
+
+.gbe-proverbes-archive .gbe-card__footer {
+	margin-top: 0;
+	padding-top: 0.85rem;
+	border-top: 1px solid rgba(13, 27, 61, 0.08);
+	flex: 0 0 auto;
+	flex-shrink: 0;
+}
+
+.gbe-proverbes-archive .gbe-card__cta {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	padding: 0.45rem 0.85rem;
+	border-radius: 999px;
+	background: rgba(30, 90, 58, 0.08);
+	font-size: 0.8rem;
+	font-weight: 700;
+	line-height: 1.35;
+	color: var(--gbe-green, #1e5a3a) !important;
+	-webkit-text-fill-color: var(--gbe-green, #1e5a3a);
+	transition: background 0.2s ease, color 0.2s ease;
+}
+
+.gbe-proverbes-archive .gbe-card__surface:hover .gbe-card__cta,
+.gbe-proverbes-archive .gbe-card__surface:focus-visible .gbe-card__cta {
+	background: var(--gbe-gold, #d99a2b);
+	color: var(--gbe-navy, #0d1b3d) !important;
+	-webkit-text-fill-color: var(--gbe-navy, #0d1b3d);
+}
+
+.gbe-proverbes-archive .gbe-empty {
+	margin: 0;
+	padding: 2.5rem 1.35rem;
+	border-radius: 16px;
+	background: rgba(255, 255, 255, 0.75);
+	border: 1px dashed rgba(13, 27, 61, 0.16);
+	text-align: center;
+	color: #4a5568;
+}
+
+/* Pagination */
+.gbe-proverbes-pagination {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-top: 0.5rem;
+	padding-top: 1.5rem;
+	border-top: 1px solid rgba(13, 27, 61, 0.1);
+}
+
+.gbe-proverbes-pagination__link {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.7rem 1.15rem;
+	border-radius: 999px;
+	background: var(--gbe-white, #fff);
+	border: 1px solid rgba(13, 27, 61, 0.12);
+	color: var(--gbe-navy, #0d1b3d) !important;
+	-webkit-text-fill-color: var(--gbe-navy, #0d1b3d);
+	font-weight: 600;
+	font-size: 0.9rem;
+	line-height: 1.35;
+	text-decoration: none !important;
+	transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.gbe-proverbes-pagination__link:hover,
+.gbe-proverbes-pagination__link:focus-visible {
+	background: var(--gbe-gold, #d99a2b);
+	border-color: var(--gbe-gold, #d99a2b);
+	outline: none;
+}
+
+.gbe-proverbes-pagination__status {
+	font-size: 0.9rem;
+	font-weight: 600;
+	color: var(--gbe-navy, #0d1b3d);
+}
+
+@media (max-width: 900px) {
+	.gbe-proverbes-banque-stats__grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.gbe-proverbes-archive .gbe-filters--proverbes {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	.gbe-proverbes-archive .gbe-filters__field--search {
+		grid-column: 1 / -1;
+	}
+
+	.gbe-proverbes-archive .gbe-filters__actions {
+		grid-column: 1 / -1;
+	}
+
+	.gbe-proverbes-archive .gbe-cards-grid--proverbes {
+		gap: 1.5rem !important;
+	}
+}
+
+@media (max-width: 600px) {
+	.gbe-proverbes-banque-stats {
+		margin-top: -1.75rem;
+	}
+
+	.gbe-proverbes-banque-body {
+		gap: 1.5rem;
+	}
+
+	.gbe-proverbes-archive .gbe-filters--proverbes {
+		grid-template-columns: 1fr;
+	}
+
+	.gbe-proverbes-pagination {
+		flex-direction: column;
+		align-items: stretch;
+		text-align: center;
+	}
+}

@@ -58,7 +58,7 @@ class GBE_Home_Composer_Admin {
 		return array(
 			'hero' => array(
 				'title'   => 'Préserver, transmettre et faire rayonner le patrimoine Gbe.',
-				'lead'    => 'GbeCosmoLingua est un observatoire international des langues et cultures gbe — du Togo au Nigeria, pour la recherche, la transmission et le dialogue interculturel.',
+				'lead'    => 'Gbe est une langue unique parlée par environ quatre millions de personnes au Ghana, au Togo, au Bénin et au Nigeria. GbeCosmoLingua en documente les parlers, les cultures et le patrimoine oral.',
 				'bg_id'   => 0,
 				'buttons' => array(
 					array(
@@ -68,7 +68,7 @@ class GBE_Home_Composer_Admin {
 					),
 					array(
 						'text'    => 'Découvrir notre mission',
-						'url'     => '/a-propos/',
+						'url'     => '/notre-philosophie/#missions',
 						'outline' => true,
 					),
 				),
@@ -76,17 +76,18 @@ class GBE_Home_Composer_Admin {
 			'stats' => array(
 				'items' => array(
 					array( 'stat' => 4, 'suffix' => '', 'grouped' => false, 'text' => '', 'label' => 'Pays', 'icon' => '🌍' ),
-					array( 'stat' => 60, 'suffix' => '+', 'grouped' => false, 'text' => '', 'label' => 'Variétés linguistiques', 'icon' => '💬' ),
-					array( 'stat' => 20, 'suffix' => '+', 'grouped' => false, 'text' => '', 'label' => 'Projets de recherche', 'icon' => '🔬' ),
+					array( 'stat' => 50, 'suffix' => '+', 'grouped' => false, 'text' => '', 'label' => 'Parlers Gbe', 'icon' => '💬' ),
+					array( 'stat' => 4, 'suffix' => 'M+', 'grouped' => false, 'text' => '', 'label' => 'Locuteurs', 'icon' => '🗣' ),
+					array( 'stat' => 5, 'suffix' => '', 'grouped' => false, 'text' => '', 'label' => 'Sections dialectales', 'icon' => '📖' ),
 					array( 'stat' => 5000, 'suffix' => '+', 'grouped' => true, 'text' => '', 'label' => 'Ressources numériques', 'icon' => '📚' ),
 					array( 'stat' => 100, 'suffix' => '+', 'grouped' => false, 'text' => '', 'label' => 'Partenaires institutionnels', 'icon' => '🤝' ),
-					array( 'stat' => 10000, 'suffix' => '+', 'grouped' => true, 'text' => '', 'label' => 'Membres de la communauté', 'icon' => '👥' ),
 				),
 			),
+			'introduction' => gbe_home_introduction_defaults(),
 			'map' => array(
 				'kicker'      => 'Continuum Gbe',
-				'title'       => 'Un espace linguistique et culturel partagé',
-				'text'        => 'Découvrez sur la carte interactive la richesse et la diversité des langues gbe à travers l\'Afrique de l\'Ouest.',
+				'title'       => 'Une langue, quatre pays, cinquante parlers',
+				'text'        => 'Du Ghana au Nigeria, une cinquantaine de parlers mutuellement intelligibles composent la langue Gbe. Explorez leur répartition géographique.',
 				'button_text' => 'Explorer la carte interactive',
 				'button_url'  => '/le-gbe/carte-interactive/',
 				'image_id'    => 0,
@@ -124,7 +125,7 @@ class GBE_Home_Composer_Admin {
 				'title'       => 'BIBLIOTHÈQUE NUMÉRIQUE',
 				'text'        => 'Livres, archives audio, vidéos, images et cartes : explorez les corpus documentaires du continuum gbe.',
 				'button_text' => 'Accéder à la bibliothèque',
-				'button_url'  => '/le-gbe/bibliotheque-linguistique/',
+				'button_url'  => '/le-gbe/linguistique/bibliotheque/',
 				'cards'       => array(
 					array( 'title' => 'Livres & Manuscrits', 'subtitle' => 'Ouvrages & écrits', 'count' => '1 200+', 'image_file' => 'biblio-books.jpg' ),
 					array( 'title' => 'Archives audio', 'subtitle' => 'Enregistrements oraux', 'count' => '1 500+', 'image_file' => 'biblio-audio.jpg' ),
@@ -255,6 +256,12 @@ class GBE_Home_Composer_Admin {
 			'partners' => array(
 				'title' => 'Nos partenaires institutionnels',
 				'limit' => 8,
+			),
+			'membres_fondateurs' => array(
+				'kicker'    => 'Gouvernance',
+				'title'     => 'Membres fondateurs',
+				'link_text' => 'Notre philosophie →',
+				'link_url'  => '/notre-philosophie/',
 			),
 			'cta' => array(
 				'title'   => 'Ensemble, préservons et transmettons le patrimoine Gbe',
@@ -422,6 +429,42 @@ class GBE_Home_Composer_Admin {
 			}
 		}
 
+		if ( isset( $raw['introduction'] ) && is_array( $raw['introduction'] ) ) {
+			$intro = $raw['introduction'];
+			$out['introduction']['kicker'] = sanitize_text_field( $intro['kicker'] ?? '' );
+			$out['introduction']['title']  = sanitize_text_field( $intro['title'] ?? '' );
+			$out['introduction']['link_text']  = sanitize_text_field( $intro['link_text'] ?? '' );
+			$out['introduction']['link_url']   = esc_url_raw( $intro['link_url'] ?? '' );
+			$out['introduction']['link2_text'] = sanitize_text_field( $intro['link2_text'] ?? '' );
+			$out['introduction']['link2_url']  = esc_url_raw( $intro['link2_url'] ?? '' );
+			$out['introduction']['paragraphs'] = array();
+			if ( ! empty( $intro['paragraphs'] ) && is_array( $intro['paragraphs'] ) ) {
+				foreach ( $intro['paragraphs'] as $para ) {
+					$para = sanitize_textarea_field( (string) $para );
+					if ( '' !== $para ) {
+						$out['introduction']['paragraphs'][] = $para;
+					}
+				}
+			}
+			$out['introduction']['highlights'] = array();
+			if ( ! empty( $intro['highlights'] ) && is_array( $intro['highlights'] ) ) {
+				foreach ( $intro['highlights'] as $item ) {
+					if ( ! is_array( $item ) ) {
+						continue;
+					}
+					$label = sanitize_text_field( $item['label'] ?? '' );
+					$text  = sanitize_text_field( $item['text'] ?? '' );
+					if ( '' === $label && '' === $text ) {
+						continue;
+					}
+					$out['introduction']['highlights'][] = array(
+						'label' => $label,
+						'text'  => $text,
+					);
+				}
+			}
+		}
+
 		if ( isset( $raw['stats']['items'] ) && is_array( $raw['stats']['items'] ) ) {
 			$out['stats']['items'] = array();
 			foreach ( $raw['stats']['items'] as $item ) {
@@ -556,6 +599,16 @@ class GBE_Home_Composer_Admin {
 			);
 		}
 
+		if ( isset( $raw['membres_fondateurs'] ) && is_array( $raw['membres_fondateurs'] ) ) {
+			$m = $raw['membres_fondateurs'];
+			$out['membres_fondateurs'] = array(
+				'kicker'    => sanitize_text_field( $m['kicker'] ?? '' ),
+				'title'     => sanitize_text_field( $m['title'] ?? '' ),
+				'link_text' => sanitize_text_field( $m['link_text'] ?? '' ),
+				'link_url'  => esc_url_raw( $m['link_url'] ?? '' ),
+			);
+		}
+
 		if ( isset( $raw['cta'] ) && is_array( $raw['cta'] ) ) {
 			$c = $raw['cta'];
 			$out['cta']['title'] = sanitize_text_field( $c['title'] ?? '' );
@@ -605,7 +658,7 @@ class GBE_Home_Composer_Admin {
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Composer la page d\'accueil', 'gbecosmolingua-core' ); ?></h1>
-			<p class="description"><?php esc_html_e( 'Structure identique au site public : bannière, chiffres, carte, langues, culture, bibliothèque, galerie, témoignages, partenaires et appel à l’action.', 'gbecosmolingua-core' ); ?></p>
+			<p class="description"><?php esc_html_e( 'Structure identique au site public : bannière, chiffres, présentation de Gbe, carte, langues, culture, bibliothèque, galerie, témoignages, partenaires et appel à l’action.', 'gbecosmolingua-core' ); ?></p>
 			<p>
 				<a class="button button-primary" href="<?php echo esc_url( $preview ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Voir la page publique', 'gbecosmolingua-core' ); ?></a>
 			</p>
@@ -617,12 +670,14 @@ class GBE_Home_Composer_Admin {
 
 				<?php self::render_section_hero( $layout['hero'] ); ?>
 				<?php self::render_section_stats( $layout['stats']['items'] ); ?>
+				<?php self::render_section_introduction( $layout['introduction'] ?? gbe_home_introduction_defaults() ); ?>
 				<?php self::render_section_map( $layout['map'] ); ?>
 				<?php self::render_section_langues( $layout['langues'] ); ?>
 				<?php self::render_section_culture( $layout['culture'] ); ?>
 				<?php self::render_section_bibliotheque( $layout['bibliotheque'] ); ?>
 				<?php self::render_section_gallery( $layout['gallery']['tiles'] ); ?>
 				<?php self::render_section_testimonials( $layout['testimonials'] ); ?>
+				<?php self::render_section_membres_fondateurs( $layout['membres_fondateurs'] ?? array() ); ?>
 				<?php self::render_section_partners( $layout['partners'] ); ?>
 				<?php self::render_section_cta( $layout['cta'] ); ?>
 
@@ -696,6 +751,48 @@ class GBE_Home_Composer_Admin {
 				</tbody>
 			</table>
 			<p class="description"><? esc_html_e( 'Laissez « Valeur » vide et remplissez « Texte fixe » pour un affichage littéral (ex. 24/7).', 'gbecosmolingua-core' ); ?></p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * @param array<string, mixed> $intro Section introduction Gbe.
+	 */
+	private static function render_section_introduction( $intro ) {
+		$paragraphs = $intro['paragraphs'] ?? array();
+		$highlights = $intro['highlights'] ?? array();
+		?>
+		<div class="postbox" style="margin-top:1.5rem;padding:1rem 1.25rem;max-width:1200px;">
+			<h2><?php esc_html_e( 'Qu\'est-ce que Gbe ?', 'gbecosmolingua-core' ); ?></h2>
+			<table class="form-table" role="presentation">
+				<tr><th scope="row"><label><? esc_html_e( 'Sur-titre', 'gbecosmolingua-core' ); ?></label></th><td><input type="text" class="large-text" name="gbe_home_layout[introduction][kicker]" value="<?php echo esc_attr( $intro['kicker'] ?? '' ); ?>" /></td></tr>
+				<tr><th scope="row"><label><? esc_html_e( 'Titre', 'gbecosmolingua-core' ); ?></label></th><td><input type="text" class="large-text" name="gbe_home_layout[introduction][title]" value="<?php echo esc_attr( $intro['title'] ?? '' ); ?>" /></td></tr>
+			</table>
+			<h3><?php esc_html_e( 'Paragraphes', 'gbecosmolingua-core' ); ?></h3>
+			<?php for ( $i = 0; $i < max( 3, count( $paragraphs ) ); $i++ ) : ?>
+				<p><textarea class="large-text" rows="3" name="gbe_home_layout[introduction][paragraphs][<?php echo esc_attr( (string) $i ); ?>]"><?php echo esc_textarea( $paragraphs[ $i ] ?? '' ); ?></textarea></p>
+			<?php endfor; ?>
+			<h3><?php esc_html_e( 'Points clés', 'gbecosmolingua-core' ); ?></h3>
+			<table class="widefat striped">
+				<thead><tr><th><? esc_html_e( 'Libellé', 'gbecosmolingua-core' ); ?></th><th><? esc_html_e( 'Texte', 'gbecosmolingua-core' ); ?></th></tr></thead>
+				<tbody>
+				<?php for ( $i = 0; $i < max( 4, count( $highlights ) ); $i++ ) : ?>
+					<?php $item = $highlights[ $i ] ?? array( 'label' => '', 'text' => '' ); ?>
+					<tr>
+						<td><input type="text" class="regular-text" name="gbe_home_layout[introduction][highlights][<?php echo esc_attr( (string) $i ); ?>][label]" value="<?php echo esc_attr( $item['label'] ?? '' ); ?>" /></td>
+						<td><input type="text" class="large-text" name="gbe_home_layout[introduction][highlights][<?php echo esc_attr( (string) $i ); ?>][text]" value="<?php echo esc_attr( $item['text'] ?? '' ); ?>" /></td>
+					</tr>
+				<?php endfor; ?>
+				</tbody>
+			</table>
+			<p>
+				<input type="text" class="regular-text" name="gbe_home_layout[introduction][link_text]" value="<?php echo esc_attr( $intro['link_text'] ?? '' ); ?>" placeholder="<? esc_attr_e( 'Lien 1', 'gbecosmolingua-core' ); ?>" />
+				<input type="text" class="regular-text" name="gbe_home_layout[introduction][link_url]" value="<?php echo esc_attr( $intro['link_url'] ?? '' ); ?>" placeholder="URL" />
+			</p>
+			<p>
+				<input type="text" class="regular-text" name="gbe_home_layout[introduction][link2_text]" value="<?php echo esc_attr( $intro['link2_text'] ?? '' ); ?>" placeholder="<? esc_attr_e( 'Lien 2', 'gbecosmolingua-core' ); ?>" />
+				<input type="text" class="regular-text" name="gbe_home_layout[introduction][link2_url]" value="<?php echo esc_attr( $intro['link2_url'] ?? '' ); ?>" placeholder="URL" />
+			</p>
 		</div>
 		<?php
 	}
@@ -830,6 +927,26 @@ class GBE_Home_Composer_Admin {
 					</p>
 				</fieldset>
 			<?php endforeach; ?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * @param array<string, mixed> $membres Membres fondateurs.
+	 */
+	private static function render_section_membres_fondateurs( $membres ) {
+		?>
+		<div class="postbox" style="margin-top:1.5rem;padding:1rem 1.25rem;max-width:1200px;">
+			<h2><?php esc_html_e( 'Membres fondateurs', 'gbecosmolingua-core' ); ?></h2>
+			<p>
+				<input type="text" class="regular-text" name="gbe_home_layout[membres_fondateurs][kicker]" value="<?php echo esc_attr( $membres['kicker'] ?? '' ); ?>" placeholder="<? esc_attr_e( 'Sur-titre', 'gbecosmolingua-core' ); ?>" />
+				<input type="text" class="large-text" name="gbe_home_layout[membres_fondateurs][title]" value="<?php echo esc_attr( $membres['title'] ?? '' ); ?>" placeholder="<? esc_attr_e( 'Titre de section', 'gbecosmolingua-core' ); ?>" />
+			</p>
+			<p>
+				<input type="text" class="regular-text" name="gbe_home_layout[membres_fondateurs][link_text]" value="<?php echo esc_attr( $membres['link_text'] ?? '' ); ?>" placeholder="<? esc_attr_e( 'Lien (libellé)', 'gbecosmolingua-core' ); ?>" />
+				<input type="text" class="regular-text" name="gbe_home_layout[membres_fondateurs][link_url]" value="<?php echo esc_attr( $membres['link_url'] ?? '' ); ?>" placeholder="URL" />
+			</p>
+			<p class="description"><? esc_html_e( 'Grille alimentée par le CPT Membres (groupe « Membres fondateurs »). Photo = image mise en avant de chaque fiche.', 'gbecosmolingua-core' ); ?></p>
 		</div>
 		<?php
 	}
